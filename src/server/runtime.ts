@@ -8,13 +8,15 @@ import {
 } from '../engine/reasoningProvider';
 import type { WalletProvider } from '../engine/walletProvider';
 import { loadServerConfig } from './config';
-import { WdkWalletProvider } from './providers/wdkWalletProvider';
 import { SchedulerService } from './schedulerService';
+import { createRequire } from 'node:module';
 
 export const serverConfig = loadServerConfig();
+const require = createRequire(import.meta.url);
 
 function createWalletProvider(): WalletProvider {
   if (serverConfig.walletProvider === 'wdk') {
+    const { WdkWalletProvider } = require('./providers/wdkWalletProvider') as typeof import('./providers/wdkWalletProvider');
     return new WdkWalletProvider({
       seedPhrase: serverConfig.walletSeedPhrase!,
       rpcUrl: serverConfig.rpcUrl!,
