@@ -1,0 +1,49 @@
+{
+  "name": "react-vite-tailwind",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:api": "tsx watch src/server/index.ts",
+    "dev:bot": "tsx watch src/server/telegramBot.ts",
+    "dev:full": "concurrently -k \"npm:dev:api\" \"npm:dev\"",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start:api": "tsx src/server/index.ts",
+    "start:bot": "tsx src/server/telegramBot.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@tetherto/wdk": "^1.0.0-beta.6",
+    "@tetherto/wdk-wallet-evm": "^1.0.0-beta.8",
+    "clsx": "2.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "framer-motion": "^12.35.2",
+    "grammy": "^1.38.4",
+    "lucide-react": "^0.577.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "tailwind-merge": "3.4.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.1.17",
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.0.0",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "@types/supertest": "^6.0.3",
+    "@vitejs/plugin-react": "5.1.1",
+    "concurrently": "^9.2.1",
+    "supertest": "^7.1.4",
+    "tailwindcss": "4.1.17",
+    "typescript": "5.9.3",
+    "vite": "7.2.4",
+    "vite-plugin-singlefile": "2.3.0",
+    "vitest": "^3.2.4",
+    "tsx": "^4.20.6"
+  }
+}
