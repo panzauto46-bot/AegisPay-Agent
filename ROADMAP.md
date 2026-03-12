@@ -14,9 +14,9 @@
 | Phase 1 - Foundation | 93% | In Progress | App shell, runtime, provider abstraction, wallet state, and optional WDK integration are ready. |
 | Phase 2 - AI Agent Core | 80% | In Progress | Command understanding is functional with deterministic + provider-backed reasoning; OpenClaw remains the main gap. |
 | Phase 3 - Payment Engine | 90% | In Progress | Validation, payments, recurring execution, and explorer reporting are working in demo mode. |
-| Phase 4 - Advanced Features | 94% | In Progress | Landing page, wallet-connect flow, web chat, Telegram bridge, scheduler, and the lazy-loaded Vercel runtime path are live locally. |
-| Phase 5 - Polish & Submit | 60% | In Progress | Docs, tests, UX polish, and deployment runtime wiring are shipped; production verification, demo video, and final submission hardening remain. |
-| Overall | 90% | In Progress | Full-stack MVP is ready with a stronger deployment path; track-specific and submission-specific work is still pending. |
+| Phase 4 - Advanced Features | 96% | In Progress | Landing page, wallet-connect flow, web chat, Telegram bridge, scheduler, and the lazy-loaded Vercel runtime path are live with production health/state endpoints confirmed. |
+| Phase 5 - Polish & Submit | 60% | In Progress | Docs, tests, UX polish, and deployment runtime recovery are shipped; demo video and final submission hardening remain. |
+| Overall | 91% | In Progress | Full-stack MVP is ready with a stable deployment path; track-specific and submission-specific work is still pending. |
 
 ---
 
@@ -131,12 +131,12 @@ Goal: make the agent demo-ready and useful across channels.
 - Vercel cron schedule support for recurring scheduler execution
 - CommonJS serverless bundle bootstrap bridged from the Vercel ES module entrypoint
 - Lazy WDK loading so demo-mode deployments do not import WDK packages during startup
+- Production `/api/health` and `/api/state` now return `200` on Vercel
 
 ### Remaining
 
 - Payment outcome notifications
 - Production scheduler observability/alerting
-- Production redeploy verification for `/api/health` and `/api/state`
 
 ---
 

@@ -302,6 +302,8 @@ The Vercel entrypoint stays as an ES module, but it now bridges into a bundled C
 
 Recurring scheduler automation is wired through Vercel Cron in `vercel.json` and calls `/api/scheduler/cron` every minute.
 
+The production deployment path has been recovered with this bootstrap pattern, and `/api/health` plus `/api/state` now respond successfully on Vercel.
+
 ### Run Tests
 
 ```bash

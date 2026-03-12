@@ -8,7 +8,7 @@ Submission deadline: March 22, 2026
 
 | Metric | Value |
 |--------|-------|
-| Overall progress | 90% |
+| Overall progress | 91% |
 | TypeScript errors | 0 |
 | Test suites | 3 |
 | Tests | 10/10 passed |
@@ -17,7 +17,7 @@ Submission deadline: March 22, 2026
 | Build output | `dist/index.html` (~524 KB) |
 | Current runtime state | Full-stack MVP |
 
-The project is in strong MVP shape. The product story is now much clearer thanks to the animated landing page and wallet-connect entry flow, and the backend has a credible runtime model with provider-backed reasoning, scheduler execution, Telegram bridge, optional WDK support, and a Vercel serverless deployment path with a CommonJS bundle plus lazy WDK loading landed locally. The most important remaining gaps are still OpenClaw integration, funded live WDK verification, persistence/auth hardening, production redeploy verification, and the final hackathon deliverables such as the demo video and submission assets.
+The project is in strong MVP shape. The product story is now much clearer thanks to the animated landing page and wallet-connect entry flow, and the backend has a credible runtime model with provider-backed reasoning, scheduler execution, Telegram bridge, optional WDK support, and a Vercel serverless deployment path with a CommonJS bundle plus lazy WDK loading now stable in production. The most important remaining gaps are still OpenClaw integration, funded live WDK verification, persistence/auth hardening, and the final hackathon deliverables such as the demo video and submission assets.
 
 ## Current Architecture
 
@@ -131,9 +131,9 @@ The backend still lacks an auth gate. If publicly exposed as-is, anyone who can 
 
 ### Medium severity
 
-#### 5. Deployment still needs backend env setup and production verification
+#### 5. Deployment still needs backend env setup hardening
 
-The deployment path exists now, but production still requires correctly configured Vercel env vars (Alibaba-compatible API key, model list, and base URL) plus a fresh redeploy verification to confirm `/api/health` and `/api/state` are green after the CommonJS + lazy-WDK bootstrap fix.
+The deployment path exists now and production health/state endpoints are responding. Remaining deployment work is mostly hardening: ensure Vercel env vars stay correct (Alibaba-compatible API key, model list, and base URL), add auth/CORS tightening, and keep runtime observability for cron/scheduler behavior.
 
 #### 6. Test coverage is still selective
 
@@ -161,7 +161,7 @@ UI flows, Telegram bridge behavior, and live-provider smoke tests are still miss
 | Scheduler | Working in-process + Vercel cron path available |
 | Tests | 10/10 passing |
 | README accuracy | Improved and aligned with runtime |
-| Submission readiness | Not done yet |
+| Submission readiness | Not done yet (but deployment runtime is now stable) |
 
 ## Hackathon Readiness
 
