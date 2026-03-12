@@ -14,9 +14,9 @@
 | Phase 1 - Foundation | 93% | In Progress | App shell, runtime, provider abstraction, wallet state, and optional WDK integration are ready. |
 | Phase 2 - AI Agent Core | 80% | In Progress | Command understanding is functional with deterministic + provider-backed reasoning; OpenClaw remains the main gap. |
 | Phase 3 - Payment Engine | 90% | In Progress | Validation, payments, recurring execution, and explorer reporting are working in demo mode. |
-| Phase 4 - Advanced Features | 93% | In Progress | Landing page, wallet-connect flow, web chat, Telegram bridge, scheduler, and ESM-based Vercel runtime path are live locally. |
+| Phase 4 - Advanced Features | 94% | In Progress | Landing page, wallet-connect flow, web chat, Telegram bridge, scheduler, and the lazy-loaded Vercel runtime path are live locally. |
 | Phase 5 - Polish & Submit | 60% | In Progress | Docs, tests, UX polish, and deployment runtime wiring are shipped; production verification, demo video, and final submission hardening remain. |
-| Overall | 89% | In Progress | Full-stack MVP is ready with a stronger deployment path; track-specific and submission-specific work is still pending. |
+| Overall | 90% | In Progress | Full-stack MVP is ready with a stronger deployment path; track-specific and submission-specific work is still pending. |
 
 ---
 
@@ -129,7 +129,8 @@ Goal: make the agent demo-ready and useful across channels.
 - Project Status page backed by shared metadata
 - Vercel catch-all API function path for `/api/*`
 - Vercel cron schedule support for recurring scheduler execution
-- ESM serverless bundle bootstrap for Vercel API compatibility with WDK packages
+- CommonJS serverless bundle bootstrap bridged from the Vercel ES module entrypoint
+- Lazy WDK loading so demo-mode deployments do not import WDK packages during startup
 
 ### Remaining
 

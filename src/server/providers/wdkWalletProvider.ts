@@ -1,5 +1,3 @@
-import WDK from '@tetherto/wdk';
-import WalletManagerEvm from '@tetherto/wdk-wallet-evm';
 import {
   createAddressExplorerUrl,
   createTransactionExplorerUrl,
@@ -36,23 +34,49 @@ function unitsToDecimal(amount: bigint, decimals: number) {
   return negative ? -value : value;
 }
 
+interface WdkAccount {
+  getAddress(): Promise<string>;
+  getTokenBalance(tokenAddress: string): Promise<bigint>;
+  getBalance(): Promise<bigint>;
+  transfer(input: { token: string; recipient: string; amount: bigint }): Promise<{ hash: string; fee: bigint }>;
+}
+
+interface WdkRuntime {
+  getAccount(blockchain: string, index?: number): Promise<WdkAccount>;
+}
+
 export class WdkWalletProvider implements WalletProvider {
   readonly mode = 'live' as const;
   readonly label = 'wdk';
 
   private readonly options: WdkWalletProviderOptions;
-  private readonly wdk: WDK;
+  private wdkPromise?: Promise<WdkRuntime>;
 
   constructor(options: WdkWalletProviderOptions) {
     this.options = options;
-    this.wdk = new WDK(options.seedPhrase).registerWallet('ethereum', WalletManagerEvm, {
-      provider: options.rpcUrl,
-      transferMaxFee: options.transferMaxFeeWei,
-    });
+  }
+
+  private async getWdk() {
+    if (!this.wdkPromise) {
+      this.wdkPromise = (async () => {
+        const [{ default: WDK }, { default: WalletManagerEvm }] = await Promise.all([
+          import('@tetherto/wdk'),
+          import('@tetherto/wdk-wallet-evm'),
+        ]);
+
+        return new WDK(this.options.seedPhrase).registerWallet('ethereum', WalletManagerEvm, {
+          provider: this.options.rpcUrl,
+          transferMaxFee: this.options.transferMaxFeeWei,
+        }) as unknown as WdkRuntime;
+      })();
+    }
+
+    return this.wdkPromise;
   }
 
   async createWallet(input: CreateWalletInput): Promise<Wallet> {
-    const account = await this.wdk.getAccount('ethereum', input.walletCount);
+    const wdk = await this.getWdk();
+    const account = await wdk.getAccount('ethereum', input.walletCount);
     const address = await account.getAddress();
     const tokenBalance = await account.getTokenBalance(this.options.tokenAddress);
     const nativeBalance = await account.getBalance();
@@ -74,10 +98,11 @@ export class WdkWalletProvider implements WalletProvider {
   }
 
   async refreshWallets(wallets: Wallet[]) {
+    const wdk = await this.getWdk();
     const refreshedWallets = await Promise.all(
       wallets.map(async (wallet, index) => {
         const accountIndex = wallet.walletIndex ?? index;
-        const account = await this.wdk.getAccount('ethereum', accountIndex);
+        const account = await wdk.getAccount('ethereum', accountIndex);
         const address = await account.getAddress();
         const tokenBalance = await account.getTokenBalance(this.options.tokenAddress);
         const nativeBalance = await account.getBalance();
@@ -97,8 +122,9 @@ export class WdkWalletProvider implements WalletProvider {
   }
 
   async sendToken(input: WalletTransferInput) {
+    const wdk = await this.getWdk();
     const accountIndex = input.wallet.walletIndex ?? 0;
-    const account = await this.wdk.getAccount('ethereum', accountIndex);
+    const account = await wdk.getAccount('ethereum', accountIndex);
     const transfer = await account.transfer({
       token: this.options.tokenAddress,
       recipient: input.recipient,

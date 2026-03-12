@@ -38,7 +38,7 @@ Using **Tether's Wallet Development Kit (WDK)** and the **OpenClaw** AI agent fr
 
 The agent acts as an **independent financial actor** — capable of managing funds, making decisions, and executing payments under user-defined constraints.
 
-The current build includes an animated React web UI, a wallet-connect entry flow, a Node.js API runtime, a shared agent engine, an optional WDK-backed wallet provider, a Telegram bridge, an ESM-based Vercel serverless API bootstrap, Alibaba Model Studio-compatible reasoning with model auto-switch fallback, and automated tests for the core command and scheduling flows.
+The current build includes an animated React web UI, a wallet-connect entry flow, a Node.js API runtime, a shared agent engine, an optional WDK-backed wallet provider, a Telegram bridge, a Vercel serverless API bootstrap backed by a bundled CommonJS server app with lazy WDK loading, Alibaba Model Studio-compatible reasoning with model auto-switch fallback, and automated tests for the core command and scheduling flows.
 
 ### 💡 What Makes AegisPay Different?
 
@@ -286,7 +286,7 @@ To disable provider-backed reasoning entirely, set `AEGIS_REASONING_PROVIDER=det
 
 This project now supports Vercel Functions for the backend API via `api/[...route].ts`, so `/api/*` runs in Vercel instead of falling back to local-only demo logic.
 
-The serverless backend is bundled as an ES module to stay compatible with WDK's ESM packages. This avoids the `ERR_REQUIRE_ESM` crash pattern that shows up when a CommonJS bootstrap tries to load `@tetherto/wdk`.
+The Vercel entrypoint stays as an ES module, but it now bridges into a bundled CommonJS server app. WDK packages are lazy-loaded only when `AEGIS_WALLET_PROVIDER=wdk`, so demo-mode deployments do not touch WDK at startup. This avoids both the earlier `ERR_MODULE_NOT_FOUND` bootstrap issue and the `ERR_REQUIRE_ESM` crash pattern.
 
 1. In Vercel, add these environment variables for your deployment:
    - `AEGIS_REASONING_PROVIDER=openai`
@@ -296,10 +296,9 @@ The serverless backend is bundled as an ES module to stay compatible with WDK's 
    - `AEGIS_OPENAI_MODELS=qwen-plus,qwen-turbo,qwen3-8b,qwen3-4b`
    - `CRON_SECRET=<strong-random-secret>`
 2. Keep frontend API target as `VITE_AEGIS_API_URL=/api`.
-3. Redeploy your project after saving env vars.
-4. Redeploy after saving env vars and code changes.
-5. Check runtime health at `https://<your-vercel-domain>/api/health`.
-6. Check state endpoint at `https://<your-vercel-domain>/api/state`.
+3. Redeploy your project after saving env vars and code changes.
+4. Check runtime health at `https://<your-vercel-domain>/api/health`.
+5. Check state endpoint at `https://<your-vercel-domain>/api/state`.
 
 Recurring scheduler automation is wired through Vercel Cron in `vercel.json` and calls `/api/scheduler/cron` every minute.
 
