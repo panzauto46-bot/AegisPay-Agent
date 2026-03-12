@@ -138,8 +138,8 @@ export default function LandingPage({
         </div>
       </header>
 
-      <main className="relative z-10 flex w-full flex-col gap-10 px-5 pb-20 sm:px-8 xl:px-12 2xl:px-16">
-        <section className="grid gap-10 pt-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:items-center lg:gap-14 lg:pt-8">
+      <main className="relative z-10 flex w-full flex-col gap-12 px-5 pb-20 sm:px-8 xl:px-12 2xl:px-16">
+        <section className="grid gap-10 pt-4 lg:min-h-[calc(100vh-7.5rem)] lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-center lg:gap-16 lg:pt-8 2xl:grid-cols-[minmax(0,0.86fr)_minmax(0,1.14fr)]">
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
@@ -184,7 +184,7 @@ export default function LandingPage({
               </motion.button>
             </div>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            <div className="mt-8 grid gap-4 sm:grid-cols-3 xl:max-w-[56rem]">
               {[
                 { label: 'Portfolio Surface', value: `${totalBalance.toFixed(2)} USDT`, icon: Coins },
                 { label: 'Active Guardrails', value: `${activeRules}`, icon: ShieldCheck },
@@ -212,7 +212,7 @@ export default function LandingPage({
             initial={{ opacity: 0, scale: 0.92, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.9, ease: 'easeOut', delay: 0.15 }}
-            className="relative w-full lg:justify-self-end xl:max-w-[860px]"
+            className="relative w-full lg:min-h-[42rem] lg:justify-self-stretch"
           >
             <div className="landing-stage">
               <div className="landing-stage-grid" />
@@ -297,26 +297,28 @@ export default function LandingPage({
           </motion.div>
         </section>
 
-        <section className="landing-panel overflow-hidden rounded-[32px] py-4">
-          <div className="mb-3 px-5 text-[11px] uppercase tracking-[0.28em] text-slate-500 sm:px-8">
-            Running Signal Strip
-          </div>
-          <div className="marquee-shell">
-            <div className="marquee-track">
-              {[...tickerItems, ...tickerItems].map((item, index) => (
-                <div key={`${item}-${index}`} className="marquee-item">
-                  <Orbit className="h-4 w-4 text-cyan-200" />
-                  <span>{item}</span>
-                </div>
-              ))}
+        <section className="relative left-1/2 w-screen -translate-x-1/2 px-5 sm:px-8 xl:px-12 2xl:px-16">
+          <div className="landing-panel overflow-hidden rounded-[32px] py-4">
+            <div className="mb-3 px-5 text-[11px] uppercase tracking-[0.28em] text-slate-500 sm:px-8">
+              Running Signal Strip
+            </div>
+            <div className="marquee-shell">
+              <div className="marquee-track">
+                {[...tickerItems, ...tickerItems].map((item, index) => (
+                  <div key={`${item}-${index}`} className="marquee-item">
+                    <Orbit className="h-4 w-4 text-cyan-200" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <section className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] 2xl:grid-cols-[minmax(0,1.22fr)_minmax(0,0.78fr)]">
           <div className="landing-panel rounded-[32px] p-6 sm:p-8">
             <div className="mb-6 flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-300/25 to-emerald-300/25 text-cyan-100">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-300/25 to-emerald-300/25 text-cyan-100">
                 <Command className="h-5 w-5" />
               </div>
               <div>
@@ -405,31 +407,33 @@ export default function LandingPage({
           </div>
         </section>
 
-        <section className="landing-panel rounded-[36px] p-6 sm:p-8">
-          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
-            <div>
-              <p className="mb-3 text-[11px] uppercase tracking-[0.28em] text-cyan-100/65">Ready to show it live</p>
-              <h2 className="landing-display text-3xl font-bold text-white sm:text-4xl">
-                Launch the landing page, then dive straight into the agent console.
-              </h2>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-400 sm:text-base">
-                This landing surface is designed to sell the vision first, then funnel users into the working
-                wallet runtime, transaction dashboard, and project status views without losing momentum.
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-              <button
-                onClick={() => onNavigate('chat')}
-                className="rounded-full bg-gradient-to-r from-amber-300 via-cyan-300 to-emerald-300 px-6 py-3.5 text-sm font-semibold text-slate-950"
-              >
-                Start Demo Flow
-              </button>
-              <button
-                onClick={() => onNavigate('status')}
-                className="rounded-full border border-white/12 bg-white/[0.06] px-6 py-3.5 text-sm font-semibold text-slate-100"
-              >
-                Open Roadmap Status
-              </button>
+        <section className="relative left-1/2 w-screen -translate-x-1/2 px-5 sm:px-8 xl:px-12 2xl:px-16">
+          <div className="landing-panel rounded-[36px] p-6 sm:p-8">
+            <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
+              <div>
+                <p className="mb-3 text-[11px] uppercase tracking-[0.28em] text-cyan-100/65">Ready to show it live</p>
+                <h2 className="landing-display max-w-[14ch] text-3xl font-bold text-white sm:text-4xl xl:text-5xl">
+                  Launch the landing page, then dive straight into the agent console.
+                </h2>
+                <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-400 sm:text-base">
+                  This landing surface is designed to sell the vision first, then funnel users into the working
+                  wallet runtime, transaction dashboard, and project status views without losing momentum.
+                </p>
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+                <button
+                  onClick={() => onNavigate('chat')}
+                  className="rounded-full bg-gradient-to-r from-amber-300 via-cyan-300 to-emerald-300 px-6 py-3.5 text-sm font-semibold text-slate-950"
+                >
+                  Start Demo Flow
+                </button>
+                <button
+                  onClick={() => onNavigate('status')}
+                  className="rounded-full border border-white/12 bg-white/[0.06] px-6 py-3.5 text-sm font-semibold text-slate-100"
+                >
+                  Open Roadmap Status
+                </button>
+              </div>
             </div>
           </div>
         </section>
