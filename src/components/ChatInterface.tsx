@@ -1,13 +1,18 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Zap, Sparkles, Bot, User } from 'lucide-react';
-import type { ChatMessage } from '../types';
+import type { ChatMessage, Wallet } from '../types';
 import { cn } from '../utils/cn';
 
 interface ChatInterfaceProps {
   messages: ChatMessage[];
   isProcessing: boolean;
   runtimeMode: 'local' | 'remote';
+  connectedWallet: Wallet | null;
   onSendMessage: (message: string) => void;
+}
+
+function shortenAddress(address: string) {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
 
 const quickCommands = [
@@ -33,7 +38,13 @@ function formatMarkdown(text: string) {
   });
 }
 
-export default function ChatInterface({ messages, isProcessing, runtimeMode, onSendMessage }: ChatInterfaceProps) {
+export default function ChatInterface({
+  messages,
+  isProcessing,
+  runtimeMode,
+  connectedWallet,
+  onSendMessage,
+}: ChatInterfaceProps) {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -77,6 +88,14 @@ export default function ChatInterface({ messages, isProcessing, runtimeMode, onS
             </div>
           </div>
         </div>
+        {connectedWallet && (
+          <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-cyan-400/15 bg-cyan-400/8 px-3 py-1.5 text-xs text-cyan-100">
+            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            Connected wallet:
+            <span className="font-semibold text-white">{connectedWallet.name}</span>
+            <span className="font-mono text-cyan-200/80">{shortenAddress(connectedWallet.address)}</span>
+          </div>
+        )}
       </div>
 
       {/* Messages */}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Page } from './types';
 import { useAgent } from './hooks/useAgent';
 import Sidebar from './components/Sidebar';
@@ -11,13 +11,58 @@ import SpendingRules from './components/SpendingRules';
 import RecurringPayments from './components/RecurringPayments';
 import ProjectStatus from './components/ProjectStatus';
 import LandingPage from './components/LandingPage';
+import ConnectWalletPage from './components/ConnectWalletPage';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>('landing');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [connectedWalletId, setConnectedWalletId] = useState<string | null>(null);
 
   const agent = useAgent();
+  const connectedWallet = connectedWalletId
+    ? agent.wallets.find((wallet) => wallet.id === connectedWalletId) ?? null
+    : null;
+
+  useEffect(() => {
+    if (connectedWalletId && !connectedWallet) {
+      setConnectedWalletId(null);
+    }
+  }, [connectedWallet, connectedWalletId]);
+
+  const handlePageChange = (page: Page) => {
+    if (page === 'chat' && !connectedWalletId) {
+      setCurrentPage('connect');
+      return;
+    }
+
+    setCurrentPage(page);
+  };
+
+  const handleLaunchConsole = () => {
+    if (connectedWalletId) {
+      setCurrentPage('chat');
+      return;
+    }
+
+    setCurrentPage('connect');
+  };
+
+  const handleConnectWallet = (walletId: string) => {
+    setConnectedWalletId(walletId);
+    setCurrentPage('chat');
+  };
+
+  const handleCreateAndConnectWallet = async () => {
+    const nextState = await agent.createWallet();
+    const nextWallet = nextState.wallets.at(-1);
+    if (!nextWallet) {
+      return;
+    }
+
+    setConnectedWalletId(nextWallet.id);
+    setCurrentPage('chat');
+  };
 
   const renderPage = () => {
     switch (currentPage) {
@@ -29,7 +74,19 @@ export default function App() {
             rules={agent.rules}
             recurringPayments={agent.recurringPayments}
             runtimeMode={agent.runtimeMode}
-            onNavigate={setCurrentPage}
+            onLaunchConsole={handleLaunchConsole}
+            onNavigate={handlePageChange}
+          />
+        );
+      case 'connect':
+        return (
+          <ConnectWalletPage
+            wallets={agent.wallets}
+            runtimeMode={agent.runtimeMode}
+            isProcessing={agent.isProcessing}
+            onBack={() => setCurrentPage('landing')}
+            onConnect={handleConnectWallet}
+            onCreateAndConnect={handleCreateAndConnectWallet}
           />
         );
       case 'dashboard':
@@ -39,7 +96,7 @@ export default function App() {
             transactions={agent.transactions}
             rules={agent.rules}
             recurringPayments={agent.recurringPayments}
-            onNavigate={setCurrentPage}
+            onNavigate={handlePageChange}
           />
         );
       case 'chat':
@@ -48,6 +105,7 @@ export default function App() {
             messages={agent.messages}
             isProcessing={agent.isProcessing}
             runtimeMode={agent.runtimeMode}
+            connectedWallet={connectedWallet}
             onSendMessage={agent.processCommand}
           />
         );
@@ -55,7 +113,7 @@ export default function App() {
         return (
           <WalletPanel
             wallets={agent.wallets}
-            onNavigate={setCurrentPage}
+            onNavigate={handlePageChange}
           />
         );
       case 'transactions':
@@ -99,7 +157,7 @@ export default function App() {
     }
   };
 
-  if (currentPage === 'landing') {
+  if (currentPage === 'landing' || currentPage === 'connect') {
     return renderPage();
   }
 
@@ -109,7 +167,7 @@ export default function App() {
       <div className="hidden lg:block">
         <Sidebar
           currentPage={currentPage}
-          onPageChange={setCurrentPage}
+          onPageChange={handlePageChange}
           collapsed={sidebarCollapsed}
           onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
           unreadMessages={0}
@@ -121,7 +179,7 @@ export default function App() {
         {/* Mobile Nav */}
         <MobileNav
           currentPage={currentPage}
-          onPageChange={setCurrentPage}
+          onPageChange={handlePageChange}
           isOpen={mobileMenuOpen}
           onToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
         />

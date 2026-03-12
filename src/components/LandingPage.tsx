@@ -24,6 +24,7 @@ interface LandingPageProps {
   rules: SpendingRule[];
   recurringPayments: RecurringPayment[];
   runtimeMode: 'local' | 'remote';
+  onLaunchConsole: () => void;
   onNavigate: (page: Page) => void;
 }
 
@@ -77,6 +78,7 @@ export default function LandingPage({
   rules,
   recurringPayments,
   runtimeMode,
+  onLaunchConsole,
   onNavigate,
 }: LandingPageProps) {
   const activeRules = rules.filter((rule) => rule.enabled).length;
@@ -130,7 +132,7 @@ export default function LandingPage({
             Project Status
           </button>
           <button
-            onClick={() => onNavigate('chat')}
+            onClick={onLaunchConsole}
             className="rounded-full bg-gradient-to-r from-cyan-300 via-teal-300 to-emerald-300 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:scale-[1.02]"
           >
             Launch Console
@@ -167,7 +169,7 @@ export default function LandingPage({
               <motion.button
                 whileHover={{ y: -2, scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => onNavigate('chat')}
+                onClick={onLaunchConsole}
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-300 via-teal-300 to-emerald-300 px-6 py-3.5 text-sm font-semibold text-slate-950 shadow-[0_20px_80px_rgba(34,211,238,0.22)]"
               >
                 Talk to the Agent
@@ -422,7 +424,7 @@ export default function LandingPage({
               </div>
               <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
                 <button
-                  onClick={() => onNavigate('chat')}
+                  onClick={onLaunchConsole}
                   className="rounded-full bg-gradient-to-r from-amber-300 via-cyan-300 to-emerald-300 px-6 py-3.5 text-sm font-semibold text-slate-950"
                 >
                   Start Demo Flow

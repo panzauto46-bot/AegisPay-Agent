@@ -69,11 +69,14 @@ export function useAgent() {
   const runLocal = async (operation: () => Promise<AgentState>) => {
     const state = await operation();
     updateState(state);
+    return state;
   };
 
   const runRemote = async (path: string, init?: RequestInit) => {
     const payload = await fetchJson<ApiStatePayload>(`${DEFAULT_API_BASE_URL}${path}`, init);
-    updateState(deserializeAgentState(payload.state));
+    const nextState = deserializeAgentState(payload.state);
+    updateState(nextState);
+    return nextState;
   };
 
   const processCommand = async (input: string) => {
@@ -184,10 +187,30 @@ export function useAgent() {
     }
   };
 
+  const createWallet = async (name?: string) => {
+    setIsProcessing(true);
+    try {
+      if (runtimeMode === 'remote') {
+        return await runRemote('/wallets', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name }),
+        });
+      }
+
+      return await runLocal(() => engineRef.current!.createWallet(name));
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return {
     ...agentState,
     isProcessing,
     runtimeMode,
+    createWallet,
     processCommand,
     toggleRule,
     deleteRule,
