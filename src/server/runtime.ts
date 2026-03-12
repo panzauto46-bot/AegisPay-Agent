@@ -37,6 +37,7 @@ function createReasoningProvider(): ReasoningProvider {
       new OpenAIReasoningProvider({
         apiKey: serverConfig.openAiApiKey,
         model: serverConfig.openAiModel,
+        models: serverConfig.openAiModels,
         baseUrl: serverConfig.openAiBaseUrl,
         fallback: deterministicProvider,
       }),

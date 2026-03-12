@@ -190,8 +190,80 @@ export class DeterministicReasoningProvider implements ReasoningProvider {
 interface OpenAIReasoningProviderOptions {
   apiKey: string;
   model: string;
+  models?: string[];
   baseUrl?: string;
   fallback?: ReasoningProvider;
+}
+
+class ReasoningProviderHttpError extends Error {
+  constructor(
+    message: string,
+    readonly status?: number,
+    readonly code?: string,
+    readonly body?: string,
+  ) {
+    super(message);
+  }
+}
+
+function safeParseJson(value: string) {
+  try {
+    return JSON.parse(value) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+function parseProviderError(status: number, bodyText: string) {
+  const parsed = safeParseJson(bodyText);
+  const rootError = parsed && typeof parsed.error === 'object' && parsed.error !== null
+    ? parsed.error as Record<string, unknown>
+    : parsed;
+
+  const code = typeof rootError?.code === 'string' ? rootError.code : undefined;
+  const message = typeof rootError?.message === 'string'
+    ? rootError.message
+    : bodyText || `Reasoning request failed with status ${status}.`;
+
+  return {
+    code,
+    message,
+  };
+}
+
+function shouldRetryWithNextModel(error: unknown) {
+  if (!(error instanceof ReasoningProviderHttpError)) {
+    const message = error instanceof Error ? error.message.toLowerCase() : '';
+    return (
+      message.includes('structured output') ||
+      message.includes('json') ||
+      message.includes('unsupported')
+    );
+  }
+
+  const status = error.status ?? 0;
+  const code = error.code?.toLowerCase() ?? '';
+  const message = error.message.toLowerCase();
+
+  if ([403, 408, 409, 429, 500, 502, 503, 504].includes(status)) {
+    return true;
+  }
+
+  return [
+    'allocationquota',
+    'free tier',
+    'free quota',
+    'quota',
+    'insufficient_quota',
+    'rate limit',
+    'rate_limit',
+    'capacity',
+    'unsupported',
+    'not support',
+    'modelnotfound',
+    'model_not_found',
+    'resource exhausted',
+  ].some((needle) => code.includes(needle) || message.includes(needle));
 }
 
 function getOpenAiStateSummary(state: AgentState) {
@@ -284,133 +356,156 @@ export class OpenAIReasoningProvider implements ReasoningProvider {
   readonly label = 'openai';
 
   private readonly apiKey: string;
-  private readonly model: string;
+  private readonly models: string[];
   private readonly baseUrl: string;
   private readonly fallback?: ReasoningProvider;
 
   constructor(options: OpenAIReasoningProviderOptions) {
     this.apiKey = options.apiKey;
-    this.model = options.model;
+    this.models = Array.from(new Set([...(options.models ?? []), options.model].map((model) => model.trim()).filter(Boolean)));
     this.baseUrl = options.baseUrl ?? 'https://api.openai.com/v1';
     this.fallback = options.fallback;
   }
 
   async analyze(input: string, state: AgentState): Promise<AgentIntent> {
     try {
-      const summary = getOpenAiStateSummary(state);
-      const response = await fetch(`${this.baseUrl}/responses`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.apiKey}`,
-        },
-        body: JSON.stringify({
-          model: this.model,
-          input: [
-            {
-              role: 'system',
-              content: [
-                {
-                  type: 'input_text',
-                  text:
-                    'You classify wallet-agent commands into a strict JSON intent. Prefer the closest supported action. Never invent wallet addresses or amounts. If required data is missing, return the intended action with null fields.',
-                },
-              ],
-            },
-            {
-              role: 'user',
-              content: [
-                {
-                  type: 'input_text',
-                  text: `Current agent state:\n${JSON.stringify(summary, null, 2)}\n\nUser command:\n${input}`,
-                },
-              ],
-            },
-          ],
-          text: {
-            format: {
-              type: 'json_schema',
-              name: 'aegispay_intent',
-              strict: true,
-              schema: intentSchema,
-            },
-          },
-        }),
-      });
+      let lastError: unknown;
 
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      const payload = (await response.json()) as Record<string, unknown>;
-      const outputText = readOutputText(payload);
-      if (!outputText) {
-        throw new Error('OpenAI response did not include structured output text.');
-      }
-
-      const parsed = JSON.parse(outputText) as {
-        action: AgentIntent['action'];
-        walletName?: string | null;
-        amount?: number | null;
-        recipientAddress?: string | null;
-        frequency?: 'daily' | 'weekly' | 'monthly' | null;
-        recipientLabel?: string | null;
-        ruleType?: SpendingRule['type'] | null;
-        addresses?: string[] | null;
-      };
-
-      switch (parsed.action) {
-        case 'create_wallet':
-          return { action: 'create_wallet', walletName: parsed.walletName ?? undefined };
-        case 'schedule_payment':
-          return {
-            action: 'schedule_payment',
-            amount: parsed.amount ?? null,
-            recipientAddress: parsed.recipientAddress ?? undefined,
-            frequency: parsed.frequency ?? 'monthly',
-            recipientLabel: parsed.recipientLabel ?? undefined,
-          };
-        case 'update_address_rule':
-          if (parsed.ruleType === 'whitelist' || parsed.ruleType === 'blacklist') {
-            return {
-              action: 'update_address_rule',
-              ruleType: parsed.ruleType,
-              addresses: parsed.addresses ?? [],
-            };
+      for (let index = 0; index < this.models.length; index += 1) {
+        const model = this.models[index];
+        try {
+          return await this.analyzeWithModel(model, input, state);
+        } catch (error) {
+          lastError = error;
+          const hasFallbackModel = index < this.models.length - 1;
+          if (hasFallbackModel && shouldRetryWithNextModel(error)) {
+            continue;
           }
-          return { action: 'unknown' };
-        case 'update_numeric_rule':
-          if (parsed.ruleType === 'daily_limit' || parsed.ruleType === 'max_transaction') {
-            return {
-              action: 'update_numeric_rule',
-              ruleType: parsed.ruleType,
-              amount: parsed.amount ?? null,
-            };
-          }
-          return { action: 'unknown' };
-        case 'send_payment':
-          return {
-            action: 'send_payment',
-            amount: parsed.amount ?? null,
-            recipientAddress: parsed.recipientAddress ?? undefined,
-          };
-        case 'help':
-        case 'project_status':
-        case 'run_scheduler':
-        case 'list_wallets':
-        case 'check_balance':
-        case 'history':
-        case 'unknown':
-          return { action: parsed.action };
-        default:
-          return { action: 'unknown' };
+
+          throw error;
+        }
       }
+
+      throw lastError ?? new Error('No reasoning model is configured.');
     } catch {
       if (this.fallback) {
         return this.fallback.analyze(input, state);
       }
 
       return { action: 'unknown' };
+    }
+  }
+
+  private async analyzeWithModel(model: string, input: string, state: AgentState): Promise<AgentIntent> {
+    const summary = getOpenAiStateSummary(state);
+    const response = await fetch(`${this.baseUrl}/responses`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${this.apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        input: [
+          {
+            role: 'system',
+            content: [
+              {
+                type: 'input_text',
+                text:
+                  'You classify wallet-agent commands into a strict JSON intent. Prefer the closest supported action. Never invent wallet addresses or amounts. If required data is missing, return the intended action with null fields.',
+              },
+            ],
+          },
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'input_text',
+                text: `Current agent state:\n${JSON.stringify(summary, null, 2)}\n\nUser command:\n${input}`,
+              },
+            ],
+          },
+        ],
+        text: {
+          format: {
+            type: 'json_schema',
+            name: 'aegispay_intent',
+            strict: true,
+            schema: intentSchema,
+          },
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const bodyText = await response.text();
+      const parsedError = parseProviderError(response.status, bodyText);
+      throw new ReasoningProviderHttpError(parsedError.message, response.status, parsedError.code, bodyText);
+    }
+
+    const payload = (await response.json()) as Record<string, unknown>;
+    const outputText = readOutputText(payload);
+    if (!outputText) {
+      throw new Error(`Model ${model} did not include structured output text.`);
+    }
+
+    const parsed = JSON.parse(outputText) as {
+      action: AgentIntent['action'];
+      walletName?: string | null;
+      amount?: number | null;
+      recipientAddress?: string | null;
+      frequency?: 'daily' | 'weekly' | 'monthly' | null;
+      recipientLabel?: string | null;
+      ruleType?: SpendingRule['type'] | null;
+      addresses?: string[] | null;
+    };
+
+    switch (parsed.action) {
+      case 'create_wallet':
+        return { action: 'create_wallet', walletName: parsed.walletName ?? undefined };
+      case 'schedule_payment':
+        return {
+          action: 'schedule_payment',
+          amount: parsed.amount ?? null,
+          recipientAddress: parsed.recipientAddress ?? undefined,
+          frequency: parsed.frequency ?? 'monthly',
+          recipientLabel: parsed.recipientLabel ?? undefined,
+        };
+      case 'update_address_rule':
+        if (parsed.ruleType === 'whitelist' || parsed.ruleType === 'blacklist') {
+          return {
+            action: 'update_address_rule',
+            ruleType: parsed.ruleType,
+            addresses: parsed.addresses ?? [],
+          };
+        }
+        return { action: 'unknown' };
+      case 'update_numeric_rule':
+        if (parsed.ruleType === 'daily_limit' || parsed.ruleType === 'max_transaction') {
+          return {
+            action: 'update_numeric_rule',
+            ruleType: parsed.ruleType,
+            amount: parsed.amount ?? null,
+          };
+        }
+        return { action: 'unknown' };
+      case 'send_payment':
+        return {
+          action: 'send_payment',
+          amount: parsed.amount ?? null,
+          recipientAddress: parsed.recipientAddress ?? undefined,
+        };
+      case 'help':
+      case 'project_status':
+      case 'run_scheduler':
+      case 'list_wallets':
+      case 'check_balance':
+      case 'history':
+      case 'unknown':
+        return { action: parsed.action };
+      default:
+        return { action: 'unknown' };
     }
   }
 }

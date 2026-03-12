@@ -104,7 +104,7 @@ Communicate with the agent via Telegram bot, web chat, or CLI.
 
 - **Demo mode** for local development without credentials
 - **WDK mode** for live Sepolia wallet derivation, balance reads, and transfers when environment variables are configured
-- **OpenAI reasoning mode** for optional intent classification through the Responses API with deterministic fallback
+- **OpenAI-compatible reasoning mode** for optional intent classification through the Responses API with deterministic fallback and model auto-switch
 
 ---
 
@@ -227,9 +227,10 @@ AEGIS_SCHEDULER_ENABLED=true
 AEGIS_SCHEDULER_INTERVAL_MS=60000
 AEGIS_SCHEDULER_RUN_ON_START=false
 
-# Optional OpenAI reasoning
+# Optional OpenAI-compatible reasoning
 OPENAI_API_KEY=your_openai_api_key
 AEGIS_OPENAI_MODEL=gpt-5-mini
+AEGIS_OPENAI_MODELS=
 AEGIS_OPENAI_BASE_URL=https://api.openai.com/v1
 
 # WDK live mode
@@ -255,6 +256,19 @@ npm run start:api
 # Optional: start the Telegram bridge once the API is running
 npm run start:bot
 ```
+
+### Multi-Model Fallback
+
+If you want the reasoning layer to auto-switch models when the primary one runs out of quota or hits rate limits, set a comma-separated model list:
+
+```env
+AEGIS_REASONING_PROVIDER=openai
+OPENAI_API_KEY=your_provider_key
+AEGIS_OPENAI_BASE_URL=https://dashscope-intl.aliyuncs.com/api/v2/apps/protocols/compatible-mode/v1
+AEGIS_OPENAI_MODELS=qwen-plus,qwen-turbo,qwen3-8b,qwen3-4b
+```
+
+The runtime will try the models in order and automatically move to the next one when it receives quota, free-tier, rate-limit, or model-support errors from the provider.
 
 ### Run Tests
 

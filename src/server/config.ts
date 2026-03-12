@@ -16,6 +16,7 @@ export interface AegisServerConfig {
   networkName: string;
   openAiApiKey?: string;
   openAiModel: string;
+  openAiModels: string[];
   openAiBaseUrl: string;
   schedulerEnabled: boolean;
   schedulerIntervalMs: number;
@@ -46,6 +47,18 @@ function getBooleanEnv(name: string, fallback: boolean) {
   return ['1', 'true', 'yes', 'on'].includes(value.toLowerCase());
 }
 
+function getListEnv(name: string) {
+  const value = getOptionalEnv(name);
+  if (!value) {
+    return [];
+  }
+
+  return value
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
 export function loadServerConfig(): AegisServerConfig {
   const walletProvider = (process.env.AEGIS_WALLET_PROVIDER?.trim().toLowerCase() as 'demo' | 'wdk' | undefined) ?? 'demo';
   const reasoningProvider = (process.env.AEGIS_REASONING_PROVIDER?.trim().toLowerCase() as 'deterministic' | 'openai' | undefined) ?? 'deterministic';
@@ -53,6 +66,8 @@ export function loadServerConfig(): AegisServerConfig {
   const tokenDecimals = Number.parseInt(process.env.AEGIS_TOKEN_DECIMALS ?? '6', 10);
   const schedulerIntervalMs = Number.parseInt(process.env.AEGIS_SCHEDULER_INTERVAL_MS ?? '60000', 10);
   const transferMaxFee = getOptionalEnv('AEGIS_TRANSFER_MAX_FEE_WEI');
+  const openAiModel = getOptionalEnv('AEGIS_OPENAI_MODEL') ?? 'gpt-5-mini';
+  const openAiModels = getListEnv('AEGIS_OPENAI_MODELS');
 
   if (walletProvider === 'wdk') {
     getRequiredEnv('AEGIS_WALLET_SEED_PHRASE');
@@ -76,7 +91,8 @@ export function loadServerConfig(): AegisServerConfig {
     explorerBaseUrl: getOptionalEnv('AEGIS_EXPLORER_BASE_URL') ?? DEFAULT_EXPLORER_BASE_URL,
     networkName: getOptionalEnv('AEGIS_NETWORK_NAME') ?? NETWORK_NAME,
     openAiApiKey: getOptionalEnv('OPENAI_API_KEY'),
-    openAiModel: getOptionalEnv('AEGIS_OPENAI_MODEL') ?? 'gpt-5-mini',
+    openAiModel,
+    openAiModels: openAiModels.length > 0 ? openAiModels : [openAiModel],
     openAiBaseUrl: getOptionalEnv('AEGIS_OPENAI_BASE_URL') ?? 'https://api.openai.com/v1',
     schedulerEnabled: getBooleanEnv('AEGIS_SCHEDULER_ENABLED', true),
     schedulerIntervalMs: Number.isFinite(schedulerIntervalMs) ? schedulerIntervalMs : 60000,
