@@ -105,7 +105,7 @@ export default function LandingPage({
         />
       </div>
 
-      <header className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-5 sm:px-8">
+      <header className="relative z-10 flex w-full items-center justify-between px-5 py-5 sm:px-8 xl:px-12 2xl:px-16">
         <button
           onClick={() => onNavigate('landing')}
           className="flex items-center gap-3 text-left"
@@ -138,25 +138,25 @@ export default function LandingPage({
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-10 px-5 pb-20 sm:px-8">
-        <section className="grid gap-10 pt-4 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:pt-8">
+      <main className="relative z-10 flex w-full flex-col gap-10 px-5 pb-20 sm:px-8 xl:px-12 2xl:px-16">
+        <section className="grid gap-10 pt-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:items-center lg:gap-14 lg:pt-8">
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="max-w-3xl"
+            className="max-w-[58rem]"
           >
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/[0.08] px-4 py-1.5 text-[11px] uppercase tracking-[0.26em] text-cyan-100">
               <Sparkles className="h-3.5 w-3.5" />
               Built for Agent Wallets
             </div>
-            <h1 className="landing-display max-w-4xl text-5xl font-bold leading-[0.94] tracking-tight text-white sm:text-6xl lg:text-7xl">
+            <h1 className="landing-display max-w-[7.5ch] text-5xl font-bold leading-[0.94] tracking-tight text-white sm:text-6xl lg:text-7xl xl:text-[6.25rem]">
               Wallet automation
               <span className="block bg-gradient-to-r from-amber-200 via-cyan-200 to-emerald-200 bg-clip-text text-transparent">
                 that looks alive.
               </span>
             </h1>
-            <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
+            <p className="mt-6 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg">
               AegisPay Agent turns payment commands into guarded on-chain actions with an animated control
               surface, recurring execution engine, runtime telemetry across {transactionCount} recorded
               transaction{transactionCount === 1 ? '' : 's'}, and a wallet core that is ready to grow
@@ -212,7 +212,7 @@ export default function LandingPage({
             initial={{ opacity: 0, scale: 0.92, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.9, ease: 'easeOut', delay: 0.15 }}
-            className="relative mx-auto w-full max-w-[620px]"
+            className="relative w-full lg:justify-self-end xl:max-w-[860px]"
           >
             <div className="landing-stage">
               <div className="landing-stage-grid" />
