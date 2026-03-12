@@ -30,14 +30,6 @@ function getOptionalEnv(name: string) {
   return value ? value : undefined;
 }
 
-function getRequiredEnv(name: string) {
-  const value = getOptionalEnv(name);
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
-  return value;
-}
-
 function getBooleanEnv(name: string, fallback: boolean) {
   const value = getOptionalEnv(name);
   if (!value) {
@@ -60,23 +52,36 @@ function getListEnv(name: string) {
 }
 
 export function loadServerConfig(): AegisServerConfig {
-  const walletProvider = (process.env.AEGIS_WALLET_PROVIDER?.trim().toLowerCase() as 'demo' | 'wdk' | undefined) ?? 'demo';
-  const reasoningProvider = (process.env.AEGIS_REASONING_PROVIDER?.trim().toLowerCase() as 'deterministic' | 'openai' | undefined) ?? 'deterministic';
+  const configuredWalletProvider = (process.env.AEGIS_WALLET_PROVIDER?.trim().toLowerCase() as 'demo' | 'wdk' | undefined) ?? 'demo';
+  const configuredReasoningProvider = (process.env.AEGIS_REASONING_PROVIDER?.trim().toLowerCase() as 'deterministic' | 'openai' | undefined) ?? 'deterministic';
   const port = Number.parseInt(process.env.AEGIS_PORT ?? '8787', 10);
   const tokenDecimals = Number.parseInt(process.env.AEGIS_TOKEN_DECIMALS ?? '6', 10);
   const schedulerIntervalMs = Number.parseInt(process.env.AEGIS_SCHEDULER_INTERVAL_MS ?? '60000', 10);
   const transferMaxFee = getOptionalEnv('AEGIS_TRANSFER_MAX_FEE_WEI');
   const openAiModel = getOptionalEnv('AEGIS_OPENAI_MODEL') ?? 'gpt-5-mini';
   const openAiModels = getListEnv('AEGIS_OPENAI_MODELS');
+  const openAiApiKey = getOptionalEnv('OPENAI_API_KEY');
+  const hasWdkConfig = Boolean(getOptionalEnv('AEGIS_WALLET_SEED_PHRASE') && getOptionalEnv('AEGIS_EVM_RPC_URL') && getOptionalEnv('AEGIS_USDT_TOKEN_ADDRESS'));
 
-  if (walletProvider === 'wdk') {
-    getRequiredEnv('AEGIS_WALLET_SEED_PHRASE');
-    getRequiredEnv('AEGIS_EVM_RPC_URL');
-    getRequiredEnv('AEGIS_USDT_TOKEN_ADDRESS');
+  let walletProvider = configuredWalletProvider;
+  if (walletProvider === 'wdk' && !hasWdkConfig) {
+    console.warn('[AegisPay] WDK mode requested but required env vars are missing. Falling back to demo wallet provider.');
+    walletProvider = 'demo';
   }
 
-  if (reasoningProvider === 'openai') {
-    getRequiredEnv('OPENAI_API_KEY');
+  let reasoningProvider = configuredReasoningProvider;
+  if (reasoningProvider === 'openai' && !openAiApiKey) {
+    console.warn('[AegisPay] OpenAI-compatible reasoning requested but OPENAI_API_KEY is missing. Falling back to deterministic reasoning.');
+    reasoningProvider = 'deterministic';
+  }
+
+  let transferMaxFeeWei: bigint | undefined;
+  if (transferMaxFee) {
+    try {
+      transferMaxFeeWei = BigInt(transferMaxFee);
+    } catch {
+      console.warn('[AegisPay] Invalid AEGIS_TRANSFER_MAX_FEE_WEI value. Ignoring transfer max fee configuration.');
+    }
   }
 
   return {
@@ -87,10 +92,10 @@ export function loadServerConfig(): AegisServerConfig {
     walletSeedPhrase: getOptionalEnv('AEGIS_WALLET_SEED_PHRASE'),
     tokenAddress: getOptionalEnv('AEGIS_USDT_TOKEN_ADDRESS'),
     tokenDecimals: Number.isFinite(tokenDecimals) ? tokenDecimals : 6,
-    transferMaxFeeWei: transferMaxFee ? BigInt(transferMaxFee) : undefined,
+    transferMaxFeeWei,
     explorerBaseUrl: getOptionalEnv('AEGIS_EXPLORER_BASE_URL') ?? DEFAULT_EXPLORER_BASE_URL,
     networkName: getOptionalEnv('AEGIS_NETWORK_NAME') ?? NETWORK_NAME,
-    openAiApiKey: getOptionalEnv('OPENAI_API_KEY'),
+    openAiApiKey,
     openAiModel,
     openAiModels: openAiModels.length > 0 ? openAiModels : [openAiModel],
     openAiBaseUrl: getOptionalEnv('AEGIS_OPENAI_BASE_URL') ?? 'https://api.openai.com/v1',
