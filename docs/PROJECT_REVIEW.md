@@ -8,16 +8,16 @@ Submission deadline: March 22, 2026
 
 | Metric | Value |
 |--------|-------|
-| Overall progress | 92% |
+| Overall progress | 93% |
 | TypeScript errors | 0 |
 | Test suites | 4 |
 | Tests | 12/12 passed |
-| Source files in `src/` | 38 |
-| Source lines in `src/` | ~6,380 |
+| Source files in `src/` | 39 |
+| Source lines in `src/` | ~6,470 |
 | Build output | `dist/index.html` (~524 KB) |
 | Current runtime state | Full-stack MVP |
 
-The project is in strong MVP shape. The product story is now much clearer thanks to the animated landing page and wallet-connect entry flow, and the backend has a credible runtime model with provider-backed reasoning, scheduler execution, Telegram bridge, optional WDK support, and a Vercel serverless deployment path with a CommonJS bundle plus lazy WDK loading now stable in production. OpenClaw CLI integration is now wired as an optional reasoning path with deterministic fallback. The most important remaining gaps are live OpenClaw runtime validation, funded WDK verification, persistence/auth hardening, and final hackathon deliverables such as the demo video and submission assets.
+The project is in strong MVP shape. The product story is now much clearer thanks to the animated landing page and wallet-connect entry flow, and the backend has a credible runtime model with provider-backed reasoning, scheduler execution, Telegram bridge, optional WDK support, and a Vercel serverless deployment path with a CommonJS bundle plus lazy WDK loading now stable in production. OpenClaw CLI integration is now wired as an optional reasoning path with deterministic fallback, and a funded WDK smoke script is now in place. The most important remaining gaps are live OpenClaw runtime validation, funded WDK execution proof, persistence/auth hardening, and final hackathon deliverables such as the demo video and submission assets.
 
 ## Current Architecture
 
@@ -120,7 +120,7 @@ OpenClaw CLI reasoning is now integrated in code, but it still needs end-to-end 
 
 #### 2. Live WDK verification is still pending
 
-The WDK provider exists, but there is still no funded Sepolia verification recorded in the docs or tests. Until that happens, live blockchain capability is implemented but not fully proven.
+The WDK provider exists and there is now a dedicated `npm run verify:wdk` smoke script, but there is still no funded Sepolia verification hash recorded yet because live env secrets are missing in the local setup.
 
 #### 3. No persistence layer
 

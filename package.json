@@ -13,6 +13,7 @@
     "preview": "vite preview",
     "start:api": "tsx src/server/index.ts",
     "start:bot": "tsx src/server/telegramBot.ts",
+    "verify:wdk": "tsx src/server/wdkSmoke.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },

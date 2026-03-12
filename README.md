@@ -295,6 +295,26 @@ AEGIS_OPENCLAW_COMMAND=openclaw
 AEGIS_OPENCLAW_TIMEOUT_MS=15000
 ```
 
+### WDK Funded Smoke Verification
+
+To verify a real WDK wallet session before submission:
+
+```bash
+npm run verify:wdk
+```
+
+This command performs a read-only live check by default and fails fast when required WDK env vars are missing.
+
+To execute a real transfer and produce a transaction hash:
+
+```env
+AEGIS_WDK_SMOKE_EXECUTE=true
+AEGIS_WDK_SMOKE_AMOUNT=0.01
+AEGIS_WDK_SMOKE_RECIPIENT=0xYourRecipientAddress
+```
+
+Then run `npm run verify:wdk` again. The script prints transaction hash and explorer URL on success.
+
 ### Vercel Deployment (Real Runtime)
 
 This project now supports Vercel Functions for the backend API via `api/[...route].ts`, so `/api/*` runs in Vercel instead of falling back to local-only demo logic.

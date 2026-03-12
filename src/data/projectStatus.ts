@@ -33,9 +33,9 @@ export interface MvpChecklistItem {
 export const projectStatusMeta = {
   lastUpdated: 'March 13, 2026',
   deliveryTarget: 'March 22, 2026 (submission deadline - 23:59 UTC)',
-  overallProgress: 92,
+  overallProgress: 93,
   summary:
-    'The current build is a full-stack MVP with an animated landing page, wallet-connect console flow, stable Vercel runtime, scheduler automation path, Telegram bridge, tests, optional WDK-backed wallet operations, Alibaba-compatible reasoning, and an OpenClaw CLI reasoning path with deterministic fallback. The biggest remaining gaps are OpenClaw runtime validation, funded WDK live verification, persistence/security hardening, demo video, and submission assets.',
+    'The current build is a full-stack MVP with an animated landing page, wallet-connect console flow, stable Vercel runtime, scheduler automation path, Telegram bridge, tests, optional WDK-backed wallet operations, Alibaba-compatible reasoning, an OpenClaw CLI reasoning path with deterministic fallback, and a funded WDK smoke verification script. The biggest remaining gaps are OpenClaw runtime validation, funded WDK execution proof, persistence/security hardening, demo video, and submission assets.',
 };
 
 export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
@@ -51,9 +51,10 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
       'Wallet creation and wallet inventory views',
       'WDK-aligned wallet state, transaction state, and rule state',
       'Node.js API runtime with swappable demo and WDK wallet providers',
+      'Funded WDK smoke verification script with preflight checks and execute mode',
     ],
     next: [
-      'Run live credential verification against a funded Sepolia wallet',
+      'Run live credential verification against a funded Sepolia wallet and capture a transfer hash',
       'Harden operational secrets handling before deployment',
     ],
   },

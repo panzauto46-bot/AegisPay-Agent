@@ -11,12 +11,12 @@
 
 | Phase | Progress | Status | Outcome |
 |-------|----------|--------|---------|
-| Phase 1 - Foundation | 93% | In Progress | App shell, runtime, provider abstraction, wallet state, and optional WDK integration are ready. |
+| Phase 1 - Foundation | 95% | In Progress | App shell, runtime, provider abstraction, wallet state, optional WDK integration, and funded smoke tooling are ready. |
 | Phase 2 - AI Agent Core | 88% | In Progress | Command understanding is functional with deterministic + provider-backed reasoning, and OpenClaw CLI routing is now wired with fallback. |
 | Phase 3 - Payment Engine | 90% | In Progress | Validation, payments, recurring execution, and explorer reporting are working in demo mode. |
 | Phase 4 - Advanced Features | 96% | In Progress | Landing page, wallet-connect flow, web chat, Telegram bridge, scheduler, and the lazy-loaded Vercel runtime path are live with production health/state endpoints confirmed. |
-| Phase 5 - Polish & Submit | 62% | In Progress | Docs, tests, UX polish, deployment runtime recovery, and OpenClaw wiring are shipped; demo video and final submission hardening remain. |
-| Overall | 92% | In Progress | Full-stack MVP is ready with a stable deployment path and active OpenClaw integration path; track-specific validation and submission work remain. |
+| Phase 5 - Polish & Submit | 64% | In Progress | Docs, tests, UX polish, deployment runtime recovery, OpenClaw wiring, and WDK smoke tooling are shipped; demo video and final submission hardening remain. |
+| Overall | 93% | In Progress | Full-stack MVP is ready with a stable deployment path, active OpenClaw integration path, and funded verification tooling; final validation and submission work remain. |
 
 ---
 
@@ -68,10 +68,11 @@ Goal: establish the app, API runtime, and wallet provider layer around the WDK f
 - Demo wallet provider and optional WDK provider abstraction
 - Wallet creation, wallet inventory, and explorer-ready wallet state
 - API runtime with state, command, wallet, rules, recurring, and scheduler endpoints
+- WDK funded smoke script (`npm run verify:wdk`) with preflight env validation and execute mode
 
 ### Remaining
 
-- Funded Sepolia verification using the WDK path
+- Funded Sepolia verification execution with transaction hash evidence
 - Deployment-grade secret handling review
 
 ---
@@ -195,7 +196,7 @@ Goal: stabilize, document, and package the project for judging.
 ## Next Build Priorities
 
 1. Validate real OpenClaw CLI runtime flow and capture evidence for submission.
-2. Run a funded WDK Sepolia smoke test.
+2. Provision WDK env secrets and produce funded hash proof through `npm run verify:wdk`.
 3. Add persistence for runtime state.
 4. Add API authentication and tighten CORS.
 5. Record the demo video.
