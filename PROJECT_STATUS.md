@@ -4,10 +4,25 @@ Last updated: March 13, 2026
 
 ## Current Snapshot
 
-- Overall progress: `88%`
-- Delivery target: `April 30, 2026`
-- Product state: `Full-stack MVP with animated landing page, wallet-connect console flow, Vercel-ready API runtime, scheduler automation path, Telegram bridge, and Alibaba-compatible reasoning`
-- Primary focus: `OpenClaw integration`, `funded WDK live verification`, `persistence + auth hardening`, `demo video`, `submission assets`
+- Overall progress: `89%`
+- Delivery target: `March 22, 2026 (submission deadline - 23:59 UTC)`
+- Product state: `Full-stack MVP with animated landing page, wallet-connect console flow, API runtime, ESM-based Vercel serverless bootstrap, scheduler, Telegram bridge, and Alibaba-compatible reasoning`
+- Primary focus: `deployment stability`, `OpenClaw integration`, `funded WDK live verification`, `demo video`, `submission assets`
+
+## PR Prioritas (Wajib Sebelum Submit)
+
+| Priority | PR / Pending Work | Status | Definition of Done |
+|----------|-------------------|--------|--------------------|
+| P0 | Fix production API crash di Vercel (`/api/health`, `/api/state`) | 🟠 In Progress | Bundle serverless ESM sudah lolos build + import lokal, lalu endpoint health/state return `200` di production tanpa `ERR_MODULE_NOT_FOUND` / `ERR_REQUIRE_ESM`. |
+| P0 | Integrasi OpenClaw nyata untuk layer reasoning/planning | 🔴 Open | Alur command agent berjalan via OpenClaw path, bukan hanya mention di dokumen. |
+| P0 | Verifikasi WDK live funded (Sepolia) end-to-end | 🔴 Open | Ada 1 transaksi live sukses + hash + bukti di README/demo script. |
+| P0 | Demo video submission (<= 5 menit, unlisted YouTube) | 🔴 Open | Link video siap ditempel di DoraHacks submission. |
+| P1 | Tambah `LICENSE` Apache-2.0 | 🔴 Open | File `LICENSE` tersedia dan sesuai requirement hackathon. |
+| P1 | Submission package final (disclosure third-party + run instruction jelas) | 🟠 In Progress | Checklist submit lengkap: repo, track, video, disclosure, cara run. |
+| P1 | Harden security backend (API auth + CORS ketat) | 🟠 In Progress | API key/token guard aktif + CORS tidak wildcard di production. |
+| P1 | Tambah persistence (JSON/SQLite) untuk wallet/rules/recurring state | 🟠 In Progress | Restart server tidak menghapus state utama demo. |
+| P2 | Rename package dari `react-vite-tailwind` ke `aegispay-agent` | 🔴 Open | `package.json` sudah pakai nama project yang benar. |
+| P2 | Tambah smoke tests untuk flow deployment + provider live | 🟠 In Progress | Ada test atau script verifikasi minimal untuk endpoint production dan provider config. |
 
 ## What Is Working Now
 
@@ -38,12 +53,14 @@ Last updated: March 13, 2026
 - Web chat interface with API/local fallback behavior
 - Telegram bot bridge via `grammy`
 - Automated tests for engine, reasoning fallback, and API flows (`10/10` passing)
+- ESM serverless bundle for Vercel API bootstrap now builds successfully
 - In-app Project Status page backed by shared metadata
 - Single-file production build via `vite-plugin-singlefile`
 - TypeScript strict mode with zero compilation errors
 
 ## What Is Not Done Yet
 
+- Vercel production API still needs redeploy verification after the ESM bootstrap fix
 - OpenClaw is still not integrated even though it is a track requirement
 - Live WDK mode is implemented but not yet verified with a funded Sepolia wallet
 - No persistence layer yet, so runtime state resets on server restart
@@ -52,7 +69,7 @@ Last updated: March 13, 2026
 - No demo video recorded yet
 - No `LICENSE` file yet
 - `package.json` name is still `react-vite-tailwind`
-- Public deployment now supports provider-backed AI through Vercel env vars and serverless API routes
+- Public deployment still needs backend environment variables for provider-backed AI
 - Notification delivery for payment outcomes is not implemented
 - Test coverage is still centered on core engine/API paths only
 
@@ -63,8 +80,8 @@ Last updated: March 13, 2026
 | Phase 1 - Foundation | 93% | In Progress | Wallet lifecycle, API runtime, provider abstraction, and optional WDK integration are in place; funded live verification is the remaining gap. |
 | Phase 2 - AI Agent Core | 80% | In Progress | Natural-language command handling works across UI and API, and Alibaba-compatible reasoning with model auto-switch is live locally; OpenClaw-native integration is still missing. |
 | Phase 3 - Payment Engine | 90% | In Progress | Demo sends, guardrails, recurring execution, and explorer links are in place; live funded transfer verification is still pending. |
-| Phase 4 - Advanced Features | 92% | In Progress | Scheduler, web chat, Telegram bridge, landing page, wallet-connect entry flow, and Vercel serverless + cron path are complete; notifications remain open. |
-| Phase 5 - Polish & Submit | 58% | In Progress | Docs, review, tests, UX polish, and deployment runtime wiring are in place; demo video, security review, LICENSE, naming cleanup, and final submission packaging remain. |
+| Phase 4 - Advanced Features | 90% | In Progress | Scheduler, web chat, Telegram bridge, landing page, wallet-connect entry flow, and ESM serverless bootstrap are in place; notifications and production verification remain open. |
+| Phase 5 - Polish & Submit | 52% | In Progress | Docs, review, tests, and UX polish are in place; demo video, security review, LICENSE, naming cleanup, and final submission packaging remain. |
 
 ## MVP Checklist
 
@@ -94,9 +111,9 @@ Last updated: March 13, 2026
 | TypeScript errors | 0 |
 | Test suites | 3 |
 | Tests passing | 10/10 ✅ |
-| Source lines | ~6,300 |
+| Source lines | ~6,210 |
 | Source files | 36 |
-| Git commits | 7 |
+| Git commits | 13 |
 | Build output | Single-file HTML (`dist/index.html`, ~524 KB) |
 
 ## Open Risks
@@ -106,17 +123,19 @@ Last updated: March 13, 2026
 | OpenClaw integration is still missing | 🔴 High | Add an OpenClaw-native planning layer or wrapper before final submission. |
 | Live WDK mode still depends on funded credentials and Sepolia testing | 🔴 High | Keep the demo provider as fallback, then run a funded smoke test before demo freeze. |
 | Backend state is in-memory only | 🟡 Medium | Add JSON-file or SQLite persistence for demo stability. |
+| Public deployment still needs post-fix production verification | 🟡 Medium | Redeploy and confirm `/api/health` plus `/api/state` are stable in Vercel runtime logs. |
 | Public deployment still lacks API authentication | 🟡 Medium | Add at least a shared API key or token gate before public backend exposure. |
-| Scheduler durability in serverless relies on cron schedule and function availability | 🟡 Medium | Keep Vercel cron enabled and monitor cron execution status/logs. |
+| Scheduler runs in-process only | 🟡 Medium | Move recurring execution to a worker or cron-capable deployment target. |
 | Provider-backed AI depends on runtime env vars in deployment | 🟡 Medium | Mirror the validated local Alibaba env configuration into the hosting environment. |
 | Test coverage is still narrow | 🟡 Medium | Add UI, Telegram, and live-provider smoke coverage. |
 
 ## Next Priorities
 
-1. Integrate OpenClaw into the reasoning/planning layer.
-2. Record the hackathon demo video.
+1. Redeploy and verify Vercel API runtime so `/api/health` and `/api/state` are green in production.
+2. Integrate OpenClaw into the reasoning/planning layer.
 3. Run a funded Sepolia smoke test with `AEGIS_WALLET_PROVIDER=wdk`.
-4. Add persistence for state and scheduler continuity.
-5. Add basic API authentication and tighten CORS for deployment.
-6. Add `LICENSE` and rename the package from `react-vite-tailwind` to `aegispay-agent`.
-7. Expand automated coverage to UI and Telegram paths.
+4. Record and publish unlisted demo video (<= 5 minutes).
+5. Add `LICENSE` Apache-2.0 and finalize submission compliance artifacts.
+6. Add persistence for state and scheduler continuity.
+7. Add basic API authentication and tighten CORS for deployment.
+8. Rename package to `aegispay-agent` and expand deployment/live-provider smoke coverage.

@@ -8,7 +8,7 @@
     "dev:api": "tsx watch src/server/index.ts",
     "dev:bot": "tsx watch src/server/telegramBot.ts",
     "dev:full": "concurrently -k \"npm:dev:api\" \"npm:dev\"",
-    "build:serverless": "esbuild src/server/app.ts --bundle --platform=node --format=cjs --packages=external --outfile=.serverless/server-app.cjs",
+    "build:serverless": "esbuild src/server/app.ts --bundle --platform=node --format=esm --packages=external --outfile=.serverless/server-app.mjs",
     "build": "npm run build:serverless && vite build",
     "preview": "vite preview",
     "start:api": "tsx src/server/index.ts",
