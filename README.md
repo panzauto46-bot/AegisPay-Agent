@@ -24,7 +24,8 @@
   <a href="#-demo">Demo</a> •
   <a href="./PRD.md">PRD</a> •
   <a href="./ROADMAP.md">Roadmap</a> •
-  <a href="./PROJECT_STATUS.md">Project Status</a>
+  <a href="./PROJECT_STATUS.md">Project Status</a> •
+  <a href="./docs/PROJECT_REVIEW.md">Project Review</a>
 </p>
 
 ---
@@ -37,7 +38,7 @@ Using **Tether's Wallet Development Kit (WDK)** and the **OpenClaw** AI agent fr
 
 The agent acts as an **independent financial actor** — capable of managing funds, making decisions, and executing payments under user-defined constraints.
 
-The current build includes a React web UI, a Node.js API runtime, a shared agent engine, an optional WDK-backed wallet provider, a Telegram bridge, and automated tests for the core command and scheduling flows.
+The current build includes an animated React web UI, a wallet-connect entry flow, a Node.js API runtime, a shared agent engine, an optional WDK-backed wallet provider, a Telegram bridge, Alibaba Model Studio-compatible reasoning with model auto-switch fallback, and automated tests for the core command and scheduling flows.
 
 ### 💡 What Makes AegisPay Different?
 
@@ -100,11 +101,15 @@ Agent: 🔒 Daily spending limit set: 100 USDT
 ### 💬 Chat Interface
 Communicate with the agent via Telegram bot, web chat, or CLI.
 
+### 🎨 Launch Experience
+Guide users from the landing page into a wallet-connect step before entering the live agent console.
+
 ### 🧠 Runtime Modes
 
 - **Demo mode** for local development without credentials
 - **WDK mode** for live Sepolia wallet derivation, balance reads, and transfers when environment variables are configured
 - **OpenAI-compatible reasoning mode** for optional intent classification through the Responses API with deterministic fallback and model auto-switch
+- **Alibaba Model Studio mode** using Qwen models through the compatible-mode Responses endpoint
 
 ---
 
@@ -160,10 +165,10 @@ User sends command → AI parses intent → Agent validates rules
 |----------|------------|
 | **Frontend** | React / Next.js |
 | **Backend** | Node.js, TypeScript |
-| **AI Agent Framework** | OpenClaw |
+| **AI Agent Framework** | OpenClaw (planned integration) |
 | **Wallet Infrastructure** | Tether Wallet Development Kit (WDK) |
 | **Blockchain** | Ethereum Sepolia Testnet |
-| **AI Model** | OpenAI API / Open-source LLM |
+| **AI Model** | Alibaba Model Studio (Qwen) via OpenAI-compatible Responses API |
 | **Messaging** | Telegram Bot API |
 
 ---
@@ -197,8 +202,8 @@ User sends command → AI parses intent → Agent validates rules
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/aegispay-agent.git
-cd aegispay-agent
+git clone https://github.com/panzauto46-bot/AegisPay-Agent.git
+cd AegisPay-Agent
 
 # Install dependencies
 npm install
@@ -220,7 +225,7 @@ VITE_AEGIS_API_URL=/api
 AEGIS_PORT=8787
 AEGIS_SERVER_URL=http://localhost:8787
 AEGIS_WALLET_PROVIDER=demo
-AEGIS_REASONING_PROVIDER=deterministic
+AEGIS_REASONING_PROVIDER=openai
 AEGIS_NETWORK_NAME=Ethereum Sepolia
 AEGIS_EXPLORER_BASE_URL=https://sepolia.etherscan.io
 AEGIS_SCHEDULER_ENABLED=true
@@ -228,10 +233,11 @@ AEGIS_SCHEDULER_INTERVAL_MS=60000
 AEGIS_SCHEDULER_RUN_ON_START=false
 
 # Optional OpenAI-compatible reasoning
-OPENAI_API_KEY=your_openai_api_key
-AEGIS_OPENAI_MODEL=gpt-5-mini
-AEGIS_OPENAI_MODELS=
-AEGIS_OPENAI_BASE_URL=https://api.openai.com/v1
+# Alibaba Model Studio example:
+OPENAI_API_KEY=your_alibaba_model_studio_key
+AEGIS_OPENAI_MODEL=qwen-plus
+AEGIS_OPENAI_MODELS=qwen-plus,qwen-turbo,qwen3-8b,qwen3-4b
+AEGIS_OPENAI_BASE_URL=https://dashscope-intl.aliyuncs.com/api/v2/apps/protocols/compatible-mode/v1
 
 # WDK live mode
 AEGIS_WALLET_SEED_PHRASE=your_twelve_word_seed_phrase
@@ -269,6 +275,10 @@ AEGIS_OPENAI_MODELS=qwen-plus,qwen-turbo,qwen3-8b,qwen3-4b
 ```
 
 The runtime will try the models in order and automatically move to the next one when it receives quota, free-tier, rate-limit, or model-support errors from the provider.
+
+If you want to use OpenAI directly instead of Alibaba Model Studio, switch the base URL back to `https://api.openai.com/v1` and choose an OpenAI model such as `gpt-5-mini`.
+
+To disable provider-backed reasoning entirely, set `AEGIS_REASONING_PROVIDER=deterministic`.
 
 ### Run Tests
 
@@ -379,7 +389,7 @@ Contributions are welcome! Please follow these steps:
 
 ## 📄 License
 
-This project is licensed under the MIT License — see the [LICENSE](./LICENSE) file for details.
+License file is still pending and will be added before submission.
 
 ---
 
@@ -387,11 +397,13 @@ This project is licensed under the MIT License — see the [LICENSE](./LICENSE) 
 
 - 📋 [Product Requirements Document (PRD)](./PRD.md)
 - 🗺️ [Development Roadmap](./ROADMAP.md)
+- 📈 [Project Status](./PROJECT_STATUS.md)
+- 🔍 [Project Review](./docs/PROJECT_REVIEW.md)
 
 ---
 
 <p align="center">
   <strong>Built with ❤️ for the Agent Wallets Hackathon</strong>
   <br />
-  <sub>Powered by Tether WDK • OpenClaw • AI</sub>
+  <sub>Powered by Tether WDK • Qwen / Alibaba Model Studio • OpenClaw-ready architecture</sub>
 </p>

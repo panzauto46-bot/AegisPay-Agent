@@ -33,9 +33,9 @@ export interface MvpChecklistItem {
 export const projectStatusMeta = {
   lastUpdated: 'March 12, 2026',
   deliveryTarget: 'April 30, 2026',
-  overallProgress: 88,
+  overallProgress: 84,
   summary:
-    'The current build is now a fuller hackathon implementation: web UI, API runtime, persistent scheduler, Telegram bridge, tests, and optional WDK-backed wallet plus OpenAI-backed reasoning providers are wired in. The main remaining gaps are funded live verification, OpenClaw-native reasoning, and final hackathon submission assets.',
+    'The current build is a full-stack MVP with an animated landing page, wallet-connect console flow, API runtime, Telegram bridge, tests, optional WDK-backed wallet operations, and Alibaba-compatible reasoning with model auto-switch. The biggest remaining gaps are OpenClaw integration, funded WDK live verification, persistence/security hardening, demo video, and submission assets.',
 };
 
 export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
@@ -43,7 +43,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
     id: 'phase-1',
     title: 'Phase 1 - Foundation',
     window: 'Week 1-2',
-    progress: 92,
+    progress: 93,
     status: 'in_progress',
     objective: 'Set up the project infrastructure and model the wallet lifecycle around the WDK flow.',
     shipped: [
@@ -61,7 +61,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
     id: 'phase-2',
     title: 'Phase 2 - AI Agent Core',
     window: 'Week 2-3',
-    progress: 82,
+    progress: 80,
     status: 'in_progress',
     objective: 'Turn natural language instructions into wallet actions and user-facing explanations.',
     shipped: [
@@ -69,10 +69,11 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
       'Intent parsing for wallet, balance, payments, recurring, rules, and status',
       'Agent responses that explain validation decisions',
       'Shared agent engine used by UI and API',
-      'Optional OpenAI-backed reasoning provider with deterministic fallback',
+      'Alibaba-compatible reasoning provider validated locally through a Responses API endpoint',
+      'Multi-model auto-switch fallback before deterministic fallback',
     ],
     next: [
-      'Connect the command layer to OpenClaw-native planning',
+      'Integrate OpenClaw-native planning (track requirement — not yet started)',
       'Add richer fallback handling for ambiguous commands',
     ],
   },
@@ -106,6 +107,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
       'Recurring payment scheduling UI',
       'API-backed scheduler run for due recurring payments',
       'Persistent server-side scheduler service',
+      'Animated landing page and wallet-connect entry flow',
       'Dedicated web chat interface for the wallet agent',
       'Telegram bot bridge wired to the AegisPay API',
     ],
@@ -123,13 +125,17 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
     objective: 'Stabilize the product, document the architecture, and prepare the hackathon submission.',
     shipped: [
       'PRD, roadmap, and project status documentation',
-      'Automated tests for engine and API flows',
+      'Automated tests for engine, API, and reasoning fallback flows (7/7 passing)',
       'Backend startup and health verification',
+      'Comprehensive technical README plus project review',
     ],
     next: [
-      'Complete security review and demo video',
+      'Integrate OpenClaw (track requirement)',
+      'Record demo video (mandatory deliverable)',
+      'Add LICENSE file and fix package.json name',
+      'Complete security review',
+      'Add state persistence and API authentication',
       'Prepare final submission assets',
-      'Write deployment runbook for live demo setup',
     ],
   },
 ];
@@ -160,6 +166,12 @@ export const roadmapMilestones: MilestoneStatus[] = [
     note: 'Natural language commands now cover the MVP workflow across the frontend and API runtime.',
   },
   {
+    title: 'Provider-backed AI verified locally',
+    targetDate: 'March 12, 2026',
+    status: 'complete',
+    note: 'Alibaba Model Studio compatible-mode reasoning was verified locally with Qwen models.',
+  },
+  {
     title: 'First autonomous payment',
     targetDate: 'April 5, 2026',
     status: 'complete',
@@ -181,7 +193,7 @@ export const roadmapMilestones: MilestoneStatus[] = [
     title: 'All tests and submission assets',
     targetDate: 'April 30, 2026',
     status: 'in_progress',
-    note: 'Tests are in place; security review, demo video, and final submission assets are still open.',
+    note: 'Unit tests pass (7/7); OpenClaw integration, demo video, LICENSE, security review, and final submission assets are still open.',
   },
 ];
 
@@ -193,10 +205,16 @@ export const projectRisks: RiskStatus[] = [
     mitigation: 'Keep the wallet adapter isolated and provide a demo fallback so local development continues without blocking on credentials.',
   },
   {
+    title: 'OpenClaw integration is a track requirement but not yet started',
+    impact: 'high',
+    likelihood: 'high',
+    mitigation: 'Prioritize wrapping the reasoning layer with OpenClaw-native planning before submission.',
+  },
+  {
     title: 'Natural language parsing is still rule-based',
     impact: 'medium',
     likelihood: 'medium',
-    mitigation: 'Use the current parser for deterministic MVP commands, then layer OpenClaw or an LLM planner behind the same command interface.',
+    mitigation: 'Use the current parser plus Alibaba-compatible reasoning and model auto-switch now, then layer OpenClaw behind the same command interface.',
   },
   {
     title: 'Recurring automation still needs a persistent scheduler in deployment',
@@ -252,8 +270,11 @@ export const mvpChecklist: MvpChecklistItem[] = [
 ];
 
 export const nextBuildPriorities = [
-  'Replace the rule-based parser with OpenClaw or an LLM-backed planning layer.',
+  'Integrate OpenClaw-native planning (track requirement, not yet started).',
+  'Record the hackathon demo video (mandatory deliverable).',
   'Run a funded Sepolia smoke test with the WDK provider enabled.',
+  'Wire production/deployment env vars for Alibaba-backed reasoning.',
+  'Fix package.json name and add LICENSE file.',
+  'Add state persistence and basic API authentication.',
   'Expand automated coverage to UI + Telegram bridge paths.',
-  'Record the hackathon demo video and finalize submission assets.',
 ];
