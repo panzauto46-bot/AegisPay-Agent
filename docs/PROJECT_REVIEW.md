@@ -8,16 +8,16 @@ Submission deadline: March 22, 2026
 
 | Metric | Value |
 |--------|-------|
-| Overall progress | 91% |
+| Overall progress | 92% |
 | TypeScript errors | 0 |
-| Test suites | 3 |
-| Tests | 10/10 passed |
-| Source files in `src/` | 36 |
-| Source lines in `src/` | ~6,210 |
+| Test suites | 4 |
+| Tests | 12/12 passed |
+| Source files in `src/` | 38 |
+| Source lines in `src/` | ~6,380 |
 | Build output | `dist/index.html` (~524 KB) |
 | Current runtime state | Full-stack MVP |
 
-The project is in strong MVP shape. The product story is now much clearer thanks to the animated landing page and wallet-connect entry flow, and the backend has a credible runtime model with provider-backed reasoning, scheduler execution, Telegram bridge, optional WDK support, and a Vercel serverless deployment path with a CommonJS bundle plus lazy WDK loading now stable in production. The most important remaining gaps are still OpenClaw integration, funded live WDK verification, persistence/auth hardening, and the final hackathon deliverables such as the demo video and submission assets.
+The project is in strong MVP shape. The product story is now much clearer thanks to the animated landing page and wallet-connect entry flow, and the backend has a credible runtime model with provider-backed reasoning, scheduler execution, Telegram bridge, optional WDK support, and a Vercel serverless deployment path with a CommonJS bundle plus lazy WDK loading now stable in production. OpenClaw CLI integration is now wired as an optional reasoning path with deterministic fallback. The most important remaining gaps are live OpenClaw runtime validation, funded WDK verification, persistence/auth hardening, and final hackathon deliverables such as the demo video and submission assets.
 
 ## Current Architecture
 
@@ -80,6 +80,7 @@ graph TB
 - The reasoning layer supports an OpenAI-compatible Responses API.
 - The current local validation path works with Alibaba Model Studio/Qwen.
 - Multi-model fallback is implemented, so quota/rate-limit/provider errors can roll over to the next configured model before falling back to deterministic parsing.
+- OpenClaw CLI can now be used as a first-pass reasoning layer and falls back to deterministic parsing if unavailable.
 
 ### 4. Core wallet and payment flows are there
 
@@ -113,9 +114,9 @@ The docs now form a more coherent story than earlier revisions.
 
 ### High severity
 
-#### 1. OpenClaw is still not integrated
+#### 1. OpenClaw runtime validation is still pending
 
-This is still the single largest track-specific gap. The current reasoning setup is good engineering, but it does not yet satisfy the OpenClaw angle of the track in a direct way.
+OpenClaw CLI reasoning is now integrated in code, but it still needs end-to-end runtime proof with a real `openclaw agent` execution flow and demo evidence.
 
 #### 2. Live WDK verification is still pending
 
@@ -159,7 +160,7 @@ UI flows, Telegram bridge behavior, and live-provider smoke tests are still miss
 | Wallet flow | Ready in demo mode, optional WDK path present |
 | AI runtime | Alibaba-compatible reasoning verified locally and deployable via Vercel Functions |
 | Scheduler | Working in-process + Vercel cron path available |
-| Tests | 10/10 passing |
+| Tests | 12/12 passing |
 | README accuracy | Improved and aligned with runtime |
 | Submission readiness | Not done yet (but deployment runtime is now stable) |
 
@@ -171,11 +172,11 @@ UI flows, Telegram bridge behavior, and live-provider smoke tests are still miss
 | Technical documentation | ✅ Complete | README, PRD, roadmap, status, and review are aligned. |
 | Working prototype | ✅ Complete | Landing, connect-wallet, chat, API, scheduler, and Telegram bridge are functional. |
 | Demo video | ❌ Pending | Mandatory remaining deliverable. |
-| Track-specific OpenClaw story | ❌ Pending | Still needs implementation or a clear integration step. |
+| Track-specific OpenClaw story | 🟠 In Progress | OpenClaw CLI path is implemented; runtime proof is still required. |
 
 ## Recommended Next Steps
 
-1. Integrate OpenClaw into the reasoning/planning path.
+1. Validate OpenClaw with a real CLI session and record proof.
 2. Run a funded WDK Sepolia smoke test and document the result.
 3. Add persistence so the runtime survives restarts.
 4. Add basic API authentication before any public backend exposure.

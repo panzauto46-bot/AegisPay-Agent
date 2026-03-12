@@ -12,11 +12,11 @@
 | Phase | Progress | Status | Outcome |
 |-------|----------|--------|---------|
 | Phase 1 - Foundation | 93% | In Progress | App shell, runtime, provider abstraction, wallet state, and optional WDK integration are ready. |
-| Phase 2 - AI Agent Core | 80% | In Progress | Command understanding is functional with deterministic + provider-backed reasoning; OpenClaw remains the main gap. |
+| Phase 2 - AI Agent Core | 88% | In Progress | Command understanding is functional with deterministic + provider-backed reasoning, and OpenClaw CLI routing is now wired with fallback. |
 | Phase 3 - Payment Engine | 90% | In Progress | Validation, payments, recurring execution, and explorer reporting are working in demo mode. |
 | Phase 4 - Advanced Features | 96% | In Progress | Landing page, wallet-connect flow, web chat, Telegram bridge, scheduler, and the lazy-loaded Vercel runtime path are live with production health/state endpoints confirmed. |
-| Phase 5 - Polish & Submit | 60% | In Progress | Docs, tests, UX polish, and deployment runtime recovery are shipped; demo video and final submission hardening remain. |
-| Overall | 91% | In Progress | Full-stack MVP is ready with a stable deployment path; track-specific and submission-specific work is still pending. |
+| Phase 5 - Polish & Submit | 62% | In Progress | Docs, tests, UX polish, deployment runtime recovery, and OpenClaw wiring are shipped; demo video and final submission hardening remain. |
+| Overall | 92% | In Progress | Full-stack MVP is ready with a stable deployment path and active OpenClaw integration path; track-specific validation and submission work remain. |
 
 ---
 
@@ -87,10 +87,11 @@ Goal: turn natural-language commands into wallet actions with clear fallback beh
 - Alibaba Model Studio local verification using `qwen-plus`
 - Multi-model auto-switch fallback chain for quota/rate/model errors
 - Shared reasoning layer reused by both API and frontend runtime
+- OpenClaw CLI reasoning provider path with deterministic fallback
 
 ### Remaining
 
-- OpenClaw-native integration
+- Real OpenClaw runtime validation and demo evidence capture
 - Richer ambiguity handling and user confirmation flows
 
 ---
@@ -183,7 +184,7 @@ Goal: stabilize, document, and package the project for judging.
 
 | Risk | Impact | Likelihood | Mitigation |
 |------|--------|------------|------------|
-| OpenClaw is still missing | High | High | Prioritize an OpenClaw wrapper/planner before submission. |
+| OpenClaw runtime validation is still pending | High | High | Use the new OpenClaw provider path in a real session and capture proof for the demo. |
 | Funded live WDK verification is still pending | High | Medium | Run a dedicated Sepolia smoke test with real credentials. |
 | Runtime state is in-memory only | Medium | Medium | Add JSON or SQLite persistence before final demo. |
 | Provider-backed AI needs backend env configuration in deployment | Medium | Medium | Mirror the validated local Alibaba config into hosting secrets. |
@@ -193,7 +194,7 @@ Goal: stabilize, document, and package the project for judging.
 
 ## Next Build Priorities
 
-1. Integrate OpenClaw into the reasoning/planning path.
+1. Validate real OpenClaw CLI runtime flow and capture evidence for submission.
 2. Run a funded WDK Sepolia smoke test.
 3. Add persistence for runtime state.
 4. Add API authentication and tighten CORS.

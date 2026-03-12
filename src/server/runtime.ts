@@ -8,6 +8,7 @@ import {
 } from '../engine/reasoningProvider';
 import type { WalletProvider } from '../engine/walletProvider';
 import { loadServerConfig } from './config';
+import { OpenClawReasoningProvider } from './providers/openClawReasoningProvider';
 import { WdkWalletProvider } from './providers/wdkWalletProvider';
 import { SchedulerService } from './schedulerService';
 
@@ -31,6 +32,17 @@ function createWalletProvider(): WalletProvider {
 
 function createReasoningProvider(): ReasoningProvider {
   const deterministicProvider = new DeterministicReasoningProvider();
+
+  if (serverConfig.reasoningProvider === 'openclaw') {
+    return new FallbackReasoningProvider([
+      new OpenClawReasoningProvider({
+        command: serverConfig.openClawCommand,
+        timeoutMs: serverConfig.openClawTimeoutMs,
+        fallback: deterministicProvider,
+      }),
+      deterministicProvider,
+    ]);
+  }
 
   if (serverConfig.reasoningProvider === 'openai' && serverConfig.openAiApiKey) {
     return new FallbackReasoningProvider([

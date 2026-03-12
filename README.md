@@ -38,7 +38,7 @@ Using **Tether's Wallet Development Kit (WDK)** and the **OpenClaw** AI agent fr
 
 The agent acts as an **independent financial actor** — capable of managing funds, making decisions, and executing payments under user-defined constraints.
 
-The current build includes an animated React web UI, a wallet-connect entry flow, a Node.js API runtime, a shared agent engine, an optional WDK-backed wallet provider, a Telegram bridge, a Vercel serverless API bootstrap backed by a bundled CommonJS server app with lazy WDK loading, Alibaba Model Studio-compatible reasoning with model auto-switch fallback, and automated tests for the core command and scheduling flows.
+The current build includes an animated React web UI, a wallet-connect entry flow, a Node.js API runtime, a shared agent engine, an optional WDK-backed wallet provider, a Telegram bridge, a Vercel serverless API bootstrap backed by a bundled CommonJS server app with lazy WDK loading, Alibaba Model Studio-compatible reasoning with model auto-switch fallback, an OpenClaw CLI reasoning path (with deterministic fallback), and automated tests for the core command and scheduling flows.
 
 ### 💡 What Makes AegisPay Different?
 
@@ -165,7 +165,7 @@ User sends command → AI parses intent → Agent validates rules
 |----------|------------|
 | **Frontend** | React / Next.js |
 | **Backend** | Node.js, TypeScript |
-| **AI Agent Framework** | OpenClaw (planned integration) |
+| **AI Agent Framework** | OpenClaw CLI reasoning mode (optional) |
 | **Wallet Infrastructure** | Tether Wallet Development Kit (WDK) |
 | **Blockchain** | Ethereum Sepolia Testnet |
 | **AI Model** | Alibaba Model Studio (Qwen) via OpenAI-compatible Responses API |
@@ -241,6 +241,11 @@ AEGIS_OPENAI_MODEL=qwen-plus
 AEGIS_OPENAI_MODELS=qwen-plus,qwen-turbo,qwen3-8b,qwen3-4b
 AEGIS_OPENAI_BASE_URL=https://dashscope-intl.aliyuncs.com/api/v2/apps/protocols/compatible-mode/v1
 
+# Optional OpenClaw reasoning mode
+# Requires a local OpenClaw CLI install
+AEGIS_OPENCLAW_COMMAND=openclaw
+AEGIS_OPENCLAW_TIMEOUT_MS=15000
+
 # WDK live mode
 AEGIS_WALLET_SEED_PHRASE=your_twelve_word_seed_phrase
 AEGIS_EVM_RPC_URL=https://sepolia.infura.io/v3/your_key
@@ -281,6 +286,14 @@ The runtime will try the models in order and automatically move to the next one 
 If you want to use OpenAI directly instead of Alibaba Model Studio, switch the base URL back to `https://api.openai.com/v1` and choose an OpenAI model such as `gpt-5-mini`.
 
 To disable provider-backed reasoning entirely, set `AEGIS_REASONING_PROVIDER=deterministic`.
+
+To use OpenClaw as the first reasoning layer (with automatic deterministic fallback), set:
+
+```env
+AEGIS_REASONING_PROVIDER=openclaw
+AEGIS_OPENCLAW_COMMAND=openclaw
+AEGIS_OPENCLAW_TIMEOUT_MS=15000
+```
 
 ### Vercel Deployment (Real Runtime)
 

@@ -32,10 +32,10 @@ export interface MvpChecklistItem {
 
 export const projectStatusMeta = {
   lastUpdated: 'March 13, 2026',
-  deliveryTarget: 'April 30, 2026',
-  overallProgress: 88,
+  deliveryTarget: 'March 22, 2026 (submission deadline - 23:59 UTC)',
+  overallProgress: 92,
   summary:
-    'The current build is a full-stack MVP with an animated landing page, wallet-connect console flow, Vercel-ready API runtime, scheduler automation path, Telegram bridge, tests, optional WDK-backed wallet operations, and Alibaba-compatible reasoning with model auto-switch. The biggest remaining gaps are OpenClaw integration, funded WDK live verification, persistence/security hardening, demo video, and submission assets.',
+    'The current build is a full-stack MVP with an animated landing page, wallet-connect console flow, stable Vercel runtime, scheduler automation path, Telegram bridge, tests, optional WDK-backed wallet operations, Alibaba-compatible reasoning, and an OpenClaw CLI reasoning path with deterministic fallback. The biggest remaining gaps are OpenClaw runtime validation, funded WDK live verification, persistence/security hardening, demo video, and submission assets.',
 };
 
 export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
@@ -61,7 +61,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
     id: 'phase-2',
     title: 'Phase 2 - AI Agent Core',
     window: 'Week 2-3',
-    progress: 80,
+    progress: 88,
     status: 'in_progress',
     objective: 'Turn natural language instructions into wallet actions and user-facing explanations.',
     shipped: [
@@ -73,7 +73,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
       'Multi-model auto-switch fallback before deterministic fallback',
     ],
     next: [
-      'Integrate OpenClaw-native planning (track requirement — not yet started)',
+      'Validate real OpenClaw CLI runtime path and capture demo evidence',
       'Add richer fallback handling for ambiguous commands',
     ],
   },
@@ -122,18 +122,18 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
     id: 'phase-5',
     title: 'Phase 5 - Polish & Submit',
     window: 'Week 5-6',
-    progress: 58,
+    progress: 62,
     status: 'in_progress',
     objective: 'Stabilize the product, document the architecture, and prepare the hackathon submission.',
     shipped: [
       'PRD, roadmap, and project status documentation',
-      'Automated tests for engine, API, and reasoning fallback flows (10/10 passing)',
+      'Automated tests for engine, API, reasoning fallback, and OpenClaw provider flows (12/12 passing)',
       'Backend startup and health verification',
       'Comprehensive technical README plus project review',
       'Vercel deployment configuration for API and scheduler cron',
     ],
     next: [
-      'Integrate OpenClaw (track requirement)',
+      'Validate OpenClaw runtime with a real openclaw agent session',
       'Record demo video (mandatory deliverable)',
       'Add LICENSE file and fix package.json name',
       'Complete security review',
@@ -194,9 +194,9 @@ export const roadmapMilestones: MilestoneStatus[] = [
   },
   {
     title: 'All tests and submission assets',
-    targetDate: 'April 30, 2026',
+    targetDate: 'March 22, 2026',
     status: 'in_progress',
-    note: 'Unit tests pass (10/10); OpenClaw integration, demo video, LICENSE, security review, and final submission assets are still open.',
+    note: 'Unit tests pass (12/12); OpenClaw runtime validation, demo video, LICENSE, security review, and final submission assets are still open.',
   },
 ];
 
@@ -208,10 +208,10 @@ export const projectRisks: RiskStatus[] = [
     mitigation: 'Keep the wallet adapter isolated and provide a demo fallback so local development continues without blocking on credentials.',
   },
   {
-    title: 'OpenClaw integration is a track requirement but not yet started',
+    title: 'OpenClaw runtime validation is pending',
     impact: 'high',
     likelihood: 'high',
-    mitigation: 'Prioritize wrapping the reasoning layer with OpenClaw-native planning before submission.',
+    mitigation: 'Use the new OpenClaw provider path for live session validation and capture runtime evidence in the demo.',
   },
   {
     title: 'Natural language parsing is still rule-based',
@@ -273,7 +273,7 @@ export const mvpChecklist: MvpChecklistItem[] = [
 ];
 
 export const nextBuildPriorities = [
-  'Integrate OpenClaw-native planning (track requirement, not yet started).',
+  'Validate OpenClaw runtime with a real openclaw agent session and capture evidence.',
   'Record the hackathon demo video (mandatory deliverable).',
   'Run a funded Sepolia smoke test with the WDK provider enabled.',
   'Wire production/deployment env vars for Alibaba-backed reasoning.',
