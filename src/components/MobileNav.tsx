@@ -1,4 +1,4 @@
-import { LayoutDashboard, MessageSquare, Wallet, ArrowRightLeft, ShieldCheck, CalendarClock, Menu, X, Zap, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Wallet, ArrowRightLeft, ShieldCheck, CalendarClock, Menu, X, Zap, BarChart3, Sparkles } from 'lucide-react';
 import type { Page } from '../types';
 import { cn } from '../utils/cn';
 
@@ -10,6 +10,7 @@ interface MobileNavProps {
 }
 
 const navItems: { page: Page; label: string; icon: React.ElementType }[] = [
+  { page: 'landing', label: 'Landing', icon: Sparkles },
   { page: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { page: 'chat', label: 'AI Agent', icon: MessageSquare },
   { page: 'wallets', label: 'Wallets', icon: Wallet },
@@ -60,7 +61,7 @@ export default function MobileNav({ currentPage, onPageChange, isOpen, onToggle 
 
       {/* Bottom Tab Bar */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 border-t border-cyan-500/10 bg-dark-900/95 backdrop-blur-xl z-40 px-2 py-1.5 flex items-center justify-around">
-        {[navItems[0], navItems[1], navItems[4], navItems[5], navItems[6]].map(({ page, label, icon: Icon }) => (
+        {[navItems[0], navItems[1], navItems[2], navItems[6], navItems[7]].map(({ page, label, icon: Icon }) => (
           <button
             key={page}
             onClick={() => onPageChange(page)}

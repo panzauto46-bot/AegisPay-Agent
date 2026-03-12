@@ -57,7 +57,7 @@ export interface ChatMessage {
   action?: string;
 }
 
-export type Page = 'dashboard' | 'chat' | 'wallets' | 'transactions' | 'rules' | 'recurring' | 'status';
+export type Page = 'landing' | 'dashboard' | 'chat' | 'wallets' | 'transactions' | 'rules' | 'recurring' | 'status';
 
 export interface AgentState {
   wallets: Wallet[];

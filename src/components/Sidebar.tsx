@@ -1,4 +1,4 @@
-import { LayoutDashboard, MessageSquare, Wallet, ArrowRightLeft, ShieldCheck, CalendarClock, ChevronLeft, ChevronRight, Zap, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Wallet, ArrowRightLeft, ShieldCheck, CalendarClock, ChevronLeft, ChevronRight, Zap, BarChart3, Sparkles } from 'lucide-react';
 import type { Page } from '../types';
 import { cn } from '../utils/cn';
 
@@ -11,6 +11,7 @@ interface SidebarProps {
 }
 
 const navItems: { page: Page; label: string; icon: React.ElementType }[] = [
+  { page: 'landing', label: 'Landing', icon: Sparkles },
   { page: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { page: 'chat', label: 'AI Agent', icon: MessageSquare },
   { page: 'wallets', label: 'Wallets', icon: Wallet },

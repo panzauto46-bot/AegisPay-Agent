@@ -10,9 +10,10 @@ import TransactionHistory from './components/TransactionHistory';
 import SpendingRules from './components/SpendingRules';
 import RecurringPayments from './components/RecurringPayments';
 import ProjectStatus from './components/ProjectStatus';
+import LandingPage from './components/LandingPage';
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<Page>('dashboard');
+  const [currentPage, setCurrentPage] = useState<Page>('landing');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -20,6 +21,17 @@ export default function App() {
 
   const renderPage = () => {
     switch (currentPage) {
+      case 'landing':
+        return (
+          <LandingPage
+            wallets={agent.wallets}
+            transactions={agent.transactions}
+            rules={agent.rules}
+            recurringPayments={agent.recurringPayments}
+            runtimeMode={agent.runtimeMode}
+            onNavigate={setCurrentPage}
+          />
+        );
       case 'dashboard':
         return (
           <Dashboard
@@ -86,6 +98,10 @@ export default function App() {
         return null;
     }
   };
+
+  if (currentPage === 'landing') {
+    return renderPage();
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-dark-950">
