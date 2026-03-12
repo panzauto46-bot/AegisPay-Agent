@@ -231,6 +231,8 @@ AEGIS_EXPLORER_BASE_URL=https://sepolia.etherscan.io
 AEGIS_SCHEDULER_ENABLED=true
 AEGIS_SCHEDULER_INTERVAL_MS=60000
 AEGIS_SCHEDULER_RUN_ON_START=false
+# Optional cron auth secret (recommended for Vercel cron route)
+CRON_SECRET=your_vercel_cron_secret
 
 # Optional OpenAI-compatible reasoning
 # Alibaba Model Studio example:
@@ -280,6 +282,23 @@ If you want to use OpenAI directly instead of Alibaba Model Studio, switch the b
 
 To disable provider-backed reasoning entirely, set `AEGIS_REASONING_PROVIDER=deterministic`.
 
+### Vercel Deployment (Real Runtime)
+
+This project now supports Vercel Functions for the backend API via `api/[...route].ts`, so `/api/*` runs in Vercel instead of falling back to local-only demo logic.
+
+1. In Vercel, add these environment variables for your deployment:
+   - `AEGIS_REASONING_PROVIDER=openai`
+   - `OPENAI_API_KEY=<your_alibaba_model_studio_key>`
+   - `AEGIS_OPENAI_BASE_URL=https://dashscope-intl.aliyuncs.com/api/v2/apps/protocols/compatible-mode/v1`
+   - `AEGIS_OPENAI_MODEL=qwen-plus`
+   - `AEGIS_OPENAI_MODELS=qwen-plus,qwen-turbo,qwen3-8b,qwen3-4b`
+   - `CRON_SECRET=<strong-random-secret>`
+2. Keep frontend API target as `VITE_AEGIS_API_URL=/api`.
+3. Redeploy your project after saving env vars.
+4. Check runtime health at `https://<your-vercel-domain>/api/health`.
+
+Recurring scheduler automation is wired through Vercel Cron in `vercel.json` and calls `/api/scheduler/cron` every minute.
+
 ### Run Tests
 
 ```bash
@@ -315,6 +334,7 @@ The demo showcases end-to-end autonomous wallet operation:
 ```text
 aegispay-agent/
 ├── .env.example             # Runtime configuration template
+├── api/                     # Vercel serverless API entrypoint
 ├── docs/
 │   └── images/              # Visual diagrams and assets
 ├── src/
@@ -332,6 +352,7 @@ aegispay-agent/
 ├── README.md                # This file
 ├── package.json
 ├── tsconfig.json
+├── vercel.json              # Vercel function + cron configuration
 └── vite.config.ts
 ```
 

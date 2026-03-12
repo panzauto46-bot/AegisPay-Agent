@@ -31,11 +31,11 @@ export interface MvpChecklistItem {
 }
 
 export const projectStatusMeta = {
-  lastUpdated: 'March 12, 2026',
+  lastUpdated: 'March 13, 2026',
   deliveryTarget: 'April 30, 2026',
-  overallProgress: 84,
+  overallProgress: 88,
   summary:
-    'The current build is a full-stack MVP with an animated landing page, wallet-connect console flow, API runtime, Telegram bridge, tests, optional WDK-backed wallet operations, and Alibaba-compatible reasoning with model auto-switch. The biggest remaining gaps are OpenClaw integration, funded WDK live verification, persistence/security hardening, demo video, and submission assets.',
+    'The current build is a full-stack MVP with an animated landing page, wallet-connect console flow, Vercel-ready API runtime, scheduler automation path, Telegram bridge, tests, optional WDK-backed wallet operations, and Alibaba-compatible reasoning with model auto-switch. The biggest remaining gaps are OpenClaw integration, funded WDK live verification, persistence/security hardening, demo video, and submission assets.',
 };
 
 export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
@@ -100,34 +100,37 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
     id: 'phase-4',
     title: 'Phase 4 - Advanced Features',
     window: 'Week 4-5',
-    progress: 88,
+    progress: 92,
     status: 'in_progress',
     objective: 'Add recurring automation and user-facing channels that make the agent useful in practice.',
     shipped: [
       'Recurring payment scheduling UI',
       'API-backed scheduler run for due recurring payments',
       'Persistent server-side scheduler service',
+      'Vercel catch-all API function support for /api/*',
+      'Vercel cron-ready scheduler endpoint with optional CRON_SECRET protection',
       'Animated landing page and wallet-connect entry flow',
       'Dedicated web chat interface for the wallet agent',
       'Telegram bot bridge wired to the AegisPay API',
     ],
     next: [
       'Add notification delivery for payment outcomes',
-      'Move recurring execution to a persistent worker or cron service',
+      'Add production scheduler observability and alerting',
     ],
   },
   {
     id: 'phase-5',
     title: 'Phase 5 - Polish & Submit',
     window: 'Week 5-6',
-    progress: 52,
+    progress: 58,
     status: 'in_progress',
     objective: 'Stabilize the product, document the architecture, and prepare the hackathon submission.',
     shipped: [
       'PRD, roadmap, and project status documentation',
-      'Automated tests for engine, API, and reasoning fallback flows (7/7 passing)',
+      'Automated tests for engine, API, and reasoning fallback flows (10/10 passing)',
       'Backend startup and health verification',
       'Comprehensive technical README plus project review',
+      'Vercel deployment configuration for API and scheduler cron',
     ],
     next: [
       'Integrate OpenClaw (track requirement)',
@@ -193,7 +196,7 @@ export const roadmapMilestones: MilestoneStatus[] = [
     title: 'All tests and submission assets',
     targetDate: 'April 30, 2026',
     status: 'in_progress',
-    note: 'Unit tests pass (7/7); OpenClaw integration, demo video, LICENSE, security review, and final submission assets are still open.',
+    note: 'Unit tests pass (10/10); OpenClaw integration, demo video, LICENSE, security review, and final submission assets are still open.',
   },
 ];
 
@@ -217,10 +220,10 @@ export const projectRisks: RiskStatus[] = [
     mitigation: 'Use the current parser plus Alibaba-compatible reasoning and model auto-switch now, then layer OpenClaw behind the same command interface.',
   },
   {
-    title: 'Recurring automation still needs a persistent scheduler in deployment',
+    title: 'Recurring automation in serverless depends on cron reliability',
     impact: 'medium',
     likelihood: 'medium',
-    mitigation: 'Move the scheduler to a backend worker or serverless cron before production use.',
+    mitigation: 'Keep Vercel cron enabled with CRON_SECRET protection and monitor scheduler health via /api/health.',
   },
   {
     title: 'Test coverage exists but is still limited to core flows',

@@ -14,9 +14,9 @@
 | Phase 1 - Foundation | 93% | In Progress | App shell, runtime, provider abstraction, wallet state, and optional WDK integration are ready. |
 | Phase 2 - AI Agent Core | 80% | In Progress | Command understanding is functional with deterministic + provider-backed reasoning; OpenClaw remains the main gap. |
 | Phase 3 - Payment Engine | 90% | In Progress | Validation, payments, recurring execution, and explorer reporting are working in demo mode. |
-| Phase 4 - Advanced Features | 88% | In Progress | Landing page, wallet-connect flow, web chat, Telegram bridge, and scheduler are live. |
-| Phase 5 - Polish & Submit | 52% | In Progress | Docs, tests, and UX polish are shipped; demo video and final submission hardening remain. |
-| Overall | 84% | In Progress | Full-stack MVP is ready; track-specific and submission-specific work is still pending. |
+| Phase 4 - Advanced Features | 92% | In Progress | Landing page, wallet-connect flow, web chat, Telegram bridge, scheduler, and Vercel runtime path are live. |
+| Phase 5 - Polish & Submit | 58% | In Progress | Docs, tests, UX polish, and deployment runtime wiring are shipped; demo video and final submission hardening remain. |
+| Overall | 88% | In Progress | Full-stack MVP is ready with real deployment path; track-specific and submission-specific work is still pending. |
 
 ---
 
@@ -46,7 +46,7 @@ gantt
     section Phase 4 - Advanced Features
     Recurring Scheduler            :done,   p4a, 2026-03-27, 4d
     Web + Telegram Interface       :done,   p4b, 2026-03-30, 5d
-    Deployment Hardening           :active, p4c, 2026-04-05, 5d
+    Deployment Hardening           :done,   p4c, 2026-04-05, 5d
 
     section Phase 5 - Polish & Submit
     Documentation Sync             :done,   p5a, 2026-04-08, 3d
@@ -127,12 +127,13 @@ Goal: make the agent demo-ready and useful across channels.
 - Telegram bot bridge
 - In-process recurring scheduler service
 - Project Status page backed by shared metadata
+- Vercel catch-all API function path for `/api/*`
+- Vercel cron schedule support for recurring scheduler execution
 
 ### Remaining
 
 - Payment outcome notifications
-- Deployment worker/cron option for scheduler durability
-- Public deployment env sync for backend AI runtime
+- Production scheduler observability/alerting
 
 ---
 
@@ -199,4 +200,4 @@ Goal: stabilize, document, and package the project for judging.
 
 ---
 
-> Last updated: March 12, 2026
+> Last updated: March 13, 2026

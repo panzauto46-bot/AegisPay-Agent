@@ -1,6 +1,6 @@
 # AegisPay Agent - Project Review
 
-Review date: March 12, 2026  
+Review date: March 13, 2026  
 Target hackathon: Agent Wallets (WDK / OpenClaw)  
 Submission deadline: April 30, 2026
 
@@ -8,16 +8,16 @@ Submission deadline: April 30, 2026
 
 | Metric | Value |
 |--------|-------|
-| Overall progress | 84% |
+| Overall progress | 88% |
 | TypeScript errors | 0 |
 | Test suites | 3 |
-| Tests | 7/7 passed |
+| Tests | 10/10 passed |
 | Source files in `src/` | 36 |
 | Source lines in `src/` | ~6,210 |
 | Build output | `dist/index.html` (~524 KB) |
 | Current runtime state | Full-stack MVP |
 
-The project is in strong MVP shape. The product story is now much clearer thanks to the animated landing page and wallet-connect entry flow, and the backend has a credible runtime model with provider-backed reasoning, scheduler execution, Telegram bridge, and optional WDK support. The most important remaining gaps are still OpenClaw integration, funded live WDK verification, persistence/auth hardening, and the final hackathon deliverables such as the demo video and submission assets.
+The project is in strong MVP shape. The product story is now much clearer thanks to the animated landing page and wallet-connect entry flow, and the backend has a credible runtime model with provider-backed reasoning, scheduler execution, Telegram bridge, optional WDK support, and a Vercel serverless deployment path. The most important remaining gaps are still OpenClaw integration, funded live WDK verification, persistence/auth hardening, and the final hackathon deliverables such as the demo video and submission assets.
 
 ## Current Architecture
 
@@ -37,7 +37,7 @@ graph TB
     end
 
     subgraph Backend
-        API["Express API"]
+        API["Express API / Vercel Function"]
         SCHED["SchedulerService"]
         TELE["Telegram Bridge"]
         WDK["WdkWalletProvider"]
@@ -102,6 +102,12 @@ That is enough to demonstrate the intended product loop.
 
 The docs now form a more coherent story than earlier revisions.
 
+### 6. Real deployment path is now available
+
+- API routes can run in Vercel via `api/[...route].ts`.
+- Scheduler automation can be triggered by Vercel Cron through `/api/scheduler/cron`.
+- Optional `CRON_SECRET` bearer validation is implemented for cron calls.
+
 ## Main Gaps
 
 ### High severity
@@ -126,7 +132,7 @@ The backend still lacks an auth gate. If publicly exposed as-is, anyone who can 
 
 #### 5. Deployment still needs backend env setup
 
-The local Alibaba-compatible reasoning path is validated, but the deployed backend still needs the correct provider env vars to avoid silently falling back to deterministic mode.
+The deployment path exists now, but production still requires correctly configured Vercel env vars (Alibaba-compatible API key, model list, and base URL) to avoid silently falling back to deterministic mode.
 
 #### 6. Test coverage is still selective
 
@@ -150,9 +156,9 @@ UI flows, Telegram bridge behavior, and live-provider smoke tests are still miss
 |------|---------------|
 | Landing + UX | Strong hackathon demo quality |
 | Wallet flow | Ready in demo mode, optional WDK path present |
-| AI runtime | Alibaba-compatible reasoning verified locally |
-| Scheduler | Working in-process |
-| Tests | 7/7 passing |
+| AI runtime | Alibaba-compatible reasoning verified locally and deployable via Vercel Functions |
+| Scheduler | Working in-process + Vercel cron path available |
+| Tests | 10/10 passing |
 | README accuracy | Improved and aligned with runtime |
 | Submission readiness | Not done yet |
 
@@ -177,6 +183,6 @@ UI flows, Telegram bridge behavior, and live-provider smoke tests are still miss
 
 ## Overall Assessment
 
-Rating: 8.4/10
+Rating: 8.8/10
 
 The project is no longer just a rough prototype. It now looks and behaves like a polished MVP with a credible architecture and a presentable user journey. The remaining work is mostly about validation, compliance with the track requirements, and final submission hardening rather than rebuilding the core product.

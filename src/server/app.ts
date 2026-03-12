@@ -18,6 +18,16 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : 'Unexpected server error';
 }
 
+function isAuthorizedCronRequest(request: express.Request) {
+  const cronSecret = process.env.CRON_SECRET?.trim();
+  if (!cronSecret) {
+    return true;
+  }
+
+  const authorization = request.header('authorization');
+  return authorization === `Bearer ${cronSecret}`;
+}
+
 interface CreateAppOptions {
   engine?: AgentEngine;
 }
@@ -190,6 +200,26 @@ export function createApp(options: CreateAppOptions = {}) {
       const state = await engine.runScheduler();
       response.json({
         state: serializeAgentState(state),
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post('/api/scheduler/cron', async (request, response, next) => {
+    try {
+      if (!isAuthorizedCronRequest(request)) {
+        response.status(401).json({
+          error: 'Unauthorized cron request.',
+        });
+        return;
+      }
+
+      const state = await engine.runScheduler();
+      response.json({
+        ok: true,
+        state: serializeAgentState(state),
+        executedAt: new Date().toISOString(),
       });
     } catch (error) {
       next(error);

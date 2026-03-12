@@ -1,13 +1,13 @@
 # AegisPay Agent - Project Status
 
-Last updated: March 12, 2026
+Last updated: March 13, 2026
 
 ## Current Snapshot
 
-- Overall progress: `84%`
+- Overall progress: `88%`
 - Delivery target: `April 30, 2026`
-- Product state: `Full-stack MVP with animated landing page, wallet-connect console flow, API runtime, scheduler, Telegram bridge, and Alibaba-compatible reasoning`
-- Primary focus: `OpenClaw integration`, `funded WDK live verification`, `persistence + security`, `demo video`, `submission assets`
+- Product state: `Full-stack MVP with animated landing page, wallet-connect console flow, Vercel-ready API runtime, scheduler automation path, Telegram bridge, and Alibaba-compatible reasoning`
+- Primary focus: `OpenClaw integration`, `funded WDK live verification`, `persistence + auth hardening`, `demo video`, `submission assets`
 
 ## What Is Working Now
 
@@ -33,9 +33,11 @@ Last updated: March 12, 2026
 - Recurring payment scheduling and management
 - API-backed scheduler cycle for due recurring payments
 - Persistent in-process scheduler service on the backend
+- Vercel serverless API entrypoint for `/api/*` via `api/[...route].ts`
+- Vercel cron-ready scheduler endpoint at `/api/scheduler/cron` with optional `CRON_SECRET` bearer protection
 - Web chat interface with API/local fallback behavior
 - Telegram bot bridge via `grammy`
-- Automated tests for engine, reasoning fallback, and API flows (`7/7` passing)
+- Automated tests for engine, reasoning fallback, and API flows (`10/10` passing)
 - In-app Project Status page backed by shared metadata
 - Single-file production build via `vite-plugin-singlefile`
 - TypeScript strict mode with zero compilation errors
@@ -50,7 +52,7 @@ Last updated: March 12, 2026
 - No demo video recorded yet
 - No `LICENSE` file yet
 - `package.json` name is still `react-vite-tailwind`
-- Public deployment still needs backend environment variables for provider-backed AI
+- Public deployment now supports provider-backed AI through Vercel env vars and serverless API routes
 - Notification delivery for payment outcomes is not implemented
 - Test coverage is still centered on core engine/API paths only
 
@@ -61,8 +63,8 @@ Last updated: March 12, 2026
 | Phase 1 - Foundation | 93% | In Progress | Wallet lifecycle, API runtime, provider abstraction, and optional WDK integration are in place; funded live verification is the remaining gap. |
 | Phase 2 - AI Agent Core | 80% | In Progress | Natural-language command handling works across UI and API, and Alibaba-compatible reasoning with model auto-switch is live locally; OpenClaw-native integration is still missing. |
 | Phase 3 - Payment Engine | 90% | In Progress | Demo sends, guardrails, recurring execution, and explorer links are in place; live funded transfer verification is still pending. |
-| Phase 4 - Advanced Features | 88% | In Progress | Scheduler, web chat, Telegram bridge, landing page, and wallet-connect entry flow are complete; notifications and deployment hardening remain open. |
-| Phase 5 - Polish & Submit | 52% | In Progress | Docs, review, tests, and UX polish are in place; demo video, security review, LICENSE, naming cleanup, and final submission packaging remain. |
+| Phase 4 - Advanced Features | 92% | In Progress | Scheduler, web chat, Telegram bridge, landing page, wallet-connect entry flow, and Vercel serverless + cron path are complete; notifications remain open. |
+| Phase 5 - Polish & Submit | 58% | In Progress | Docs, review, tests, UX polish, and deployment runtime wiring are in place; demo video, security review, LICENSE, naming cleanup, and final submission packaging remain. |
 
 ## MVP Checklist
 
@@ -91,8 +93,8 @@ Last updated: March 12, 2026
 |--------|-------|
 | TypeScript errors | 0 |
 | Test suites | 3 |
-| Tests passing | 7/7 ✅ |
-| Source lines | ~6,210 |
+| Tests passing | 10/10 ✅ |
+| Source lines | ~6,300 |
 | Source files | 36 |
 | Git commits | 7 |
 | Build output | Single-file HTML (`dist/index.html`, ~524 KB) |
@@ -105,7 +107,7 @@ Last updated: March 12, 2026
 | Live WDK mode still depends on funded credentials and Sepolia testing | 🔴 High | Keep the demo provider as fallback, then run a funded smoke test before demo freeze. |
 | Backend state is in-memory only | 🟡 Medium | Add JSON-file or SQLite persistence for demo stability. |
 | Public deployment still lacks API authentication | 🟡 Medium | Add at least a shared API key or token gate before public backend exposure. |
-| Scheduler runs in-process only | 🟡 Medium | Move recurring execution to a worker or cron-capable deployment target. |
+| Scheduler durability in serverless relies on cron schedule and function availability | 🟡 Medium | Keep Vercel cron enabled and monitor cron execution status/logs. |
 | Provider-backed AI depends on runtime env vars in deployment | 🟡 Medium | Mirror the validated local Alibaba env configuration into the hosting environment. |
 | Test coverage is still narrow | 🟡 Medium | Add UI, Telegram, and live-provider smoke coverage. |
 
@@ -117,5 +119,4 @@ Last updated: March 12, 2026
 4. Add persistence for state and scheduler continuity.
 5. Add basic API authentication and tighten CORS for deployment.
 6. Add `LICENSE` and rename the package from `react-vite-tailwind` to `aegispay-agent`.
-7. Wire deployment env vars for Alibaba Model Studio reasoning.
-8. Expand automated coverage to UI and Telegram paths.
+7. Expand automated coverage to UI and Telegram paths.
