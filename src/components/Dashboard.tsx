@@ -1,4 +1,24 @@
-import { Wallet, ArrowUpRight, ArrowDownLeft, ShieldCheck, CalendarClock, TrendingUp, Activity, Zap, ExternalLink } from 'lucide-react';
+import {
+  Wallet,
+  ArrowUpRight,
+  ArrowDownLeft,
+  ShieldCheck,
+  CalendarClock,
+  TrendingUp,
+  Activity,
+  Zap,
+  ExternalLink,
+  MessageSquare,
+  Send,
+  Repeat,
+  BarChart3,
+  Monitor,
+  Brain,
+  Cog,
+  KeyRound,
+  Link2,
+  ArrowRight,
+} from 'lucide-react';
 import type { Wallet as WalletType, Transaction, SpendingRule, RecurringPayment, Page } from '../types';
 import { cn } from '../utils/cn';
 
@@ -137,19 +157,19 @@ export default function Dashboard({ wallets, transactions, rules, recurringPayme
             </h2>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { label: 'AI Agent', page: 'chat' as Page, icon: '🤖' },
-                { label: 'Send', page: 'chat' as Page, icon: '📤' },
-                { label: 'Wallets', page: 'wallets' as Page, icon: '👛' },
-                { label: 'Rules', page: 'rules' as Page, icon: '🛡️' },
-                { label: 'Recurring', page: 'recurring' as Page, icon: '📅' },
-                { label: 'Status', page: 'status' as Page, icon: '📈' },
+                { label: 'AI Agent', page: 'chat' as Page, icon: MessageSquare },
+                { label: 'Send', page: 'chat' as Page, icon: Send },
+                { label: 'Wallets', page: 'wallets' as Page, icon: Wallet },
+                { label: 'Rules', page: 'rules' as Page, icon: ShieldCheck },
+                { label: 'Recurring', page: 'recurring' as Page, icon: Repeat },
+                { label: 'Status', page: 'status' as Page, icon: BarChart3 },
               ].map((action, i) => (
                 <button
                   key={i}
                   onClick={() => onNavigate(action.page)}
                   className="flex flex-col items-center gap-2 p-3 rounded-xl bg-dark-950/50 hover:bg-dark-800/50 transition-colors group"
                 >
-                  <span className="text-xl">{action.icon}</span>
+                  <action.icon className="w-5 h-5 text-cyan-400" />
                   <span className="text-xs text-slate-400 group-hover:text-slate-200 transition-colors">{action.label}</span>
                 </button>
               ))}
@@ -188,21 +208,21 @@ export default function Dashboard({ wallets, transactions, rules, recurringPayme
         </h2>
         <div className="flex flex-wrap items-center justify-center gap-3 lg:gap-4">
           {[
-            { label: 'User Interface', sub: 'Web / Telegram / CLI', emoji: '👤' },
-            { label: 'OpenClaw Agent', sub: 'AI Reasoning Layer', emoji: '🧠' },
-            { label: 'Agent Logic', sub: 'Rules & Validation', emoji: '⚙️' },
-            { label: 'WDK Wallet', sub: 'Key & Tx Management', emoji: '🔐' },
-            { label: 'Blockchain', sub: 'Ethereum Sepolia', emoji: '⛓️' },
+            { label: 'User Interface', sub: 'Web / Telegram / CLI', icon: Monitor },
+            { label: 'OpenClaw Agent', sub: 'AI Reasoning Layer', icon: Brain },
+            { label: 'Agent Logic', sub: 'Rules & Validation', icon: Cog },
+            { label: 'WDK Wallet', sub: 'Key & Tx Management', icon: KeyRound },
+            { label: 'Blockchain', sub: 'Ethereum Sepolia', icon: Link2 },
           ].map((node, i) => (
             <div key={i} className="flex items-center gap-3 lg:gap-4">
               <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-dark-950/50 border border-cyan-500/10 hover:border-cyan-500/20 transition-colors min-w-[120px]">
-                <span className="text-2xl">{node.emoji}</span>
+                <node.icon className="w-6 h-6 text-cyan-400" />
                 <div className="text-center">
                   <p className="text-sm font-medium text-white">{node.label}</p>
                   <p className="text-[10px] text-slate-500">{node.sub}</p>
                 </div>
               </div>
-              {i < 4 && <span className="text-cyan-500/50 text-lg hidden lg:block">→</span>}
+              {i < 4 && <ArrowRight className="w-4 h-4 text-cyan-500/50 hidden lg:block" />}
             </div>
           ))}
         </div>
