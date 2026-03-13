@@ -69,6 +69,13 @@ export default function App() {
     setCurrentPage('chat');
   };
 
+  const handleDeleteWallet = async (walletId: string) => {
+    await agent.deleteWallet(walletId);
+    if (connectedWalletId === walletId) {
+      setConnectedWalletId(null);
+    }
+  };
+
   const handleLogout = () => {
     setConnectedWalletId(null);
     setCurrentPage('connect');
@@ -98,6 +105,7 @@ export default function App() {
             onBack={() => setCurrentPage('landing')}
             onConnect={handleConnectWallet}
             onCreateAndConnect={handleCreateAndConnectWallet}
+            onDeleteWallet={handleDeleteWallet}
           />
         );
       case 'dashboard':

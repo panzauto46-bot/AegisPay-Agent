@@ -165,6 +165,17 @@ export function createApp(options: CreateAppOptions = {}) {
     }
   });
 
+  app.delete('/api/wallets/:id', async (request, response, next) => {
+    try {
+      const state = await engine.deleteWallet(request.params.id);
+      response.json({
+        state: serializeAgentState(state),
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
   app.post('/api/rules', async (request, response, next) => {
     try {
       const { type, label, value } = request.body ?? {};

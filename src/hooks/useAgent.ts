@@ -220,11 +220,23 @@ export function useAgent() {
     }
   };
 
+  const deleteWallet = async (id: string) => {
+    if (runtimeMode === 'remote') {
+      await runRemote(`/wallets/${id}`, {
+        method: 'DELETE',
+      });
+      return;
+    }
+
+    await runLocal(() => engineRef.current!.deleteWallet(id));
+  };
+
   return {
     ...agentState,
     isProcessing,
     runtimeMode,
     createWallet,
+    deleteWallet,
     processCommand,
     toggleRule,
     deleteRule,

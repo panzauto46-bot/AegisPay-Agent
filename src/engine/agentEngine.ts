@@ -343,6 +343,39 @@ This follows the PRD wallet-creation flow and is ready for funding.`,
     return this.getState(false);
   }
 
+  async deleteWallet(id: string) {
+    const walletIndex = this.state.wallets.findIndex((wallet) => wallet.id === id);
+    if (walletIndex < 0) {
+      return this.getState(false);
+    }
+
+    if (walletIndex === 0) {
+      this.addMessage(
+        'agent',
+        'Primary wallet cannot be deleted. Create another wallet if you need to rotate active wallets.',
+        'wallet_delete_blocked',
+      );
+      await this.notifyStateChange();
+      return this.getState(false);
+    }
+
+    const removedWallet = this.state.wallets[walletIndex];
+    this.state.wallets = this.state.wallets.filter((wallet) => wallet.id !== id);
+    this.addMessage(
+      'agent',
+      `Wallet removed from runtime inventory.
+
+- Name: **${removedWallet.name}**
+- Address: \`${removedWallet.address}\`
+
+Primary wallet remains active for execution and scheduler flows.`,
+      'wallet_deleted',
+    );
+
+    await this.notifyStateChange();
+    return this.getState(false);
+  }
+
   async toggleRule(id: string) {
     this.state.rules = this.state.rules.map((rule) =>
       rule.id === id ? { ...rule, enabled: !rule.enabled } : rule,

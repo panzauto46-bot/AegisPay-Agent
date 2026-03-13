@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCircle2, Plus, ShieldCheck, Wallet as WalletIcon, Zap } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Plus, ShieldCheck, Trash2, Wallet as WalletIcon, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Wallet } from '../types';
 
@@ -9,6 +9,7 @@ interface ConnectWalletPageProps {
   onBack: () => void;
   onConnect: (walletId: string) => void;
   onCreateAndConnect: () => void | Promise<void>;
+  onDeleteWallet: (walletId: string) => void | Promise<void>;
 }
 
 function shortenAddress(address: string) {
@@ -22,6 +23,7 @@ export default function ConnectWalletPage({
   onBack,
   onConnect,
   onCreateAndConnect,
+  onDeleteWallet,
 }: ConnectWalletPageProps) {
   const primaryWallet = wallets[0];
 
@@ -101,14 +103,16 @@ export default function ConnectWalletPage({
 
             <div className="space-y-4">
               {wallets.map((wallet, index) => (
-                <button
+                <div
                   key={wallet.id}
-                  onClick={() => onConnect(wallet.id)}
-                  disabled={isProcessing}
-                  className="group w-full rounded-[26px] border border-white/8 bg-white/[0.04] p-5 text-left transition hover:border-cyan-300/25 hover:bg-white/[0.06] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="w-full rounded-[26px] border border-white/8 bg-white/[0.04] p-5 transition hover:border-cyan-300/25 hover:bg-white/[0.06]"
                 >
                   <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-4">
+                    <button
+                      onClick={() => onConnect(wallet.id)}
+                      disabled={isProcessing}
+                      className="group flex flex-1 items-start gap-4 text-left disabled:cursor-not-allowed disabled:opacity-60"
+                    >
                       <div className="mt-1 flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-300/20 to-emerald-300/20 text-cyan-100">
                         <WalletIcon className="h-5 w-5" />
                       </div>
@@ -126,10 +130,23 @@ export default function ConnectWalletPage({
                           {wallet.balance.toFixed(2)} {wallet.token} on {wallet.network}
                         </p>
                       </div>
+                    </button>
+
+                    <div className="flex items-center gap-2">
+                      {index > 0 && (
+                        <button
+                          onClick={() => void onDeleteWallet(wallet.id)}
+                          disabled={isProcessing}
+                          className="rounded-xl border border-rose-300/20 bg-rose-300/5 px-2.5 py-2 text-rose-300 transition hover:bg-rose-300/10 disabled:cursor-not-allowed disabled:opacity-60"
+                          title="Delete wallet"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                      <CheckCircle2 className="h-5 w-5 text-slate-600" />
                     </div>
-                    <CheckCircle2 className="h-5 w-5 text-slate-600 transition group-hover:text-cyan-300" />
                   </div>
-                </button>
+                </div>
               ))}
 
               <button
