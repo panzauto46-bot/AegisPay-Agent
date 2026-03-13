@@ -84,7 +84,6 @@ export default function LandingPage({
   const activeRules = rules.filter((rule) => rule.enabled).length;
   const activeRecurring = recurringPayments.filter((payment) => payment.active).length;
   const totalBalance = wallets.reduce((sum, wallet) => sum + wallet.balance, 0);
-  const transactionCount = transactions.length;
 
   return (
     <div className="landing-shell relative min-h-screen overflow-hidden text-slate-100">
@@ -153,35 +152,40 @@ export default function LandingPage({
               Built for Agent Wallets
             </div>
             <h1 className="landing-display max-w-[7.5ch] text-5xl font-bold leading-[0.94] tracking-tight text-white sm:text-6xl lg:text-7xl xl:text-[6.25rem]">
-              Wallet automation
+              Policy-first wallet
               <span className="block bg-gradient-to-r from-amber-200 via-cyan-200 to-emerald-200 bg-clip-text text-transparent">
-                that looks alive.
+                execution at runtime.
               </span>
             </h1>
             <p className="mt-6 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg">
-              AegisPay Agent turns payment commands into guarded on-chain actions with an animated control
-              surface, recurring execution engine, runtime telemetry across {transactionCount} recorded
-              transaction{transactionCount === 1 ? '' : 's'}, and a wallet core that is ready to grow
-              from demo mode into WDK-backed live delivery.
+              AegisPay Agent turns natural-language payment commands into policy-validated on-chain
+              execution. It combines recurring scheduling, runtime telemetry, and a WDK wallet runtime
+              that is proven live on Sepolia.
+            </p>
+            <p className="mt-4 max-w-3xl text-xs leading-6 text-cyan-100/80 sm:text-sm">
+              Live WDK proof (Sepolia):{' '}
+              <span className="font-mono">
+                0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073
+              </span>
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <motion.button
                 whileHover={{ y: -2, scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={onLaunchConsole}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-300 via-teal-300 to-emerald-300 px-6 py-3.5 text-sm font-semibold text-slate-950 shadow-[0_20px_80px_rgba(34,211,238,0.22)]"
-              >
-                Talk to the Agent
+              onClick={onLaunchConsole}
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-300 via-teal-300 to-emerald-300 px-6 py-3.5 text-sm font-semibold text-slate-950 shadow-[0_20px_80px_rgba(34,211,238,0.22)]"
+            >
+                Open Agent Console
                 <ArrowRight className="h-4 w-4" />
               </motion.button>
               <motion.button
                 whileHover={{ y: -2, scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => onNavigate('dashboard')}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-6 py-3.5 text-sm font-semibold text-slate-100 backdrop-blur-xl"
-              >
-                Explore Command Center
+              onClick={() => onNavigate('dashboard')}
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-6 py-3.5 text-sm font-semibold text-slate-100 backdrop-blur-xl"
+            >
+                View Dashboard
                 <ChevronRight className="h-4 w-4" />
               </motion.button>
             </div>
@@ -323,11 +327,11 @@ export default function LandingPage({
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-300/25 to-emerald-300/25 text-cyan-100">
                 <Command className="h-5 w-5" />
               </div>
-              <div>
-                <p className="landing-display text-2xl font-bold text-white">Flow that never feels static</p>
-                <p className="mt-1 text-sm text-slate-400">An animated path from user intent to wallet execution.</p>
+                <div>
+                <p className="landing-display text-2xl font-bold text-white">Execution flow with policy guardrails</p>
+                <p className="mt-1 text-sm text-slate-400">A deterministic path from user intent to on-chain delivery.</p>
+                </div>
               </div>
-            </div>
 
             <div className="flow-lane">
               <div className="flow-lane-line" />
@@ -360,16 +364,16 @@ export default function LandingPage({
                   <Sparkles className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="landing-display text-xl font-bold text-white">Motion highlights</p>
-                  <p className="text-sm text-slate-400">3D core, ambient background, beam flow, and running telemetry.</p>
+                  <p className="landing-display text-xl font-bold text-white">Runtime highlights</p>
+                  <p className="text-sm text-slate-400">Core delivery signals that matter for production demos.</p>
                 </div>
               </div>
               <div className="grid gap-3">
                 {[
-                  'Parallax 3D wallet stage with rotating orbital rings',
-                  'Animated aurora background and drifting light fields',
-                  'Continuous marquee strip for runtime signals',
-                  'Flow pipeline with traveling beam and staggered reveal',
+                  'Policy validation before payment execution',
+                  'Recurring scheduler with persisted runtime state',
+                  'Unified command channels: Web, Telegram, and API',
+                  'Explorer-linked transaction trace for live proof',
                 ].map((item) => (
                   <div key={item} className="rounded-2xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm text-slate-300">
                     {item}
@@ -384,7 +388,7 @@ export default function LandingPage({
                   <CalendarClock className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="landing-display text-xl font-bold text-white">Automation run loop</p>
+                  <p className="landing-display text-xl font-bold text-white">Autonomous execution loop</p>
                   <p className="text-sm text-slate-400">A visual story for how the agent keeps moving.</p>
                 </div>
               </div>
@@ -415,11 +419,11 @@ export default function LandingPage({
               <div>
                 <p className="mb-3 text-[11px] uppercase tracking-[0.28em] text-cyan-100/65">Ready to show it live</p>
                 <h2 className="landing-display max-w-[14ch] text-3xl font-bold text-white sm:text-4xl xl:text-5xl">
-                  Launch the landing page, then dive straight into the agent console.
+                  Open the live console and run the agent flow end-to-end.
                 </h2>
                 <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-400 sm:text-base">
-                  This landing surface is designed to sell the vision first, then funnel users into the working
-                  wallet runtime, transaction dashboard, and project status views without losing momentum.
+                  This surface introduces the architecture quickly, then routes users into the working wallet
+                  runtime, dashboard, and project status pages used for submission verification.
                 </p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
@@ -427,13 +431,13 @@ export default function LandingPage({
                   onClick={onLaunchConsole}
                   className="rounded-full bg-gradient-to-r from-amber-300 via-cyan-300 to-emerald-300 px-6 py-3.5 text-sm font-semibold text-slate-950"
                 >
-                  Start Demo Flow
+                  Launch Agent Console
                 </button>
                 <button
                   onClick={() => onNavigate('status')}
                   className="rounded-full border border-white/12 bg-white/[0.06] px-6 py-3.5 text-sm font-semibold text-slate-100"
                 >
-                  Open Roadmap Status
+                  View Project Status
                 </button>
               </div>
             </div>
