@@ -6,7 +6,7 @@ Last updated: March 13, 2026
 
 - Overall progress: `99%`
 - Delivery target: `March 22, 2026 (submission deadline - 23:59 UTC)`
-- Product state: `Production-ready full-stack MVP with verified Vercel runtime, API-key auth enforcement, CORS allowlist controls, JSON persistence, scheduler path, Telegram bridge, Alibaba-compatible reasoning, and validated OpenClaw CLI reasoning path`
+- Product state: `Production-ready full-stack MVP with verified Vercel runtime, API-key auth enforcement, CORS allowlist controls, JSON persistence, scheduler path, Telegram bridge (API-key passthrough), Alibaba-compatible reasoning, and validated OpenClaw CLI reasoning path`
 - Primary focus: `funded WDK live verification`, `demo video`, `final submission package`
 
 ## PR Prioritas (Wajib Sebelum Submit)
@@ -14,8 +14,8 @@ Last updated: March 13, 2026
 | Priority | PR / Pending Work | Status | Definition of Done |
 |----------|-------------------|--------|--------------------|
 | P0 | Fix production API crash di Vercel (`/api/health`, `/api/state`) | ✅ Complete | Bundle serverless CommonJS + lazy WDK loading lolos build, route import lokal, smoke test packaging, dan endpoint health/state sudah `200` di production tanpa `ERR_MODULE_NOT_FOUND` / `ERR_REQUIRE_ESM`. |
-| P0 | Integrasi OpenClaw nyata untuk layer reasoning/planning | ✅ Complete | OpenClaw CLI tervalidasi runtime real (`openclaw agent` + provider analyze live) dengan session-aware invocation (`--session-id`) dan mode lokal opsional. |
-| P0 | Verifikasi WDK live funded (Sepolia) end-to-end | 🟠 In Progress | Script `npm run verify:wdk` sudah siap + read-only gate jalan; tinggal isi env live dan jalankan transfer sukses dengan hash + bukti di README/demo script. |
+| P0 | Integrasi OpenClaw nyata untuk layer reasoning/planning | ✅ Complete | OpenClaw CLI tervalidasi runtime real (`openclaw agent` + provider analyze live) dengan session-aware invocation (`--session-id`) dan smoke verifier khusus (`npm run verify:openclaw`). |
+| P0 | Verifikasi WDK live funded (Sepolia) end-to-end | 🟠 In Progress | Script `npm run verify:wdk` kini scan multi-account (`AEGIS_WDK_SMOKE_SCAN_COUNT`) + execute guard; transfer hash masih menunggu wallet yang benar-benar funded. |
 | P0 | Demo video submission (<= 5 menit, unlisted YouTube) | 🔴 Open | Link video siap ditempel di DoraHacks submission. |
 | P1 | Submission package final (disclosure third-party + run instruction jelas) | 🟠 In Progress | Checklist submit lengkap: repo, track, video, disclosure, cara run. |
 | P1 | Harden security backend (API auth + CORS ketat) | ✅ Complete | API auth middleware (`AEGIS_API_KEY`) + CORS allowlist (`AEGIS_ALLOWED_ORIGINS`) aktif di production: `/api/state` sekarang `401` tanpa key dan `200` dengan key valid. |
@@ -32,7 +32,9 @@ Last updated: March 13, 2026
 - API server for state, commands, wallets, rules, recurring payments, and scheduler runs
 - Optional WDK provider for live Sepolia wallet and USDT operations
 - WDK funded smoke script (`npm run verify:wdk`) with clear preflight checks and optional execute mode
+- WDK smoke now scans multiple derivation indexes and auto-selects the best candidate wallet for execute mode
 - Deployment smoke script (`npm run verify:deploy`) for runtime/provider verification
+- OpenClaw runtime smoke script (`npm run verify:openclaw`) for CLI + model + intent path validation
 - Production deploy smoke verified on `https://aegis-pay-agent.vercel.app` (wallet provider `demo`, reasoning provider `openai`)
 - API auth behavior verified in production:
   - `/api/health` returns `200` with `apiAuthEnabled: true`
@@ -52,8 +54,8 @@ Last updated: March 13, 2026
 - Vercel cron-ready scheduler endpoint at `/api/scheduler/cron` with optional `CRON_SECRET` bearer protection
 - Current Vercel cron schedule is daily (`0 0 * * *`) as defined in `vercel.json`
 - Web chat interface with API/local fallback behavior
-- Telegram bot bridge via `grammy`
-- Automated tests for engine, reasoning fallback, OpenClaw provider path, API auth, and persistence flows (`19/19` passing)
+- Telegram bot bridge via `grammy` with automatic `x-aegis-api-key` passthrough when API auth is enabled
+- Automated tests for engine, reasoning fallback, OpenClaw provider path, API auth, persistence flows, and Telegram bridge request headers (`23/23` passing)
 - Single-file production build via `vite-plugin-singlefile`
 - TypeScript strict mode with zero compilation errors
 
@@ -69,9 +71,9 @@ Last updated: March 13, 2026
 | Phase | Progress | Status | Notes |
 |-------|----------|--------|-------|
 | Phase 1 - Foundation | 98% | In Progress | Wallet lifecycle, API runtime, provider abstraction, WDK smoke tooling, and JSON persistence are in place; funded transfer proof is pending. |
-| Phase 2 - AI Agent Core | 95% | In Progress | Natural-language command handling works across UI and API, Alibaba-compatible reasoning with model auto-switch is live, and OpenClaw CLI provider is runtime-validated. |
+| Phase 2 - AI Agent Core | 97% | In Progress | Natural-language command handling works across UI and API, Alibaba-compatible reasoning with model auto-switch is live, and OpenClaw CLI provider is runtime-validated with a dedicated smoke verifier. |
 | Phase 3 - Payment Engine | 90% | In Progress | Demo sends, guardrails, recurring execution, and explorer links are in place; live funded transfer verification is pending. |
-| Phase 4 - Advanced Features | 98% | In Progress | Scheduler, web chat, Telegram bridge, landing page, wallet-connect entry flow, security hardening, and deploy verification tooling are in place. |
+| Phase 4 - Advanced Features | 99% | In Progress | Scheduler, web chat, Telegram bridge with API-key passthrough, landing page, wallet-connect entry flow, security hardening, and deploy verification tooling are in place. |
 | Phase 5 - Polish & Submit | 90% | In Progress | Docs, tests, deployment validation, security, persistence, LICENSE, and package rename are complete; demo video, funded WDK proof, and final submission assets remain. |
 
 ## MVP Checklist
@@ -83,7 +85,7 @@ Last updated: March 13, 2026
 | Single payment execution | ✅ Ready | Uses balance and rule validation before execution. |
 | Natural language commands | ✅ Ready | Covers wallet, balance, payment, recurring, rules, and status flows. |
 | Basic spending limits | ✅ Ready | Daily cap, max transaction, whitelist, and blacklist all work. |
-| One chat interface | ✅ Ready | Web chat is live and Telegram bridge is also available. |
+| One chat interface | ✅ Ready | Web chat is live and Telegram bridge is also available with API auth compatibility. |
 
 ## Hackathon Deliverables
 
@@ -100,11 +102,11 @@ Last updated: March 13, 2026
 | Metric | Value |
 |--------|-------|
 | TypeScript errors | 0 |
-| Test suites | 5 |
-| Tests passing | 19/19 ✅ |
-| Source lines | ~6,719 |
-| Source files | 42 |
-| Git commits | 20 |
+| Test suites | 6 |
+| Tests passing | 23/23 ✅ |
+| Source lines | ~7,014 |
+| Source files | 45 |
+| Git commits | 21 |
 | Build output | Single-file HTML (`dist/index.html`, ~535 KB) |
 
 ## Open Risks

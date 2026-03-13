@@ -10,10 +10,10 @@ Submission deadline: March 22, 2026
 |--------|-------|
 | Overall progress | 99% |
 | TypeScript errors | 0 |
-| Test suites | 5 |
-| Tests | 19/19 passed |
-| Source files in `src/` | 42 |
-| Source lines in `src/` | ~6,719 |
+| Test suites | 6 |
+| Tests | 23/23 passed |
+| Source files in `src/` | 45 |
+| Source lines in `src/` | ~7,014 |
 | Build output | `dist/index.html` (~535 KB) |
 | Current runtime state | Production-verified full-stack MVP |
 
@@ -78,7 +78,7 @@ graph TB
 
 - OpenAI-compatible Responses API flow is working with Alibaba Model Studio/Qwen.
 - Multi-model fallback chain is implemented before deterministic fallback.
-- OpenClaw CLI path is session-aware and runtime-validated.
+- OpenClaw CLI path is session-aware, runtime-validated, and now covered by `npm run verify:openclaw`.
 
 ### 4. Core product loop is complete for MVP demo
 
@@ -99,7 +99,7 @@ graph TB
 
 #### 1. Funded WDK proof is still pending
 
-`npm run verify:wdk` is ready, but a funded Sepolia execution hash is still required for final proof if the submission claims live funded flow.
+`npm run verify:wdk` now includes multi-account scan + funded-account selection, but a funded Sepolia execution hash is still required for final proof if the submission claims live funded flow.
 
 ### Medium severity
 
@@ -120,9 +120,9 @@ Automated coverage is strong for engine/API/provider flows, but UI regression an
 | Wallet flow | Ready in demo mode, optional WDK path present |
 | AI runtime | Alibaba-compatible reasoning and OpenClaw fallback both validated |
 | Scheduler | In-process service + Vercel cron endpoint available |
-| Security | API key auth + CORS allowlist controls active and verified in production |
+| Security | API key auth + CORS allowlist controls active and verified in production; Telegram bridge forwards API key header |
 | Persistence | JSON state persistence active in production (`/tmp/aegispay-agent-state.json`) |
-| Tests | 19/19 passing |
+| Tests | 23/23 passing |
 | Deploy verification | `npm run verify:deploy` passing |
 | Submission readiness | Close to done; non-code deliverables remain |
 

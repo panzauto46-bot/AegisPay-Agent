@@ -11,11 +11,11 @@
 
 | Phase | Progress | Status | Outcome |
 |-------|----------|--------|---------|
-| Phase 1 - Foundation | 98% | In Progress | App shell, runtime, provider abstraction, wallet state, optional WDK integration, funded smoke tooling, and JSON persistence are ready. |
-| Phase 2 - AI Agent Core | 95% | In Progress | Command understanding is functional with deterministic + provider-backed reasoning, and OpenClaw CLI routing is runtime-validated. |
+| Phase 1 - Foundation | 98% | In Progress | App shell, runtime, provider abstraction, wallet state, optional WDK integration, funded smoke tooling (multi-account scan), and JSON persistence are ready. |
+| Phase 2 - AI Agent Core | 97% | In Progress | Command understanding is functional with deterministic + provider-backed reasoning, and OpenClaw CLI routing is runtime-validated with dedicated smoke checks. |
 | Phase 3 - Payment Engine | 90% | In Progress | Validation, payments, recurring execution, and explorer reporting are working in demo mode. |
-| Phase 4 - Advanced Features | 98% | In Progress | Landing page, wallet-connect flow, web chat, Telegram bridge, scheduler path, production API auth/CORS enforcement, and deploy smoke verification tooling are live. |
-| Phase 5 - Polish & Submit | 90% | In Progress | Docs, tests, UX polish, deployment/runtime validation, OpenClaw runtime validation, WDK/deploy smoke tooling, persistence, API auth/CORS hardening, LICENSE, and package rename are shipped; demo video and final submission assets remain. |
+| Phase 4 - Advanced Features | 99% | In Progress | Landing page, wallet-connect flow, web chat, Telegram bridge (API-key passthrough), scheduler path, production API auth/CORS enforcement, and deploy smoke verification tooling are live. |
+| Phase 5 - Polish & Submit | 92% | In Progress | Docs, tests, UX polish, deployment/runtime validation, OpenClaw runtime validation + smoke tooling, WDK/deploy smoke tooling, persistence, API auth/CORS hardening, LICENSE, and package rename are shipped; demo video and final submission assets remain. |
 | Overall | 99% | In Progress | Full-stack MVP is stable and production-verified with security controls, persistence, and deployment checks; final funded proof + submission assets remain. |
 
 ---
@@ -69,6 +69,7 @@ Goal: establish the app, API runtime, and wallet provider layer around the WDK f
 - Wallet creation, wallet inventory, and explorer-ready wallet state
 - API runtime with state, command, wallet, rules, recurring, and scheduler endpoints
 - WDK funded smoke script (`npm run verify:wdk`) with preflight env validation and execute mode
+- WDK smoke upgrade with multi-account derivation scan and funded-account selection
 
 ### Remaining
 
@@ -89,6 +90,7 @@ Goal: turn natural-language commands into wallet actions with clear fallback beh
 - Multi-model auto-switch fallback chain for quota/rate/model errors
 - Shared reasoning layer reused by both API and frontend runtime
 - OpenClaw CLI reasoning provider path with deterministic fallback
+- OpenClaw runtime smoke verification command (`npm run verify:openclaw`)
 
 ### Remaining
 
@@ -126,6 +128,7 @@ Goal: make the agent demo-ready and useful across channels.
 - Wallet-connect gate before entering the console
 - Web chat interface
 - Telegram bot bridge
+- Telegram bridge now forwards `x-aegis-api-key` automatically when backend auth is enabled
 - In-process recurring scheduler service
 - JSON file persistence for wallets/rules/recurring/messages (`AEGIS_STATE_FILE_PATH`)
 - API key auth middleware (`AEGIS_API_KEY`) and CORS allowlist (`AEGIS_ALLOWED_ORIGINS`)
@@ -151,7 +154,7 @@ Goal: stabilize, document, and package the project for judging.
 ### Shipped
 
 - README, PRD, roadmap, project status, and project review docs
-- Automated coverage for engine, API, reasoning fallback, and persistence/auth guards (19/19)
+- Automated coverage for engine, API, reasoning fallback, persistence/auth guards, and Telegram bridge headers (23/23)
 - Production build validation
 - Landing/console UX polish
 - Apache-2.0 `LICENSE`

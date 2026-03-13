@@ -35,7 +35,7 @@ export const projectStatusMeta = {
   deliveryTarget: 'March 22, 2026 (submission deadline - 23:59 UTC)',
   overallProgress: 99,
   summary:
-    'The current build is a production-verified full-stack MVP with an animated landing page, wallet-connect console flow, stable Vercel runtime, scheduler automation path, JSON persistence, API-key auth + CORS controls, Telegram bridge, tests, optional WDK-backed wallet operations, Alibaba-compatible reasoning, a runtime-validated OpenClaw CLI reasoning path, and passing WDK/deployment smoke verification scripts. The biggest remaining gaps are funded WDK execution proof, demo video, and final submission assets.',
+    'The current build is a production-verified full-stack MVP with an animated landing page, wallet-connect console flow, stable Vercel runtime, scheduler automation path, JSON persistence, API-key auth + CORS controls, Telegram bridge with API-key passthrough, tests, optional WDK-backed wallet operations, Alibaba-compatible reasoning, a runtime-validated OpenClaw CLI reasoning path, and passing WDK/OpenClaw/deployment smoke verification scripts. The biggest remaining gaps are funded WDK execution proof, demo video, and final submission assets.',
 };
 
 export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
@@ -63,7 +63,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
     id: 'phase-2',
     title: 'Phase 2 - AI Agent Core',
     window: 'Week 2-3',
-    progress: 95,
+    progress: 97,
     status: 'in_progress',
     objective: 'Turn natural language instructions into wallet actions and user-facing explanations.',
     shipped: [
@@ -74,6 +74,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
       'Alibaba-compatible reasoning provider validated locally through a Responses API endpoint',
       'Multi-model auto-switch fallback before deterministic fallback',
       'OpenClaw CLI runtime validated with session-aware invocation',
+      'OpenClaw runtime smoke verification command (`npm run verify:openclaw`)',
     ],
     next: [
       'Add richer fallback handling for ambiguous commands',
@@ -103,7 +104,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
     id: 'phase-4',
     title: 'Phase 4 - Advanced Features',
     window: 'Week 4-5',
-    progress: 98,
+    progress: 99,
     status: 'in_progress',
     objective: 'Add recurring automation and user-facing channels that make the agent useful in practice.',
     shipped: [
@@ -115,6 +116,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
       'Animated landing page and wallet-connect entry flow',
       'Dedicated web chat interface for the wallet agent',
       'Telegram bot bridge wired to the AegisPay API',
+      'Telegram bridge now forwards x-aegis-api-key when backend auth is enabled',
       'Deployment/provider smoke verification script (`npm run verify:deploy`)',
       'Production API auth validation confirmed (`/api/state` 401 without key, 200 with key)',
     ],
@@ -127,12 +129,12 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
     id: 'phase-5',
     title: 'Phase 5 - Polish & Submit',
     window: 'Week 5-6',
-    progress: 90,
+    progress: 92,
     status: 'in_progress',
     objective: 'Stabilize the product, document the architecture, and prepare the hackathon submission.',
     shipped: [
       'PRD, roadmap, and project status documentation',
-      'Automated tests for engine, API, persistence, auth guards, and provider fallback flows (19/19 passing)',
+      'Automated tests for engine, API, persistence, auth guards, provider fallback flows, and Telegram bridge headers (23/23 passing)',
       'Backend startup and health verification',
       'Comprehensive technical README plus project review',
       'Vercel deployment configuration for API and scheduler cron',
@@ -140,6 +142,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
       'Apache-2.0 `LICENSE` file',
       'Package rename to `aegispay-agent`',
       'OpenClaw runtime validation in a real local session',
+      'OpenClaw smoke verifier for binary + model + intent checks',
       'Production deploy verification (`npm run verify:deploy`) passing against live Vercel runtime',
     ],
     next: [
@@ -190,7 +193,7 @@ export const roadmapMilestones: MilestoneStatus[] = [
     title: 'Chat interface live',
     targetDate: 'March 13, 2026',
     status: 'complete',
-    note: 'The web chat interface is connected to the shared runtime, and a Telegram bridge is available.',
+    note: 'The web chat interface is connected to the shared runtime, and a Telegram bridge is available with API auth compatibility.',
   },
   {
     title: 'Production deploy + API auth verification',
@@ -202,7 +205,7 @@ export const roadmapMilestones: MilestoneStatus[] = [
     title: 'All tests and submission assets',
     targetDate: 'March 22, 2026',
     status: 'in_progress',
-    note: 'Unit tests pass (19/19); funded WDK hash proof, demo video, and final submission assets are still open.',
+    note: 'Unit tests pass (23/23); funded WDK hash proof, demo video, and final submission assets are still open.',
   },
 ];
 

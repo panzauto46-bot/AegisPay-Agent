@@ -266,6 +266,9 @@ AEGIS_EVM_RPC_URL=https://sepolia.infura.io/v3/your_key
 AEGIS_USDT_TOKEN_ADDRESS=your_sepolia_usdt_contract
 AEGIS_TOKEN_DECIMALS=6
 AEGIS_TRANSFER_MAX_FEE_WEI=100000000000000
+# Optional: WDK smoke behavior
+AEGIS_WDK_SMOKE_ACCOUNT_INDEX=
+AEGIS_WDK_SMOKE_SCAN_COUNT=12
 
 # Telegram bot
 TELEGRAM_BOT_TOKEN=your_telegram_bot_token
@@ -283,6 +286,8 @@ npm run start:api
 # Optional: start the Telegram bridge once the API is running
 npm run start:bot
 ```
+
+When `AEGIS_API_KEY` is enabled, the Telegram bridge forwards it automatically to `/api/command` via the `x-aegis-api-key` header.
 
 ### Multi-Model Fallback
 
@@ -314,6 +319,16 @@ AEGIS_OPENCLAW_THINKING=high
 
 The OpenClaw provider now invokes the CLI with an explicit session id (required by current OpenClaw versions) and can run in local embedded mode by default.
 
+### OpenClaw Runtime Smoke Verification
+
+To verify the real OpenClaw CLI path end-to-end:
+
+```bash
+npm run verify:openclaw
+```
+
+The smoke script validates CLI availability, active model status, and live intent classification (`check_balance`, `project_status`, `send_payment`).
+
 ### WDK Funded Smoke Verification
 
 To verify a real WDK wallet session before submission:
@@ -330,9 +345,13 @@ To execute a real transfer and produce a transaction hash:
 AEGIS_WDK_SMOKE_EXECUTE=true
 AEGIS_WDK_SMOKE_AMOUNT=0.01
 AEGIS_WDK_SMOKE_RECIPIENT=0xYourRecipientAddress
+AEGIS_WDK_SMOKE_SCAN_COUNT=12
+AEGIS_WDK_SMOKE_ACCOUNT_INDEX=
 ```
 
 Then run `npm run verify:wdk` again. The script prints transaction hash and explorer URL on success.
+
+`AEGIS_WDK_SMOKE_SCAN_COUNT` scans multiple derivation indexes and auto-selects the best candidate wallet. Set `AEGIS_WDK_SMOKE_ACCOUNT_INDEX` when you want to force a specific funded index.
 
 ### Deployment Smoke Verification
 
