@@ -135,7 +135,10 @@ export default function ConnectWalletPage({
                     <div className="flex items-center gap-2">
                       {index > 0 && (
                         <button
-                          onClick={() => void onDeleteWallet(wallet.id)}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            void onDeleteWallet(wallet.id);
+                          }}
                           disabled={isProcessing}
                           className="rounded-xl border border-rose-300/20 bg-rose-300/5 px-2.5 py-2 text-rose-300 transition hover:bg-rose-300/10 disabled:cursor-not-allowed disabled:opacity-60"
                           title="Delete wallet"

@@ -165,16 +165,28 @@ export function createApp(options: CreateAppOptions = {}) {
     }
   });
 
-  app.delete('/api/wallets/:id', async (request, response, next) => {
+  const handleDeleteWallet = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
     try {
-      const state = await engine.deleteWallet(request.params.id);
+      const idFromBody = typeof request.body?.id === 'string' ? request.body.id.trim() : '';
+      const idFromParams = typeof request.params?.id === 'string' ? request.params.id.trim() : '';
+      const walletId = idFromBody || idFromParams;
+
+      if (!walletId) {
+        response.status(400).json({ error: 'Wallet id is required.' });
+        return;
+      }
+
+      const state = await engine.deleteWallet(walletId);
       response.json({
         state: serializeAgentState(state),
       });
     } catch (error) {
       next(error);
     }
-  });
+  };
+
+  app.delete('/api/wallets', handleDeleteWallet);
+  app.delete('/api/wallets/:id', handleDeleteWallet);
 
   app.post('/api/rules', async (request, response, next) => {
     try {

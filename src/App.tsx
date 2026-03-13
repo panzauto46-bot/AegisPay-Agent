@@ -70,9 +70,14 @@ export default function App() {
   };
 
   const handleDeleteWallet = async (walletId: string) => {
-    await agent.deleteWallet(walletId);
-    if (connectedWalletId === walletId) {
-      setConnectedWalletId(null);
+    try {
+      await agent.deleteWallet(walletId);
+      if (connectedWalletId === walletId) {
+        setConnectedWalletId(null);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      window.alert(`Delete wallet gagal: ${message}`);
     }
   };
 

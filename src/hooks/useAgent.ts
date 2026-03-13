@@ -222,8 +222,12 @@ export function useAgent() {
 
   const deleteWallet = async (id: string) => {
     if (runtimeMode === 'remote') {
-      await runRemote(`/wallets/${id}`, {
+      await runRemote('/wallets', {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }),
       });
       return;
     }
