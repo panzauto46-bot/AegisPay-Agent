@@ -24,7 +24,7 @@ function normalizeApiPath(requestPath: string) {
 
 function isPublicApiRoute(request: express.Request) {
   const path = normalizeApiPath(request.path);
-  return path === '/api/health' || path === '/api/runtime' || path === '/api/scheduler/cron';
+  return path === '/api/health' || path === '/api/runtime' || path === '/api/scheduler/cron' || path === '/api/scheduler-cron';
 }
 
 function isAllowedCorsOrigin(origin: string | undefined, allowedOrigins: string[]) {
@@ -205,27 +205,48 @@ export function createApp(options: CreateAppOptions = {}) {
     }
   });
 
-  app.patch('/api/rules/:id/toggle', async (request, response, next) => {
+  const handleToggleRule = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
     try {
-      const state = await engine.toggleRule(request.params.id);
-      response.json({
-        state: serializeAgentState(state),
-      });
-    } catch (error) {
-      next(error);
-    }
-  });
+      const idFromBody = typeof request.body?.id === 'string' ? request.body.id.trim() : '';
+      const idFromParams = typeof request.params?.id === 'string' ? request.params.id.trim() : '';
+      const ruleId = idFromBody || idFromParams;
+      if (!ruleId) {
+        response.status(400).json({ error: 'Rule id is required.' });
+        return;
+      }
 
-  app.delete('/api/rules/:id', async (request, response, next) => {
-    try {
-      const state = await engine.deleteRule(request.params.id);
+      const state = await engine.toggleRule(ruleId);
       response.json({
         state: serializeAgentState(state),
       });
     } catch (error) {
       next(error);
     }
-  });
+  };
+
+  const handleDeleteRule = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    try {
+      const idFromBody = typeof request.body?.id === 'string' ? request.body.id.trim() : '';
+      const idFromParams = typeof request.params?.id === 'string' ? request.params.id.trim() : '';
+      const ruleId = idFromBody || idFromParams;
+      if (!ruleId) {
+        response.status(400).json({ error: 'Rule id is required.' });
+        return;
+      }
+
+      const state = await engine.deleteRule(ruleId);
+      response.json({
+        state: serializeAgentState(state),
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  app.patch('/api/rules/:id/toggle', handleToggleRule);
+  app.post('/api/rules-toggle', handleToggleRule);
+  app.delete('/api/rules/:id', handleDeleteRule);
+  app.post('/api/rules-delete', handleDeleteRule);
 
   app.post('/api/recurring', async (request, response, next) => {
     try {
@@ -262,29 +283,50 @@ export function createApp(options: CreateAppOptions = {}) {
     }
   });
 
-  app.patch('/api/recurring/:id/toggle', async (request, response, next) => {
+  const handleToggleRecurring = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
     try {
-      const state = await engine.toggleRecurring(request.params.id);
+      const idFromBody = typeof request.body?.id === 'string' ? request.body.id.trim() : '';
+      const idFromParams = typeof request.params?.id === 'string' ? request.params.id.trim() : '';
+      const recurringId = idFromBody || idFromParams;
+      if (!recurringId) {
+        response.status(400).json({ error: 'Recurring payment id is required.' });
+        return;
+      }
+
+      const state = await engine.toggleRecurring(recurringId);
       response.json({
         state: serializeAgentState(state),
       });
     } catch (error) {
       next(error);
     }
-  });
+  };
 
-  app.delete('/api/recurring/:id', async (request, response, next) => {
+  const handleDeleteRecurring = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
     try {
-      const state = await engine.deleteRecurring(request.params.id);
+      const idFromBody = typeof request.body?.id === 'string' ? request.body.id.trim() : '';
+      const idFromParams = typeof request.params?.id === 'string' ? request.params.id.trim() : '';
+      const recurringId = idFromBody || idFromParams;
+      if (!recurringId) {
+        response.status(400).json({ error: 'Recurring payment id is required.' });
+        return;
+      }
+
+      const state = await engine.deleteRecurring(recurringId);
       response.json({
         state: serializeAgentState(state),
       });
     } catch (error) {
       next(error);
     }
-  });
+  };
 
-  app.post('/api/scheduler/run', async (_request, response, next) => {
+  app.patch('/api/recurring/:id/toggle', handleToggleRecurring);
+  app.post('/api/recurring-toggle', handleToggleRecurring);
+  app.delete('/api/recurring/:id', handleDeleteRecurring);
+  app.post('/api/recurring-delete', handleDeleteRecurring);
+
+  const handleRunScheduler = async (_request: express.Request, response: express.Response, next: express.NextFunction) => {
     try {
       const state = await engine.runScheduler();
       response.json({
@@ -293,9 +335,12 @@ export function createApp(options: CreateAppOptions = {}) {
     } catch (error) {
       next(error);
     }
-  });
+  };
 
-  app.post('/api/scheduler/cron', async (request, response, next) => {
+  app.post('/api/scheduler/run', handleRunScheduler);
+  app.post('/api/scheduler-run', handleRunScheduler);
+
+  const handleCronScheduler = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
     try {
       if (!isAuthorizedCronRequest(request)) {
         response.status(401).json({
@@ -313,7 +358,10 @@ export function createApp(options: CreateAppOptions = {}) {
     } catch (error) {
       next(error);
     }
-  });
+  };
+
+  app.post('/api/scheduler/cron', handleCronScheduler);
+  app.post('/api/scheduler-cron', handleCronScheduler);
 
   const distPath = path.resolve(process.cwd(), 'dist');
   app.use(express.static(distPath));

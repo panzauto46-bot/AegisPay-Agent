@@ -114,9 +114,20 @@ export function useAgent() {
 
   const toggleRule = async (id: string) => {
     if (runtimeMode === 'remote') {
-      await runRemote(`/rules/${id}/toggle`, {
-        method: 'PATCH',
-      });
+      try {
+        await runRemote('/rules-toggle', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id }),
+        });
+      } catch {
+        // Backward-compatible fallback for nested API deployments.
+        await runRemote(`/rules/${id}/toggle`, {
+          method: 'PATCH',
+        });
+      }
       return;
     }
 
@@ -125,9 +136,20 @@ export function useAgent() {
 
   const deleteRule = async (id: string) => {
     if (runtimeMode === 'remote') {
-      await runRemote(`/rules/${id}`, {
-        method: 'DELETE',
-      });
+      try {
+        await runRemote('/rules-delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id }),
+        });
+      } catch {
+        // Backward-compatible fallback for nested API deployments.
+        await runRemote(`/rules/${id}`, {
+          method: 'DELETE',
+        });
+      }
       return;
     }
 
@@ -136,9 +158,20 @@ export function useAgent() {
 
   const toggleRecurring = async (id: string) => {
     if (runtimeMode === 'remote') {
-      await runRemote(`/recurring/${id}/toggle`, {
-        method: 'PATCH',
-      });
+      try {
+        await runRemote('/recurring-toggle', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id }),
+        });
+      } catch {
+        // Backward-compatible fallback for nested API deployments.
+        await runRemote(`/recurring/${id}/toggle`, {
+          method: 'PATCH',
+        });
+      }
       return;
     }
 
@@ -147,9 +180,20 @@ export function useAgent() {
 
   const deleteRecurring = async (id: string) => {
     if (runtimeMode === 'remote') {
-      await runRemote(`/recurring/${id}`, {
-        method: 'DELETE',
-      });
+      try {
+        await runRemote('/recurring-delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id }),
+        });
+      } catch {
+        // Backward-compatible fallback for nested API deployments.
+        await runRemote(`/recurring/${id}`, {
+          method: 'DELETE',
+        });
+      }
       return;
     }
 
@@ -191,18 +235,24 @@ export function useAgent() {
     try {
       if (runtimeMode === 'remote') {
         try {
-          await runRemote('/scheduler/run', {
+          await runRemote('/scheduler-run', {
             method: 'POST',
           });
         } catch {
-          // Fallback path for deployments where /api/scheduler/* isn't routable.
-          await runRemote('/command', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ input: 'Run scheduler' }),
-          });
+          try {
+            await runRemote('/scheduler/run', {
+              method: 'POST',
+            });
+          } catch {
+            // Final fallback path for deployments where /api/scheduler/* isn't routable.
+            await runRemote('/command', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ input: 'Run scheduler' }),
+            });
+          }
         }
       } else {
         await runLocal(() => engineRef.current!.runScheduler());

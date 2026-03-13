@@ -397,7 +397,7 @@ The Vercel entrypoint stays as an ES module, but it now bridges into a bundled C
 6. Check state endpoint at `https://<your-vercel-domain>/api/state`.
 7. Run `npm run verify:deploy` from local/CI to confirm runtime/provider status.
 
-Recurring scheduler automation is wired through Vercel Cron in `vercel.json` and currently runs daily (`0 0 * * *`) against `/api/scheduler/cron`.
+Recurring scheduler automation is wired through Vercel Cron in `vercel.json` and currently runs daily (`0 0 * * *`) against `/api/scheduler-cron` (with `/api/scheduler/cron` kept as a backward-compatible alias).
 
 The production deployment path has been recovered with this bootstrap pattern, and `/api/health` plus `/api/state` respond successfully on Vercel. Latest production verification confirms:
 - `/api/health` includes `apiAuthEnabled: true`, `allowedOrigins`, and persistence status.

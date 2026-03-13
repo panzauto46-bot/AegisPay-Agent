@@ -54,7 +54,7 @@ Last updated: March 14, 2026
 - API-backed scheduler cycle for due recurring payments
 - Persistent in-process scheduler service on the backend
 - Vercel serverless API entrypoint for `/api/*` via `api/[...route].ts`
-- Vercel cron-ready scheduler endpoint at `/api/scheduler/cron` with optional `CRON_SECRET` bearer protection
+- Vercel cron-ready scheduler endpoint at `/api/scheduler-cron` (legacy alias: `/api/scheduler/cron`) with optional `CRON_SECRET` bearer protection
 - Current Vercel cron schedule is daily (`0 0 * * *`) as defined in `vercel.json`
 - Web chat interface with API/local fallback behavior
 - Telegram bot bridge via `grammy` with automatic `x-aegis-api-key` passthrough when API auth is enabled
