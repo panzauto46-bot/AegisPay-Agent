@@ -1,6 +1,6 @@
 # AegisPay Agent - Project Review
 
-Review date: March 13, 2026  
+Review date: March 14, 2026  
 Target hackathon: Agent Wallets (WDK / OpenClaw)  
 Submission deadline: March 22, 2026
 
@@ -17,7 +17,7 @@ Submission deadline: March 22, 2026
 | Build output | `dist/index.html` (~535 KB) |
 | Current runtime state | Production-verified full-stack MVP |
 
-The project is in strong submission shape. The backend deployment path on Vercel is now verified end-to-end with API auth enforcement and state persistence active in production, while the frontend experience remains polished for demo flow (landing -> connect wallet -> console). Core agent behavior, provider-backed reasoning, scheduler flows, and Telegram integration are all functional. The main remaining scope is submission packaging work, not core engineering rework.
+The project is in strong submission shape. The backend deployment path on Vercel is now verified end-to-end with API auth enforcement and state persistence active in production, while the frontend experience remains polished for demo flow (landing -> connect wallet -> console). Core agent behavior, provider-backed reasoning, scheduler flows, and Telegram integration are all functional, and funded WDK proof is now captured on Sepolia (`0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073`). The main remaining scope is submission packaging work, not core engineering rework.
 
 ## Current Architecture
 
@@ -95,20 +95,14 @@ graph TB
 
 ## Main Gaps
 
-### High severity
-
-#### 1. Funded WDK proof is still pending
-
-`npm run verify:wdk` now includes multi-account scan + funded-account selection, but a funded Sepolia execution hash is still required for final proof if the submission claims live funded flow.
-
 ### Medium severity
 
-#### 2. Submission assets remain open
+#### 1. Submission assets remain open
 
 - Demo video (<= 5 minutes, unlisted)
 - Final DoraHacks package + disclosures
 
-#### 3. Coverage focus is still core-heavy
+#### 2. Coverage focus is still core-heavy
 
 Automated coverage is strong for engine/API/provider flows, but UI regression and Telegram bridge end-to-end scenarios are still thin.
 
@@ -124,6 +118,7 @@ Automated coverage is strong for engine/API/provider flows, but UI regression an
 | Persistence | JSON state persistence active in production (`/tmp/aegispay-agent-state.json`) |
 | Tests | 23/23 passing |
 | Deploy verification | `npm run verify:deploy` passing |
+| Funded WDK proof | Captured on Sepolia with execute smoke hash `0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073` |
 | Submission readiness | Close to done; non-code deliverables remain |
 
 ## Hackathon Readiness
@@ -138,12 +133,12 @@ Automated coverage is strong for engine/API/provider flows, but UI regression an
 
 ## Recommended Next Steps
 
-1. Execute funded Sepolia WDK smoke verification and capture transaction hash proof.
-2. Record the demo video using the current production flow.
-3. Finalize and submit the DoraHacks package.
+1. Record the demo video using the current production flow.
+2. Finalize and submit the DoraHacks package.
+3. Include funded WDK proof in submission notes (`0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073`).
 
 ## Overall Assessment
 
-Rating: 9.6/10
+Rating: 9.8/10
 
-The project has moved from strong MVP to near-submission-ready production demo quality. Remaining work is concentrated on funded proof and submission assets rather than architecture or runtime stability.
+The project has moved from strong MVP to near-submission-ready production demo quality. Remaining work is now concentrated on demo packaging and submission assets rather than architecture or runtime stability.

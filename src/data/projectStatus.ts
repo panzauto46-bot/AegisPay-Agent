@@ -31,11 +31,11 @@ export interface MvpChecklistItem {
 }
 
 export const projectStatusMeta = {
-  lastUpdated: 'March 13, 2026',
+  lastUpdated: 'March 14, 2026',
   deliveryTarget: 'March 22, 2026 (submission deadline - 23:59 UTC)',
   overallProgress: 99,
   summary:
-    'The current build is a production-verified full-stack MVP with an animated landing page, wallet-connect console flow, stable Vercel runtime, scheduler automation path, JSON persistence, API-key auth + CORS controls, Telegram bridge with API-key passthrough, tests, optional WDK-backed wallet operations, Alibaba-compatible reasoning, a runtime-validated OpenClaw CLI reasoning path, and passing WDK/OpenClaw/deployment smoke verification scripts. The biggest remaining gaps are funded WDK execution proof, demo video, and final submission assets.',
+    'The current build is a production-verified full-stack MVP with an animated landing page, wallet-connect console flow, stable Vercel runtime, scheduler automation path, JSON persistence, API-key auth + CORS controls, Telegram bridge with API-key passthrough, tests, optional WDK-backed wallet operations, Alibaba-compatible reasoning, a runtime-validated OpenClaw CLI reasoning path, and passing WDK/OpenClaw/deployment smoke verification scripts. Funded WDK execution proof is now captured on Sepolia (hash: 0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073); remaining gaps are demo video and final submission assets.',
 };
 
 export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
@@ -43,8 +43,8 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
     id: 'phase-1',
     title: 'Phase 1 - Foundation',
     window: 'Week 1-2',
-    progress: 98,
-    status: 'in_progress',
+    progress: 100,
+    status: 'done',
     objective: 'Set up the project infrastructure and model the wallet lifecycle around the WDK flow.',
     shipped: [
       'React + TypeScript web app scaffold',
@@ -52,11 +52,11 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
       'WDK-aligned wallet state, transaction state, and rule state',
       'Node.js API runtime with swappable demo and WDK wallet providers',
       'Funded WDK smoke verification script with preflight checks and execute mode',
+      'Funded Sepolia WDK execution proof captured (hash: 0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073)',
       'JSON runtime state persistence with disk-backed load/save',
     ],
     next: [
-      'Run live credential verification against a funded Sepolia wallet and capture a transfer hash',
-      'Harden operational secrets handling for funded live verification',
+      'Harden operational secrets handling for funded live verification reruns',
     ],
   },
   {
@@ -85,7 +85,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
     id: 'phase-3',
     title: 'Phase 3 - Payment Engine',
     window: 'Week 3-4',
-    progress: 90,
+    progress: 96,
     status: 'in_progress',
     objective: 'Execute token transfers safely with validation, rules, and balance checks.',
     shipped: [
@@ -93,10 +93,10 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
       'Daily limit and max-transaction validation',
       'Whitelist and blacklist enforcement before send',
       'Optional WDK transfer path for live USDT sends',
+      'Funded live Sepolia transfer verification through WDK (hash: 0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073)',
       'Explorer links for wallets and transactions',
     ],
     next: [
-      'Verify live transfer execution on a funded environment',
       'Add confirmation polling and richer failure states',
     ],
   },
@@ -129,7 +129,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
     id: 'phase-5',
     title: 'Phase 5 - Polish & Submit',
     window: 'Week 5-6',
-    progress: 92,
+    progress: 94,
     status: 'in_progress',
     objective: 'Stabilize the product, document the architecture, and prepare the hackathon submission.',
     shipped: [
@@ -202,19 +202,25 @@ export const roadmapMilestones: MilestoneStatus[] = [
     note: 'Live `/api/health` and `/api/state` verification confirms auth enforcement and runtime status.',
   },
   {
+    title: 'Funded live WDK verification proof captured',
+    targetDate: 'March 14, 2026',
+    status: 'complete',
+    note: 'Execute smoke succeeded on Sepolia with hash 0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073.',
+  },
+  {
     title: 'All tests and submission assets',
     targetDate: 'March 22, 2026',
     status: 'in_progress',
-    note: 'Unit tests pass (23/23); funded WDK hash proof, demo video, and final submission assets are still open.',
+    note: 'Unit tests pass (23/23); demo video and final submission assets are still open.',
   },
 ];
 
 export const projectRisks: RiskStatus[] = [
   {
-    title: 'Live WDK mode still depends on external credentials and funded wallets',
-    impact: 'high',
+    title: 'External Sepolia faucet/service limits can delay funded-proof reruns',
+    impact: 'medium',
     likelihood: 'medium',
-    mitigation: 'Keep the wallet adapter isolated and provide a demo fallback so local development continues without blocking on credentials.',
+    mitigation: 'Keep the captured funded hash proof archived and rerun funded smoke only when strictly needed.',
   },
   {
     title: 'Natural language parsing is still rule-based',
@@ -282,9 +288,9 @@ export const mvpChecklist: MvpChecklistItem[] = [
 ];
 
 export const nextBuildPriorities = [
-  'Run a funded Sepolia smoke test with the WDK provider enabled.',
   'Record the hackathon demo video (mandatory deliverable).',
+  'Finalize DoraHacks submission assets (repo link, disclosure, and demo link).',
+  'Keep funded WDK proof in submission references (0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073).',
   'Wire production/deployment env vars for Alibaba-backed reasoning and API security.',
-  'Expand automated coverage to UI + Telegram bridge paths.',
   'Prepare final submission package assets and walkthrough notes.',
 ];

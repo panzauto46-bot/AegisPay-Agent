@@ -11,12 +11,12 @@
 
 | Phase | Progress | Status | Outcome |
 |-------|----------|--------|---------|
-| Phase 1 - Foundation | 98% | In Progress | App shell, runtime, provider abstraction, wallet state, optional WDK integration, funded smoke tooling (multi-account scan), and JSON persistence are ready. |
+| Phase 1 - Foundation | 100% | Complete | App shell, runtime, provider abstraction, wallet state, optional WDK integration, funded smoke tooling (multi-account scan), funded Sepolia proof, and JSON persistence are complete. |
 | Phase 2 - AI Agent Core | 97% | In Progress | Command understanding is functional with deterministic + provider-backed reasoning, and OpenClaw CLI routing is runtime-validated with dedicated smoke checks. |
-| Phase 3 - Payment Engine | 90% | In Progress | Validation, payments, recurring execution, and explorer reporting are working in demo mode. |
+| Phase 3 - Payment Engine | 96% | In Progress | Validation, payments, recurring execution, explorer reporting, and funded WDK Sepolia proof are complete; confirmation polling UX remains. |
 | Phase 4 - Advanced Features | 99% | In Progress | Landing page, wallet-connect flow, web chat, Telegram bridge (API-key passthrough), scheduler path, production API auth/CORS enforcement, and deploy smoke verification tooling are live. |
-| Phase 5 - Polish & Submit | 92% | In Progress | Docs, tests, UX polish, deployment/runtime validation, OpenClaw runtime validation + smoke tooling, WDK/deploy smoke tooling, persistence, API auth/CORS hardening, LICENSE, and package rename are shipped; demo video and final submission assets remain. |
-| Overall | 99% | In Progress | Full-stack MVP is stable and production-verified with security controls, persistence, and deployment checks; final funded proof + submission assets remain. |
+| Phase 5 - Polish & Submit | 94% | In Progress | Docs, tests, UX polish, deployment/runtime validation, OpenClaw runtime validation + smoke tooling, WDK/deploy smoke tooling, persistence, API auth/CORS hardening, LICENSE, package rename, and funded WDK proof are shipped; demo video and final submission assets remain. |
+| Overall | 99% | In Progress | Full-stack MVP is stable and production-verified with security controls, persistence, deployment checks, and funded WDK proof; submission assets remain. |
 
 ---
 
@@ -41,7 +41,7 @@ gantt
     section Phase 3 - Payment Engine
     Payment Validation             :done,   p3a, 2026-03-13, 1d
     Payment Execution              :done,   p3b, 2026-03-13, 1d
-    Live WDK Verification          :active, p3c, 2026-03-14, 6d
+    Live WDK Verification          :done,   p3c, 2026-03-14, 1d
 
     section Phase 4 - Advanced Features
     Recurring Scheduler            :done,   p4a, 2026-03-13, 1d
@@ -73,8 +73,7 @@ Goal: establish the app, API runtime, and wallet provider layer around the WDK f
 
 ### Remaining
 
-- Funded Sepolia verification execution with transaction hash evidence
-- Deployment-grade secret handling for funded live verification
+- Deployment-grade secret handling for funded live verification reruns
 
 ---
 
@@ -110,10 +109,10 @@ Goal: execute payments safely with guardrails and runtime feedback.
 - Recipient whitelist and blacklist enforcement
 - Transaction history and explorer links
 - Recurring execution through the scheduler
+- Funded WDK Sepolia execution proof (`0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073`)
 
 ### Remaining
 
-- Funded live Sepolia transfer verification through WDK
 - Confirmation polling and richer failure-state UX
 
 ---
@@ -165,7 +164,6 @@ Goal: stabilize, document, and package the project for judging.
 ### Remaining
 
 - Demo video
-- Funded WDK hash proof capture
 - Final submission package
 
 ---
@@ -182,6 +180,7 @@ Goal: stabilize, document, and package the project for judging.
 | Web + Telegram interface ready | March 13, 2026 | ✅ Complete | Both user-facing channels are available. |
 | Provider-backed AI verified locally | March 13, 2026 | ✅ Complete | Alibaba-compatible reasoning validated locally with `qwen-plus`. |
 | Production deploy + API auth verification | March 13, 2026 | ✅ Complete | `/api/health` and `/api/state` verified in production (`401` without key, `200` with key). |
+| Funded live WDK verification proof captured | March 14, 2026 | ✅ Complete | Execute smoke succeeded with hash `0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073`. |
 | Demo video ready | March 22, 2026 | 🔲 Pending | Mandatory submission asset before DoraHacks final submit. |
 | Hackathon submission package ready | March 22, 2026 | 🔲 Pending | Final gate before submission. |
 
@@ -191,7 +190,7 @@ Goal: stabilize, document, and package the project for judging.
 
 | Risk | Impact | Likelihood | Mitigation |
 |------|--------|------------|------------|
-| Funded live WDK verification is still pending | High | Medium | Run a dedicated Sepolia smoke test with real credentials. |
+| External Sepolia faucet/service limits can delay funded-proof reruns | Medium | Medium | Keep captured funded hash proof in submission assets and rerun funded smoke only when needed. |
 | Provider-backed AI needs backend env configuration in deployment | Medium | Medium | Mirror the validated local Alibaba config into hosting secrets. |
 | Deployed API security config can drift across environments | Medium | Medium | Enforce `AEGIS_API_KEY` + `AEGIS_ALLOWED_ORIGINS` in deployment env and validate with `npm run verify:deploy`. |
 
@@ -199,10 +198,10 @@ Goal: stabilize, document, and package the project for judging.
 
 ## Next Build Priorities
 
-1. Provision/fund WDK env wallet and produce funded hash proof through `npm run verify:wdk`.
-2. Record the demo video.
-3. Prepare final submission assets and walkthrough notes.
+1. Record the demo video.
+2. Prepare final submission assets and walkthrough notes.
+3. Keep funded WDK proof in submission references: `0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073`.
 
 ---
 
-> Last updated: March 13, 2026
+> Last updated: March 14, 2026

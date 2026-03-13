@@ -1,13 +1,13 @@
 # AegisPay Agent - Project Status
 
-Last updated: March 13, 2026
+Last updated: March 14, 2026
 
 ## Current Snapshot
 
 - Overall progress: `99%`
 - Delivery target: `March 22, 2026 (submission deadline - 23:59 UTC)`
-- Product state: `Production-ready full-stack MVP with verified Vercel runtime, API-key auth enforcement, CORS allowlist controls, JSON persistence, scheduler path, Telegram bridge (API-key passthrough), Alibaba-compatible reasoning, and validated OpenClaw CLI reasoning path`
-- Primary focus: `funded WDK live verification`, `demo video`, `final submission package`
+- Product state: `Production-ready full-stack MVP with verified Vercel runtime, API-key auth enforcement, CORS allowlist controls, JSON persistence, scheduler path, Telegram bridge (API-key passthrough), Alibaba-compatible reasoning, validated OpenClaw CLI reasoning path, and funded WDK Sepolia execution proof`
+- Primary focus: `demo video`, `final submission package`
 
 ## PR Prioritas (Wajib Sebelum Submit)
 
@@ -15,7 +15,7 @@ Last updated: March 13, 2026
 |----------|-------------------|--------|--------------------|
 | P0 | Fix production API crash di Vercel (`/api/health`, `/api/state`) | ✅ Complete | Bundle serverless CommonJS + lazy WDK loading lolos build, route import lokal, smoke test packaging, dan endpoint health/state sudah `200` di production tanpa `ERR_MODULE_NOT_FOUND` / `ERR_REQUIRE_ESM`. |
 | P0 | Integrasi OpenClaw nyata untuk layer reasoning/planning | ✅ Complete | OpenClaw CLI tervalidasi runtime real (`openclaw agent` + provider analyze live) dengan session-aware invocation (`--session-id`) dan smoke verifier khusus (`npm run verify:openclaw`). |
-| P0 | Verifikasi WDK live funded (Sepolia) end-to-end | 🟠 In Progress | Script `npm run verify:wdk` kini scan multi-account (`AEGIS_WDK_SMOKE_SCAN_COUNT`) + execute guard; transfer hash masih menunggu wallet yang benar-benar funded. |
+| P0 | Verifikasi WDK live funded (Sepolia) end-to-end | ✅ Complete | Funded execute berhasil pada March 14, 2026 via `npm run verify:wdk`; proof hash: `0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073` (`https://sepolia.etherscan.io/tx/0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073`). |
 | P0 | Demo video submission (<= 5 menit, unlisted YouTube) | 🔴 Open | Link video siap ditempel di DoraHacks submission. |
 | P1 | Submission package final (disclosure third-party + run instruction jelas) | 🟠 In Progress | Checklist submit lengkap: repo, track, video, disclosure, cara run. |
 | P1 | Harden security backend (API auth + CORS ketat) | ✅ Complete | API auth middleware (`AEGIS_API_KEY`) + CORS allowlist (`AEGIS_ALLOWED_ORIGINS`) aktif di production: `/api/state` sekarang `401` tanpa key dan `200` dengan key valid. |
@@ -33,6 +33,9 @@ Last updated: March 13, 2026
 - Optional WDK provider for live Sepolia wallet and USDT operations
 - WDK funded smoke script (`npm run verify:wdk`) with clear preflight checks and optional execute mode
 - WDK smoke now scans multiple derivation indexes and auto-selects the best candidate wallet for execute mode
+- Funded WDK execute proof captured on Sepolia (March 14, 2026):
+  - Hash: `0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073`
+  - Explorer: `https://sepolia.etherscan.io/tx/0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073`
 - Deployment smoke script (`npm run verify:deploy`) for runtime/provider verification
 - OpenClaw runtime smoke script (`npm run verify:openclaw`) for CLI + model + intent path validation
 - Production deploy smoke verified on `https://aegis-pay-agent.vercel.app` (wallet provider `demo`, reasoning provider `openai`)
@@ -61,7 +64,6 @@ Last updated: March 13, 2026
 
 ## What Is Not Done Yet
 
-- Live WDK funded verification still blocked by unfunded wallet balance (read-only smoke sudah lolos, execute mode belum dijalankan sukses)
 - Demo video submission is not recorded yet
 - Final submission package and disclosures are not finalized
 - Notification delivery for payment outcomes is not implemented
@@ -70,11 +72,11 @@ Last updated: March 13, 2026
 
 | Phase | Progress | Status | Notes |
 |-------|----------|--------|-------|
-| Phase 1 - Foundation | 98% | In Progress | Wallet lifecycle, API runtime, provider abstraction, WDK smoke tooling, and JSON persistence are in place; funded transfer proof is pending. |
+| Phase 1 - Foundation | 100% | Complete | Wallet lifecycle, API runtime, provider abstraction, WDK smoke tooling, funded Sepolia proof, and JSON persistence are complete. |
 | Phase 2 - AI Agent Core | 97% | In Progress | Natural-language command handling works across UI and API, Alibaba-compatible reasoning with model auto-switch is live, and OpenClaw CLI provider is runtime-validated with a dedicated smoke verifier. |
-| Phase 3 - Payment Engine | 90% | In Progress | Demo sends, guardrails, recurring execution, and explorer links are in place; live funded transfer verification is pending. |
+| Phase 3 - Payment Engine | 96% | In Progress | Demo sends, guardrails, recurring execution, explorer links, and funded WDK Sepolia proof are complete; confirmation polling UX remains. |
 | Phase 4 - Advanced Features | 99% | In Progress | Scheduler, web chat, Telegram bridge with API-key passthrough, landing page, wallet-connect entry flow, security hardening, and deploy verification tooling are in place. |
-| Phase 5 - Polish & Submit | 90% | In Progress | Docs, tests, deployment validation, security, persistence, LICENSE, and package rename are complete; demo video, funded WDK proof, and final submission assets remain. |
+| Phase 5 - Polish & Submit | 94% | In Progress | Docs, tests, deployment validation, security, persistence, LICENSE, package rename, and funded WDK proof are complete; demo video and final submission assets remain. |
 
 ## MVP Checklist
 
@@ -113,12 +115,12 @@ Last updated: March 13, 2026
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| Live WDK funded verification still depends on funded wallet balance | 🔴 High | Use `npm run verify:wdk` preflight gate, fund Sepolia wallet, then execute transfer for hash proof. |
+| External Sepolia faucet/service limits can delay reruns of funded proof | 🟡 Medium | Keep the captured funded hash proof archived and only rerun funded smoke when strictly needed. |
 | Scheduler runs in-process and cron cadence is daily by default in Vercel | 🟡 Medium | Move recurring execution to a worker/queue or tighten cron schedule when needed. |
 | Test coverage is still focused on core paths | 🟡 Medium | Add UI and Telegram bridge regression coverage. |
 
 ## Next Priorities
 
-1. Fund Sepolia wallet and run funded verification via `npm run verify:wdk` until hash proof is produced.
-2. Record and publish unlisted demo video (<= 5 minutes).
-3. Finalize submission package artifacts (track disclosure, runbook, and video link for DoraHacks).
+1. Record and publish unlisted demo video (<= 5 minutes).
+2. Finalize submission package artifacts (track disclosure, runbook, and video link for DoraHacks).
+3. Keep funded WDK proof in submission notes: `0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073`.

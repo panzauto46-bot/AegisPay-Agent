@@ -113,6 +113,7 @@ async function main() {
   const recipient = process.env.AEGIS_WDK_SMOKE_RECIPIENT?.trim() || wallet.address;
   const amount = Number.parseFloat(process.env.AEGIS_WDK_SMOKE_AMOUNT ?? '0.01');
   const execute = isTruthy(process.env.AEGIS_WDK_SMOKE_EXECUTE);
+  const allowZeroNative = isTruthy(process.env.AEGIS_WDK_SMOKE_ALLOW_ZERO_NATIVE);
 
   printWalletScan(refreshedWallets);
   console.log('[WDK Smoke] Selected account index:', wallet.walletIndex ?? 0);
@@ -136,8 +137,16 @@ async function main() {
     return;
   }
 
-  if ((wallet.nativeBalance ?? 0) <= 0) {
-    throw new Error('Selected account has no native balance for gas. Fund it with Sepolia ETH first.');
+  if ((wallet.nativeBalance ?? 0) <= 0 && !allowZeroNative) {
+    throw new Error(
+      'Selected account has no native balance for gas. Fund it with Sepolia ETH first or set AEGIS_WDK_SMOKE_ALLOW_ZERO_NATIVE=true for paymaster-token mode.',
+    );
+  }
+
+  if ((wallet.nativeBalance ?? 0) <= 0 && allowZeroNative) {
+    console.log(
+      '[WDK Smoke] Native balance is zero; continuing because AEGIS_WDK_SMOKE_ALLOW_ZERO_NATIVE=true (paymaster-token mode).',
+    );
   }
 
   if (wallet.balance < amount) {

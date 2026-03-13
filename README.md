@@ -38,7 +38,7 @@ Using **Tether's Wallet Development Kit (WDK)** and the **OpenClaw** AI agent fr
 
 The agent acts as an **independent financial actor** — capable of managing funds, making decisions, and executing payments under user-defined constraints.
 
-The current build includes an animated React web UI, a wallet-connect entry flow, a Node.js API runtime, a shared agent engine, JSON state persistence, API-key auth + CORS allowlist controls, an optional WDK-backed wallet provider, a Telegram bridge, a Vercel serverless API bootstrap backed by a bundled CommonJS server app with lazy WDK loading, Alibaba Model Studio-compatible reasoning with model auto-switch fallback, an OpenClaw CLI reasoning path (with deterministic fallback), and automated tests for the core command and scheduling flows. Production deployment is now verified with API auth enforcement (`/api/state` returns `401` without key and `200` with valid `x-aegis-api-key`).
+The current build includes an animated React web UI, a wallet-connect entry flow, a Node.js API runtime, a shared agent engine, JSON state persistence, API-key auth + CORS allowlist controls, an optional WDK-backed wallet provider, a Telegram bridge, a Vercel serverless API bootstrap backed by a bundled CommonJS server app with lazy WDK loading, Alibaba Model Studio-compatible reasoning with model auto-switch fallback, an OpenClaw CLI reasoning path (with deterministic fallback), and automated tests for the core command and scheduling flows. Production deployment is now verified with API auth enforcement (`/api/state` returns `401` without key and `200` with valid `x-aegis-api-key`), and funded WDK execution proof is captured on Sepolia (`0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073`, March 14, 2026).
 
 ### 💡 What Makes AegisPay Different?
 
@@ -269,6 +269,8 @@ AEGIS_TRANSFER_MAX_FEE_WEI=100000000000000
 # Optional: WDK smoke behavior
 AEGIS_WDK_SMOKE_ACCOUNT_INDEX=
 AEGIS_WDK_SMOKE_SCAN_COUNT=12
+# Optional: allow execute with zero native balance for paymaster-token mode
+AEGIS_WDK_SMOKE_ALLOW_ZERO_NATIVE=false
 
 # Telegram bot
 TELEGRAM_BOT_TOKEN=your_telegram_bot_token
@@ -347,11 +349,17 @@ AEGIS_WDK_SMOKE_AMOUNT=0.01
 AEGIS_WDK_SMOKE_RECIPIENT=0xYourRecipientAddress
 AEGIS_WDK_SMOKE_SCAN_COUNT=12
 AEGIS_WDK_SMOKE_ACCOUNT_INDEX=
+AEGIS_WDK_SMOKE_ALLOW_ZERO_NATIVE=false
 ```
 
 Then run `npm run verify:wdk` again. The script prints transaction hash and explorer URL on success.
 
 `AEGIS_WDK_SMOKE_SCAN_COUNT` scans multiple derivation indexes and auto-selects the best candidate wallet. Set `AEGIS_WDK_SMOKE_ACCOUNT_INDEX` when you want to force a specific funded index.
+
+Latest funded proof (captured on March 14, 2026):
+
+- Hash: `0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073`
+- Explorer: `https://sepolia.etherscan.io/tx/0x84358ee464ea571d4a4b4472d1376740811e8cdbca1efc8d3659f2bf61efd073`
 
 ### Deployment Smoke Verification
 
