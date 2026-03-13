@@ -6,11 +6,12 @@ interface MobileNavProps {
   currentPage: Page;
   onPageChange: (page: Page) => void;
   onLogout: () => void;
+  isAuthenticated: boolean;
   isOpen: boolean;
   onToggle: () => void;
 }
 
-const navItems: { page: Page; label: string; icon: React.ElementType }[] = [
+const guestNavItems: { page: Page; label: string; icon: React.ElementType }[] = [
   { page: 'landing', label: 'Landing', icon: Sparkles },
   { page: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { page: 'chat', label: 'AI Agent', icon: MessageSquare },
@@ -21,7 +22,24 @@ const navItems: { page: Page; label: string; icon: React.ElementType }[] = [
   { page: 'status', label: 'Status', icon: BarChart3 },
 ];
 
-export default function MobileNav({ currentPage, onPageChange, onLogout, isOpen, onToggle }: MobileNavProps) {
+const authenticatedNavItems = guestNavItems.filter((item) => item.page !== 'landing');
+
+export default function MobileNav({
+  currentPage,
+  onPageChange,
+  onLogout,
+  isAuthenticated,
+  isOpen,
+  onToggle,
+}: MobileNavProps) {
+  const navItems = isAuthenticated ? authenticatedNavItems : guestNavItems;
+  const bottomTabPages: Page[] = isAuthenticated
+    ? ['dashboard', 'chat', 'wallets', 'recurring', 'status']
+    : ['landing', 'dashboard', 'chat', 'recurring', 'status'];
+  const bottomTabs = bottomTabPages
+    .map((page) => navItems.find((item) => item.page === page))
+    .filter((item): item is { page: Page; label: string; icon: React.ElementType } => Boolean(item));
+
   return (
     <>
       {/* Top Bar */}
@@ -56,22 +74,24 @@ export default function MobileNav({ currentPage, onPageChange, onLogout, isOpen,
                 {label}
               </button>
             ))}
-            <div className="pt-2 mt-2 border-t border-cyan-500/10">
-              <button
-                onClick={() => { onLogout(); onToggle(); }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all"
-              >
-                <LogOut className="w-5 h-5" />
-                Logout
-              </button>
-            </div>
+            {isAuthenticated && (
+              <div className="pt-2 mt-2 border-t border-cyan-500/10">
+                <button
+                  onClick={() => { onLogout(); onToggle(); }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all"
+                >
+                  <LogOut className="w-5 h-5" />
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
 
       {/* Bottom Tab Bar */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 border-t border-cyan-500/10 bg-dark-900/95 backdrop-blur-xl z-40 px-2 py-1.5 flex items-center justify-around">
-        {[navItems[0], navItems[1], navItems[2], navItems[6], navItems[7]].map(({ page, label, icon: Icon }) => (
+        {bottomTabs.map(({ page, label, icon: Icon }) => (
           <button
             key={page}
             onClick={() => onPageChange(page)}

@@ -31,6 +31,11 @@ export default function App() {
   }, [connectedWallet, connectedWalletId]);
 
   const handlePageChange = (page: Page) => {
+    if (page === 'landing' && connectedWalletId) {
+      setCurrentPage('dashboard');
+      return;
+    }
+
     if (page === 'chat' && !connectedWalletId) {
       setCurrentPage('connect');
       return;
@@ -175,6 +180,7 @@ export default function App() {
           currentPage={currentPage}
           onPageChange={handlePageChange}
           onLogout={handleLogout}
+          isAuthenticated={Boolean(connectedWalletId)}
           collapsed={sidebarCollapsed}
           onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
           unreadMessages={0}
@@ -188,6 +194,7 @@ export default function App() {
           currentPage={currentPage}
           onPageChange={handlePageChange}
           onLogout={handleLogout}
+          isAuthenticated={Boolean(connectedWalletId)}
           isOpen={mobileMenuOpen}
           onToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
         />

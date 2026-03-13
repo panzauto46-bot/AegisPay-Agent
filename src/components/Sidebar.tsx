@@ -6,12 +6,13 @@ interface SidebarProps {
   currentPage: Page;
   onPageChange: (page: Page) => void;
   onLogout: () => void;
+  isAuthenticated: boolean;
   collapsed: boolean;
   onToggle: () => void;
   unreadMessages: number;
 }
 
-const navItems: { page: Page; label: string; icon: React.ElementType }[] = [
+const guestNavItems: { page: Page; label: string; icon: React.ElementType }[] = [
   { page: 'landing', label: 'Landing', icon: Sparkles },
   { page: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { page: 'chat', label: 'AI Agent', icon: MessageSquare },
@@ -22,7 +23,19 @@ const navItems: { page: Page; label: string; icon: React.ElementType }[] = [
   { page: 'status', label: 'Project Status', icon: BarChart3 },
 ];
 
-export default function Sidebar({ currentPage, onPageChange, onLogout, collapsed, onToggle, unreadMessages }: SidebarProps) {
+const authenticatedNavItems = guestNavItems.filter((item) => item.page !== 'landing');
+
+export default function Sidebar({
+  currentPage,
+  onPageChange,
+  onLogout,
+  isAuthenticated,
+  collapsed,
+  onToggle,
+  unreadMessages,
+}: SidebarProps) {
+  const navItems = isAuthenticated ? authenticatedNavItems : guestNavItems;
+
   return (
     <aside className={cn(
       'h-screen flex flex-col border-r border-cyan-500/10 bg-dark-900/80 backdrop-blur-xl transition-all duration-300 relative z-50',
@@ -73,13 +86,15 @@ export default function Sidebar({ currentPage, onPageChange, onLogout, collapsed
 
       {/* Footer Actions */}
       <div className="p-3 border-t border-cyan-500/10 shrink-0">
-        <button
-          onClick={onLogout}
-          className="mb-2 w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors text-sm"
-        >
-          <LogOut className="w-4 h-4" />
-          {!collapsed && <span>Logout</span>}
-        </button>
+        {isAuthenticated && (
+          <button
+            onClick={onLogout}
+            className="mb-2 w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors text-sm"
+          >
+            <LogOut className="w-4 h-4" />
+            {!collapsed && <span>Logout</span>}
+          </button>
+        )}
         <button
           onClick={onToggle}
           className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors text-sm"
