@@ -190,9 +190,20 @@ export function useAgent() {
     setIsProcessing(true);
     try {
       if (runtimeMode === 'remote') {
-        await runRemote('/scheduler/run', {
-          method: 'POST',
-        });
+        try {
+          await runRemote('/scheduler/run', {
+            method: 'POST',
+          });
+        } catch {
+          // Fallback path for deployments where /api/scheduler/* isn't routable.
+          await runRemote('/command', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ input: 'Run scheduler' }),
+          });
+        }
       } else {
         await runLocal(() => engineRef.current!.runScheduler());
       }
