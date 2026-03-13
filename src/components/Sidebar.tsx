@@ -1,10 +1,11 @@
-import { LayoutDashboard, MessageSquare, Wallet, ArrowRightLeft, ShieldCheck, CalendarClock, ChevronLeft, ChevronRight, Zap, BarChart3, Sparkles } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Wallet, ArrowRightLeft, ShieldCheck, CalendarClock, ChevronLeft, ChevronRight, Zap, BarChart3, Sparkles, LogOut } from 'lucide-react';
 import type { Page } from '../types';
 import { cn } from '../utils/cn';
 
 interface SidebarProps {
   currentPage: Page;
   onPageChange: (page: Page) => void;
+  onLogout: () => void;
   collapsed: boolean;
   onToggle: () => void;
   unreadMessages: number;
@@ -21,7 +22,7 @@ const navItems: { page: Page; label: string; icon: React.ElementType }[] = [
   { page: 'status', label: 'Project Status', icon: BarChart3 },
 ];
 
-export default function Sidebar({ currentPage, onPageChange, collapsed, onToggle, unreadMessages }: SidebarProps) {
+export default function Sidebar({ currentPage, onPageChange, onLogout, collapsed, onToggle, unreadMessages }: SidebarProps) {
   return (
     <aside className={cn(
       'h-screen flex flex-col border-r border-cyan-500/10 bg-dark-900/80 backdrop-blur-xl transition-all duration-300 relative z-50',
@@ -70,8 +71,15 @@ export default function Sidebar({ currentPage, onPageChange, collapsed, onToggle
         ))}
       </nav>
 
-      {/* Collapse Toggle */}
+      {/* Footer Actions */}
       <div className="p-3 border-t border-cyan-500/10 shrink-0">
+        <button
+          onClick={onLogout}
+          className="mb-2 w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors text-sm"
+        >
+          <LogOut className="w-4 h-4" />
+          {!collapsed && <span>Logout</span>}
+        </button>
         <button
           onClick={onToggle}
           className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors text-sm"

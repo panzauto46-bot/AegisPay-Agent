@@ -64,6 +64,12 @@ export default function App() {
     setCurrentPage('chat');
   };
 
+  const handleLogout = () => {
+    setConnectedWalletId(null);
+    setCurrentPage('connect');
+    setMobileMenuOpen(false);
+  };
+
   const renderPage = () => {
     switch (currentPage) {
       case 'landing':
@@ -168,6 +174,7 @@ export default function App() {
         <Sidebar
           currentPage={currentPage}
           onPageChange={handlePageChange}
+          onLogout={handleLogout}
           collapsed={sidebarCollapsed}
           onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
           unreadMessages={0}
@@ -180,6 +187,7 @@ export default function App() {
         <MobileNav
           currentPage={currentPage}
           onPageChange={handlePageChange}
+          onLogout={handleLogout}
           isOpen={mobileMenuOpen}
           onToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
         />

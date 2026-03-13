@@ -1,10 +1,11 @@
-import { LayoutDashboard, MessageSquare, Wallet, ArrowRightLeft, ShieldCheck, CalendarClock, Menu, X, Zap, BarChart3, Sparkles } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Wallet, ArrowRightLeft, ShieldCheck, CalendarClock, Menu, X, Zap, BarChart3, Sparkles, LogOut } from 'lucide-react';
 import type { Page } from '../types';
 import { cn } from '../utils/cn';
 
 interface MobileNavProps {
   currentPage: Page;
   onPageChange: (page: Page) => void;
+  onLogout: () => void;
   isOpen: boolean;
   onToggle: () => void;
 }
@@ -20,7 +21,7 @@ const navItems: { page: Page; label: string; icon: React.ElementType }[] = [
   { page: 'status', label: 'Status', icon: BarChart3 },
 ];
 
-export default function MobileNav({ currentPage, onPageChange, isOpen, onToggle }: MobileNavProps) {
+export default function MobileNav({ currentPage, onPageChange, onLogout, isOpen, onToggle }: MobileNavProps) {
   return (
     <>
       {/* Top Bar */}
@@ -55,6 +56,15 @@ export default function MobileNav({ currentPage, onPageChange, isOpen, onToggle 
                 {label}
               </button>
             ))}
+            <div className="pt-2 mt-2 border-t border-cyan-500/10">
+              <button
+                onClick={() => { onLogout(); onToggle(); }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all"
+              >
+                <LogOut className="w-5 h-5" />
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       )}
