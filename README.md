@@ -38,7 +38,7 @@ Using **Tether's Wallet Development Kit (WDK)** and the **OpenClaw** AI agent fr
 
 The agent acts as an **independent financial actor** — capable of managing funds, making decisions, and executing payments under user-defined constraints.
 
-The current build includes an animated React web UI, a wallet-connect entry flow, a Node.js API runtime, a shared agent engine, JSON state persistence, API-key auth + CORS allowlist controls, an optional WDK-backed wallet provider, a Telegram bridge, a Vercel serverless API bootstrap backed by a bundled CommonJS server app with lazy WDK loading, Alibaba Model Studio-compatible reasoning with model auto-switch fallback, an OpenClaw CLI reasoning path (with deterministic fallback), and automated tests for the core command and scheduling flows.
+The current build includes an animated React web UI, a wallet-connect entry flow, a Node.js API runtime, a shared agent engine, JSON state persistence, API-key auth + CORS allowlist controls, an optional WDK-backed wallet provider, a Telegram bridge, a Vercel serverless API bootstrap backed by a bundled CommonJS server app with lazy WDK loading, Alibaba Model Studio-compatible reasoning with model auto-switch fallback, an OpenClaw CLI reasoning path (with deterministic fallback), and automated tests for the core command and scheduling flows. Production deployment is now verified with API auth enforcement (`/api/state` returns `401` without key and `200` with valid `x-aegis-api-key`).
 
 ### 💡 What Makes AegisPay Different?
 
@@ -169,7 +169,7 @@ User sends command → AI parses intent → Agent validates rules
 
 | Category | Technology |
 |----------|------------|
-| **Frontend** | React / Next.js |
+| **Frontend** | React / Vite |
 | **Backend** | Node.js, TypeScript |
 | **AI Agent Framework** | OpenClaw CLI reasoning mode (optional) |
 | **Wallet Infrastructure** | Tether Wallet Development Kit (WDK) |
@@ -370,9 +370,12 @@ The Vercel entrypoint stays as an ES module, but it now bridges into a bundled C
 6. Check state endpoint at `https://<your-vercel-domain>/api/state`.
 7. Run `npm run verify:deploy` from local/CI to confirm runtime/provider status.
 
-Recurring scheduler automation is wired through Vercel Cron in `vercel.json` and calls `/api/scheduler/cron` every minute.
+Recurring scheduler automation is wired through Vercel Cron in `vercel.json` and currently runs daily (`0 0 * * *`) against `/api/scheduler/cron`.
 
-The production deployment path has been recovered with this bootstrap pattern, and `/api/health` plus `/api/state` now respond successfully on Vercel.
+The production deployment path has been recovered with this bootstrap pattern, and `/api/health` plus `/api/state` respond successfully on Vercel. Latest production verification confirms:
+- `/api/health` includes `apiAuthEnabled: true`, `allowedOrigins`, and persistence status.
+- `/api/state` returns `401` without API key.
+- `/api/state` returns `200` with valid `x-aegis-api-key`.
 
 ### Run Tests
 

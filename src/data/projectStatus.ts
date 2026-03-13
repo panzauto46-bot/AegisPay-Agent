@@ -33,9 +33,9 @@ export interface MvpChecklistItem {
 export const projectStatusMeta = {
   lastUpdated: 'March 13, 2026',
   deliveryTarget: 'March 22, 2026 (submission deadline - 23:59 UTC)',
-  overallProgress: 98,
+  overallProgress: 99,
   summary:
-    'The current build is a full-stack MVP with an animated landing page, wallet-connect console flow, stable Vercel runtime, scheduler automation path, JSON persistence, API-key auth + CORS controls, Telegram bridge, tests, optional WDK-backed wallet operations, Alibaba-compatible reasoning, a runtime-validated OpenClaw CLI reasoning path, and WDK/deployment smoke verification scripts. The biggest remaining gaps are funded WDK execution proof, demo video, and final submission assets.',
+    'The current build is a production-verified full-stack MVP with an animated landing page, wallet-connect console flow, stable Vercel runtime, scheduler automation path, JSON persistence, API-key auth + CORS controls, Telegram bridge, tests, optional WDK-backed wallet operations, Alibaba-compatible reasoning, a runtime-validated OpenClaw CLI reasoning path, and passing WDK/deployment smoke verification scripts. The biggest remaining gaps are funded WDK execution proof, demo video, and final submission assets.',
 };
 
 export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
@@ -103,7 +103,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
     id: 'phase-4',
     title: 'Phase 4 - Advanced Features',
     window: 'Week 4-5',
-    progress: 97,
+    progress: 98,
     status: 'in_progress',
     objective: 'Add recurring automation and user-facing channels that make the agent useful in practice.',
     shipped: [
@@ -116,6 +116,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
       'Dedicated web chat interface for the wallet agent',
       'Telegram bot bridge wired to the AegisPay API',
       'Deployment/provider smoke verification script (`npm run verify:deploy`)',
+      'Production API auth validation confirmed (`/api/state` 401 without key, 200 with key)',
     ],
     next: [
       'Add notification delivery for payment outcomes',
@@ -126,7 +127,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
     id: 'phase-5',
     title: 'Phase 5 - Polish & Submit',
     window: 'Week 5-6',
-    progress: 86,
+    progress: 90,
     status: 'in_progress',
     objective: 'Stabilize the product, document the architecture, and prepare the hackathon submission.',
     shipped: [
@@ -139,6 +140,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
       'Apache-2.0 `LICENSE` file',
       'Package rename to `aegispay-agent`',
       'OpenClaw runtime validation in a real local session',
+      'Production deploy verification (`npm run verify:deploy`) passing against live Vercel runtime',
     ],
     next: [
       'Record demo video (mandatory deliverable)',
@@ -156,45 +158,45 @@ export const roadmapMilestones: MilestoneStatus[] = [
   },
   {
     title: 'WDK integration layer',
-    targetDate: 'March 17, 2026',
+    targetDate: 'March 13, 2026',
     status: 'complete',
     note: 'A WDK-backed provider is implemented and can be enabled with environment variables.',
   },
   {
     title: 'First wallet created',
-    targetDate: 'March 20, 2026',
+    targetDate: 'March 13, 2026',
     status: 'complete',
     note: 'Wallet creation is working in the demo runtime and exposed through chat + UI.',
   },
   {
     title: 'AI agent responds to commands',
-    targetDate: 'March 28, 2026',
+    targetDate: 'March 13, 2026',
     status: 'complete',
     note: 'Natural language commands now cover the MVP workflow across the frontend and API runtime.',
   },
   {
     title: 'Provider-backed AI verified locally',
-    targetDate: 'March 12, 2026',
+    targetDate: 'March 13, 2026',
     status: 'complete',
     note: 'Alibaba Model Studio compatible-mode reasoning was verified locally with Qwen models.',
   },
   {
-    title: 'First autonomous payment',
-    targetDate: 'April 5, 2026',
+    title: 'First autonomous payment (demo mode)',
+    targetDate: 'March 13, 2026',
     status: 'complete',
     note: 'Validated send flows and scheduler-driven recurring execution are both available in demo mode.',
   },
   {
-    title: 'Recurring payments working',
-    targetDate: 'April 15, 2026',
-    status: 'complete',
-    note: 'Recurring setup is supported and can be processed through the API scheduler cycle.',
-  },
-  {
     title: 'Chat interface live',
-    targetDate: 'April 20, 2026',
+    targetDate: 'March 13, 2026',
     status: 'complete',
     note: 'The web chat interface is connected to the shared runtime, and a Telegram bridge is available.',
+  },
+  {
+    title: 'Production deploy + API auth verification',
+    targetDate: 'March 13, 2026',
+    status: 'complete',
+    note: 'Live `/api/health` and `/api/state` verification confirms auth enforcement and runtime status.',
   },
   {
     title: 'All tests and submission assets',

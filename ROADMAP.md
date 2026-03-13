@@ -14,9 +14,9 @@
 | Phase 1 - Foundation | 98% | In Progress | App shell, runtime, provider abstraction, wallet state, optional WDK integration, funded smoke tooling, and JSON persistence are ready. |
 | Phase 2 - AI Agent Core | 95% | In Progress | Command understanding is functional with deterministic + provider-backed reasoning, and OpenClaw CLI routing is runtime-validated. |
 | Phase 3 - Payment Engine | 90% | In Progress | Validation, payments, recurring execution, and explorer reporting are working in demo mode. |
-| Phase 4 - Advanced Features | 97% | In Progress | Landing page, wallet-connect flow, web chat, Telegram bridge, scheduler, lazy-loaded Vercel runtime path, and deploy smoke verification tooling are live. |
-| Phase 5 - Polish & Submit | 86% | In Progress | Docs, tests, UX polish, deployment runtime recovery, OpenClaw runtime validation, WDK/deploy smoke tooling, persistence, API auth/CORS hardening, LICENSE, and package rename are shipped; demo video and final submission hardening remain. |
-| Overall | 98% | In Progress | Full-stack MVP is stable with security controls, state persistence, and verification tooling; final funded proof + submission assets remain. |
+| Phase 4 - Advanced Features | 98% | In Progress | Landing page, wallet-connect flow, web chat, Telegram bridge, scheduler path, production API auth/CORS enforcement, and deploy smoke verification tooling are live. |
+| Phase 5 - Polish & Submit | 90% | In Progress | Docs, tests, UX polish, deployment/runtime validation, OpenClaw runtime validation, WDK/deploy smoke tooling, persistence, API auth/CORS hardening, LICENSE, and package rename are shipped; demo video and final submission assets remain. |
+| Overall | 99% | In Progress | Full-stack MVP is stable and production-verified with security controls, persistence, and deployment checks; final funded proof + submission assets remain. |
 
 ---
 
@@ -29,30 +29,30 @@ gantt
     axisFormat  %b %d
 
     section Phase 1 - Foundation
-    Project Setup & Config         :done,   p1a, 2026-03-12, 2d
-    WDK Provider Layer             :active, p1b, 2026-03-13, 5d
-    Wallet Creation & Inventory    :done,   p1c, 2026-03-14, 4d
+    Project Setup & Config         :done,   p1a, 2026-03-12, 1d
+    WDK Provider Layer             :done,   p1b, 2026-03-13, 1d
+    Wallet Creation & Inventory    :done,   p1c, 2026-03-13, 1d
 
     section Phase 2 - AI Agent Core
-    Intent Parsing                 :done,   p2a, 2026-03-16, 4d
-    Provider-backed Reasoning      :done,   p2b, 2026-03-18, 5d
-    OpenClaw Integration           :done,   p2c, 2026-03-24, 5d
+    Intent Parsing                 :done,   p2a, 2026-03-13, 1d
+    Provider-backed Reasoning      :done,   p2b, 2026-03-13, 1d
+    OpenClaw Integration           :done,   p2c, 2026-03-13, 1d
 
     section Phase 3 - Payment Engine
-    Payment Validation             :done,   p3a, 2026-03-21, 4d
-    Payment Execution              :done,   p3b, 2026-03-23, 4d
-    Live WDK Verification          :active, p3c, 2026-03-28, 4d
+    Payment Validation             :done,   p3a, 2026-03-13, 1d
+    Payment Execution              :done,   p3b, 2026-03-13, 1d
+    Live WDK Verification          :active, p3c, 2026-03-14, 6d
 
     section Phase 4 - Advanced Features
-    Recurring Scheduler            :done,   p4a, 2026-03-27, 4d
-    Web + Telegram Interface       :done,   p4b, 2026-03-30, 5d
-    Deployment Hardening           :done,   p4c, 2026-04-05, 5d
+    Recurring Scheduler            :done,   p4a, 2026-03-13, 1d
+    Web + Telegram Interface       :done,   p4b, 2026-03-13, 1d
+    Deployment Hardening           :done,   p4c, 2026-03-13, 1d
 
     section Phase 5 - Polish & Submit
-    Documentation Sync             :done,   p5a, 2026-04-08, 3d
-    Security + Persistence         :done,   p5b, 2026-04-12, 5d
-    Demo Video                     :        p5c, 2026-04-20, 3d
-    Submission Package             :crit,   p5d, 2026-04-26, 4d
+    Documentation Sync             :done,   p5a, 2026-03-13, 1d
+    Security + Persistence         :done,   p5b, 2026-03-13, 1d
+    Demo Video                     :        p5c, 2026-03-18, 3d
+    Submission Package             :crit,   p5d, 2026-03-20, 2d
 ```
 
 ---
@@ -157,6 +157,7 @@ Goal: stabilize, document, and package the project for judging.
 - Apache-2.0 `LICENSE`
 - Package rename to `aegispay-agent`
 - OpenClaw CLI runtime validation (`openclaw agent` + provider analyze live)
+- Production deployment validation with API auth/CORS enforcement and passing `npm run verify:deploy`
 
 ### Remaining
 
@@ -171,12 +172,13 @@ Goal: stabilize, document, and package the project for judging.
 | Milestone | Target Date | Status | Note |
 |-----------|-------------|--------|------|
 | Project repo initialized | March 12, 2026 | ✅ Complete | Core app, docs, and runtime structure are in place. |
-| WDK provider layer ready | March 17, 2026 | ✅ Complete | Optional WDK-backed provider is implemented and configurable. |
-| Wallet creation shipped | March 20, 2026 | ✅ Complete | Wallet creation is available through agent flows. |
-| AI command handling live | March 28, 2026 | ✅ Complete | Natural-language flows work across frontend and API. |
-| First autonomous payment | April 5, 2026 | ✅ Complete | Demo-mode payment execution and recurring logic are live. |
-| Web + Telegram interface ready | April 20, 2026 | ✅ Complete | Both user-facing channels are available. |
-| Provider-backed AI verified locally | March 12, 2026 | ✅ Complete | Alibaba-compatible reasoning validated locally with `qwen-plus`. |
+| WDK provider layer ready | March 13, 2026 | ✅ Complete | Optional WDK-backed provider is implemented and configurable. |
+| Wallet creation shipped | March 13, 2026 | ✅ Complete | Wallet creation is available through agent flows. |
+| AI command handling live | March 13, 2026 | ✅ Complete | Natural-language flows work across frontend and API. |
+| First autonomous payment (demo mode) | March 13, 2026 | ✅ Complete | Demo-mode payment execution and recurring logic are live. |
+| Web + Telegram interface ready | March 13, 2026 | ✅ Complete | Both user-facing channels are available. |
+| Provider-backed AI verified locally | March 13, 2026 | ✅ Complete | Alibaba-compatible reasoning validated locally with `qwen-plus`. |
+| Production deploy + API auth verification | March 13, 2026 | ✅ Complete | `/api/health` and `/api/state` verified in production (`401` without key, `200` with key). |
 | Demo video ready | March 22, 2026 | 🔲 Pending | Mandatory submission asset before DoraHacks final submit. |
 | Hackathon submission package ready | March 22, 2026 | 🔲 Pending | Final gate before submission. |
 
