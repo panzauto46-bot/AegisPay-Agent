@@ -11,12 +11,12 @@
 
 | Phase | Progress | Status | Outcome |
 |-------|----------|--------|---------|
-| Phase 1 - Foundation | 95% | In Progress | App shell, runtime, provider abstraction, wallet state, optional WDK integration, and funded smoke tooling are ready. |
-| Phase 2 - AI Agent Core | 88% | In Progress | Command understanding is functional with deterministic + provider-backed reasoning, and OpenClaw CLI routing is now wired with fallback. |
+| Phase 1 - Foundation | 98% | In Progress | App shell, runtime, provider abstraction, wallet state, optional WDK integration, funded smoke tooling, and JSON persistence are ready. |
+| Phase 2 - AI Agent Core | 95% | In Progress | Command understanding is functional with deterministic + provider-backed reasoning, and OpenClaw CLI routing is runtime-validated. |
 | Phase 3 - Payment Engine | 90% | In Progress | Validation, payments, recurring execution, and explorer reporting are working in demo mode. |
-| Phase 4 - Advanced Features | 96% | In Progress | Landing page, wallet-connect flow, web chat, Telegram bridge, scheduler, and the lazy-loaded Vercel runtime path are live with production health/state endpoints confirmed. |
-| Phase 5 - Polish & Submit | 64% | In Progress | Docs, tests, UX polish, deployment runtime recovery, OpenClaw wiring, and WDK smoke tooling are shipped; demo video and final submission hardening remain. |
-| Overall | 93% | In Progress | Full-stack MVP is ready with a stable deployment path, active OpenClaw integration path, and funded verification tooling; final validation and submission work remain. |
+| Phase 4 - Advanced Features | 97% | In Progress | Landing page, wallet-connect flow, web chat, Telegram bridge, scheduler, lazy-loaded Vercel runtime path, and deploy smoke verification tooling are live. |
+| Phase 5 - Polish & Submit | 86% | In Progress | Docs, tests, UX polish, deployment runtime recovery, OpenClaw runtime validation, WDK/deploy smoke tooling, persistence, API auth/CORS hardening, LICENSE, and package rename are shipped; demo video and final submission hardening remain. |
+| Overall | 98% | In Progress | Full-stack MVP is stable with security controls, state persistence, and verification tooling; final funded proof + submission assets remain. |
 
 ---
 
@@ -36,7 +36,7 @@ gantt
     section Phase 2 - AI Agent Core
     Intent Parsing                 :done,   p2a, 2026-03-16, 4d
     Provider-backed Reasoning      :done,   p2b, 2026-03-18, 5d
-    OpenClaw Integration           :        p2c, 2026-03-24, 5d
+    OpenClaw Integration           :done,   p2c, 2026-03-24, 5d
 
     section Phase 3 - Payment Engine
     Payment Validation             :done,   p3a, 2026-03-21, 4d
@@ -50,7 +50,7 @@ gantt
 
     section Phase 5 - Polish & Submit
     Documentation Sync             :done,   p5a, 2026-04-08, 3d
-    Security + Persistence         :active, p5b, 2026-04-12, 5d
+    Security + Persistence         :done,   p5b, 2026-04-12, 5d
     Demo Video                     :        p5c, 2026-04-20, 3d
     Submission Package             :crit,   p5d, 2026-04-26, 4d
 ```
@@ -73,7 +73,7 @@ Goal: establish the app, API runtime, and wallet provider layer around the WDK f
 ### Remaining
 
 - Funded Sepolia verification execution with transaction hash evidence
-- Deployment-grade secret handling review
+- Deployment-grade secret handling for funded live verification
 
 ---
 
@@ -92,7 +92,6 @@ Goal: turn natural-language commands into wallet actions with clear fallback beh
 
 ### Remaining
 
-- Real OpenClaw runtime validation and demo evidence capture
 - Richer ambiguity handling and user confirmation flows
 
 ---
@@ -128,12 +127,15 @@ Goal: make the agent demo-ready and useful across channels.
 - Web chat interface
 - Telegram bot bridge
 - In-process recurring scheduler service
+- JSON file persistence for wallets/rules/recurring/messages (`AEGIS_STATE_FILE_PATH`)
+- API key auth middleware (`AEGIS_API_KEY`) and CORS allowlist (`AEGIS_ALLOWED_ORIGINS`)
 - Project Status page backed by shared metadata
 - Vercel catch-all API function path for `/api/*`
 - Vercel cron schedule support for recurring scheduler execution
 - CommonJS serverless bundle bootstrap bridged from the Vercel ES module entrypoint
 - Lazy WDK loading so demo-mode deployments do not import WDK packages during startup
 - Production `/api/health` and `/api/state` now return `200` on Vercel
+- Deployment smoke verification script (`npm run verify:deploy`)
 
 ### Remaining
 
@@ -149,18 +151,17 @@ Goal: stabilize, document, and package the project for judging.
 ### Shipped
 
 - README, PRD, roadmap, project status, and project review docs
-- Automated coverage for engine, API, and reasoning fallback
+- Automated coverage for engine, API, reasoning fallback, and persistence/auth guards (19/19)
 - Production build validation
 - Landing/console UX polish
+- Apache-2.0 `LICENSE`
+- Package rename to `aegispay-agent`
+- OpenClaw CLI runtime validation (`openclaw agent` + provider analyze live)
 
 ### Remaining
 
 - Demo video
-- Security review
-- Persistence layer
-- API authentication
-- `LICENSE` file
-- `package.json` rename cleanup
+- Funded WDK hash proof capture
 - Final submission package
 
 ---
@@ -176,8 +177,8 @@ Goal: stabilize, document, and package the project for judging.
 | First autonomous payment | April 5, 2026 | ✅ Complete | Demo-mode payment execution and recurring logic are live. |
 | Web + Telegram interface ready | April 20, 2026 | ✅ Complete | Both user-facing channels are available. |
 | Provider-backed AI verified locally | March 12, 2026 | ✅ Complete | Alibaba-compatible reasoning validated locally with `qwen-plus`. |
-| Demo video ready | April 28, 2026 | 🔲 Pending | Mandatory submission asset. |
-| Hackathon submission package ready | April 30, 2026 | 🔲 Pending | Final gate before submission. |
+| Demo video ready | March 22, 2026 | 🔲 Pending | Mandatory submission asset before DoraHacks final submit. |
+| Hackathon submission package ready | March 22, 2026 | 🔲 Pending | Final gate before submission. |
 
 ---
 
@@ -185,23 +186,17 @@ Goal: stabilize, document, and package the project for judging.
 
 | Risk | Impact | Likelihood | Mitigation |
 |------|--------|------------|------------|
-| OpenClaw runtime validation is still pending | High | High | Use the new OpenClaw provider path in a real session and capture proof for the demo. |
 | Funded live WDK verification is still pending | High | Medium | Run a dedicated Sepolia smoke test with real credentials. |
-| Runtime state is in-memory only | Medium | Medium | Add JSON or SQLite persistence before final demo. |
 | Provider-backed AI needs backend env configuration in deployment | Medium | Medium | Mirror the validated local Alibaba config into hosting secrets. |
-| API is unauthenticated | Medium | Medium | Add at least an API key guard before public backend exposure. |
+| Deployed API security config can drift across environments | Medium | Medium | Enforce `AEGIS_API_KEY` + `AEGIS_ALLOWED_ORIGINS` in deployment env and validate with `npm run verify:deploy`. |
 
 ---
 
 ## Next Build Priorities
 
-1. Validate real OpenClaw CLI runtime flow and capture evidence for submission.
-2. Provision WDK env secrets and produce funded hash proof through `npm run verify:wdk`.
-3. Add persistence for runtime state.
-4. Add API authentication and tighten CORS.
-5. Record the demo video.
-6. Add `LICENSE` and rename the package to `aegispay-agent`.
-7. Prepare final submission assets and walkthrough notes.
+1. Provision/fund WDK env wallet and produce funded hash proof through `npm run verify:wdk`.
+2. Record the demo video.
+3. Prepare final submission assets and walkthrough notes.
 
 ---
 

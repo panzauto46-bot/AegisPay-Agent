@@ -38,7 +38,7 @@ Using **Tether's Wallet Development Kit (WDK)** and the **OpenClaw** AI agent fr
 
 The agent acts as an **independent financial actor** — capable of managing funds, making decisions, and executing payments under user-defined constraints.
 
-The current build includes an animated React web UI, a wallet-connect entry flow, a Node.js API runtime, a shared agent engine, an optional WDK-backed wallet provider, a Telegram bridge, a Vercel serverless API bootstrap backed by a bundled CommonJS server app with lazy WDK loading, Alibaba Model Studio-compatible reasoning with model auto-switch fallback, an OpenClaw CLI reasoning path (with deterministic fallback), and automated tests for the core command and scheduling flows.
+The current build includes an animated React web UI, a wallet-connect entry flow, a Node.js API runtime, a shared agent engine, JSON state persistence, API-key auth + CORS allowlist controls, an optional WDK-backed wallet provider, a Telegram bridge, a Vercel serverless API bootstrap backed by a bundled CommonJS server app with lazy WDK loading, Alibaba Model Studio-compatible reasoning with model auto-switch fallback, an OpenClaw CLI reasoning path (with deterministic fallback), and automated tests for the core command and scheduling flows.
 
 ### 💡 What Makes AegisPay Different?
 
@@ -97,6 +97,12 @@ Define and enforce maximum spending thresholds for budget control.
 User: "Set daily limit to 100 USDT"
 Agent: 🔒 Daily spending limit set: 100 USDT
 ```
+
+### 💾 Persistent Runtime State
+Wallets, rules, recurring schedules, and chat history are persisted to disk (JSON file) so API restarts do not wipe core demo state.
+
+### 🛡️ API Security Controls
+Optional API key authentication and configurable CORS allowlist for safer public deployment.
 
 ### 💬 Chat Interface
 Communicate with the agent via Telegram bot, web chat, or CLI.
@@ -220,6 +226,7 @@ Create a `.env` file with the following variables:
 ```env
 # Frontend
 VITE_AEGIS_API_URL=/api
+VITE_AEGIS_API_KEY=your_api_key_if_enabled
 
 # API server
 AEGIS_PORT=8787
@@ -231,6 +238,10 @@ AEGIS_EXPLORER_BASE_URL=https://sepolia.etherscan.io
 AEGIS_SCHEDULER_ENABLED=true
 AEGIS_SCHEDULER_INTERVAL_MS=60000
 AEGIS_SCHEDULER_RUN_ON_START=false
+AEGIS_API_KEY=your_api_key
+AEGIS_ALLOWED_ORIGINS=http://localhost:5173,https://aegis-pay-agent.vercel.app
+AEGIS_STATE_PERSISTENCE_ENABLED=true
+AEGIS_STATE_FILE_PATH=.data/agent-state.json
 # Optional cron auth secret (recommended for Vercel cron route)
 CRON_SECRET=your_vercel_cron_secret
 
@@ -245,6 +256,9 @@ AEGIS_OPENAI_BASE_URL=https://dashscope-intl.aliyuncs.com/api/v2/apps/protocols/
 # Requires a local OpenClaw CLI install
 AEGIS_OPENCLAW_COMMAND=openclaw
 AEGIS_OPENCLAW_TIMEOUT_MS=15000
+AEGIS_OPENCLAW_SESSION_ID=aegispay
+AEGIS_OPENCLAW_LOCAL=true
+AEGIS_OPENCLAW_THINKING=high
 
 # WDK live mode
 AEGIS_WALLET_SEED_PHRASE=your_twelve_word_seed_phrase
@@ -293,7 +307,12 @@ To use OpenClaw as the first reasoning layer (with automatic deterministic fallb
 AEGIS_REASONING_PROVIDER=openclaw
 AEGIS_OPENCLAW_COMMAND=openclaw
 AEGIS_OPENCLAW_TIMEOUT_MS=15000
+AEGIS_OPENCLAW_SESSION_ID=aegispay
+AEGIS_OPENCLAW_LOCAL=true
+AEGIS_OPENCLAW_THINKING=high
 ```
+
+The OpenClaw provider now invokes the CLI with an explicit session id (required by current OpenClaw versions) and can run in local embedded mode by default.
 
 ### WDK Funded Smoke Verification
 
@@ -315,6 +334,18 @@ AEGIS_WDK_SMOKE_RECIPIENT=0xYourRecipientAddress
 
 Then run `npm run verify:wdk` again. The script prints transaction hash and explorer URL on success.
 
+### Deployment Smoke Verification
+
+To verify a deployed runtime (`/api/health`, `/api/runtime`, `/api/state`) and confirm provider configuration:
+
+```bash
+AEGIS_DEPLOYMENT_URL=https://your-deployment-domain \
+AEGIS_API_KEY=your_api_key_if_enabled \
+AEGIS_EXPECTED_WALLET_PROVIDER=demo \
+AEGIS_EXPECTED_REASONING_PROVIDER=openai \
+npm run verify:deploy
+```
+
 ### Vercel Deployment (Real Runtime)
 
 This project now supports Vercel Functions for the backend API via `api/[...route].ts`, so `/api/*` runs in Vercel instead of falling back to local-only demo logic.
@@ -322,6 +353,10 @@ This project now supports Vercel Functions for the backend API via `api/[...rout
 The Vercel entrypoint stays as an ES module, but it now bridges into a bundled CommonJS server app. WDK packages are lazy-loaded only when `AEGIS_WALLET_PROVIDER=wdk`, so demo-mode deployments do not touch WDK at startup. This avoids both the earlier `ERR_MODULE_NOT_FOUND` bootstrap issue and the `ERR_REQUIRE_ESM` crash pattern.
 
 1. In Vercel, add these environment variables for your deployment:
+   - `AEGIS_API_KEY=<strong-random-api-key>`
+   - `AEGIS_ALLOWED_ORIGINS=https://<your-vercel-domain>`
+   - `AEGIS_STATE_PERSISTENCE_ENABLED=true`
+   - `AEGIS_STATE_FILE_PATH=/tmp/aegispay-agent-state.json`
    - `AEGIS_REASONING_PROVIDER=openai`
    - `OPENAI_API_KEY=<your_alibaba_model_studio_key>`
    - `AEGIS_OPENAI_BASE_URL=https://dashscope-intl.aliyuncs.com/api/v2/apps/protocols/compatible-mode/v1`
@@ -329,9 +364,11 @@ The Vercel entrypoint stays as an ES module, but it now bridges into a bundled C
    - `AEGIS_OPENAI_MODELS=qwen-plus,qwen-turbo,qwen3-8b,qwen3-4b`
    - `CRON_SECRET=<strong-random-secret>`
 2. Keep frontend API target as `VITE_AEGIS_API_URL=/api`.
-3. Redeploy your project after saving env vars and code changes.
-4. Check runtime health at `https://<your-vercel-domain>/api/health`.
-5. Check state endpoint at `https://<your-vercel-domain>/api/state`.
+3. If API auth is enabled, set `VITE_AEGIS_API_KEY=<same_as_AEGIS_API_KEY>` in frontend env.
+4. Redeploy your project after saving env vars and code changes.
+5. Check runtime health at `https://<your-vercel-domain>/api/health`.
+6. Check state endpoint at `https://<your-vercel-domain>/api/state`.
+7. Run `npm run verify:deploy` from local/CI to confirm runtime/provider status.
 
 Recurring scheduler automation is wired through Vercel Cron in `vercel.json` and calls `/api/scheduler/cron` every minute.
 
@@ -448,7 +485,7 @@ Contributions are welcome! Please follow these steps:
 
 ## 📄 License
 
-License file is still pending and will be added before submission.
+Licensed under Apache License 2.0. See [LICENSE](./LICENSE).
 
 ---
 

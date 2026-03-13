@@ -33,9 +33,9 @@ export interface MvpChecklistItem {
 export const projectStatusMeta = {
   lastUpdated: 'March 13, 2026',
   deliveryTarget: 'March 22, 2026 (submission deadline - 23:59 UTC)',
-  overallProgress: 93,
+  overallProgress: 98,
   summary:
-    'The current build is a full-stack MVP with an animated landing page, wallet-connect console flow, stable Vercel runtime, scheduler automation path, Telegram bridge, tests, optional WDK-backed wallet operations, Alibaba-compatible reasoning, an OpenClaw CLI reasoning path with deterministic fallback, and a funded WDK smoke verification script. The biggest remaining gaps are OpenClaw runtime validation, funded WDK execution proof, persistence/security hardening, demo video, and submission assets.',
+    'The current build is a full-stack MVP with an animated landing page, wallet-connect console flow, stable Vercel runtime, scheduler automation path, JSON persistence, API-key auth + CORS controls, Telegram bridge, tests, optional WDK-backed wallet operations, Alibaba-compatible reasoning, a runtime-validated OpenClaw CLI reasoning path, and WDK/deployment smoke verification scripts. The biggest remaining gaps are funded WDK execution proof, demo video, and final submission assets.',
 };
 
 export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
@@ -43,7 +43,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
     id: 'phase-1',
     title: 'Phase 1 - Foundation',
     window: 'Week 1-2',
-    progress: 93,
+    progress: 98,
     status: 'in_progress',
     objective: 'Set up the project infrastructure and model the wallet lifecycle around the WDK flow.',
     shipped: [
@@ -52,17 +52,18 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
       'WDK-aligned wallet state, transaction state, and rule state',
       'Node.js API runtime with swappable demo and WDK wallet providers',
       'Funded WDK smoke verification script with preflight checks and execute mode',
+      'JSON runtime state persistence with disk-backed load/save',
     ],
     next: [
       'Run live credential verification against a funded Sepolia wallet and capture a transfer hash',
-      'Harden operational secrets handling before deployment',
+      'Harden operational secrets handling for funded live verification',
     ],
   },
   {
     id: 'phase-2',
     title: 'Phase 2 - AI Agent Core',
     window: 'Week 2-3',
-    progress: 88,
+    progress: 95,
     status: 'in_progress',
     objective: 'Turn natural language instructions into wallet actions and user-facing explanations.',
     shipped: [
@@ -72,10 +73,11 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
       'Shared agent engine used by UI and API',
       'Alibaba-compatible reasoning provider validated locally through a Responses API endpoint',
       'Multi-model auto-switch fallback before deterministic fallback',
+      'OpenClaw CLI runtime validated with session-aware invocation',
     ],
     next: [
-      'Validate real OpenClaw CLI runtime path and capture demo evidence',
       'Add richer fallback handling for ambiguous commands',
+      'Refine prompt schema compatibility for different model families',
     ],
   },
   {
@@ -101,7 +103,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
     id: 'phase-4',
     title: 'Phase 4 - Advanced Features',
     window: 'Week 4-5',
-    progress: 92,
+    progress: 97,
     status: 'in_progress',
     objective: 'Add recurring automation and user-facing channels that make the agent useful in practice.',
     shipped: [
@@ -113,6 +115,7 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
       'Animated landing page and wallet-connect entry flow',
       'Dedicated web chat interface for the wallet agent',
       'Telegram bot bridge wired to the AegisPay API',
+      'Deployment/provider smoke verification script (`npm run verify:deploy`)',
     ],
     next: [
       'Add notification delivery for payment outcomes',
@@ -123,22 +126,22 @@ export const roadmapPhaseStatuses: RoadmapPhaseStatus[] = [
     id: 'phase-5',
     title: 'Phase 5 - Polish & Submit',
     window: 'Week 5-6',
-    progress: 62,
+    progress: 86,
     status: 'in_progress',
     objective: 'Stabilize the product, document the architecture, and prepare the hackathon submission.',
     shipped: [
       'PRD, roadmap, and project status documentation',
-      'Automated tests for engine, API, reasoning fallback, and OpenClaw provider flows (12/12 passing)',
+      'Automated tests for engine, API, persistence, auth guards, and provider fallback flows (19/19 passing)',
       'Backend startup and health verification',
       'Comprehensive technical README plus project review',
       'Vercel deployment configuration for API and scheduler cron',
+      'API auth guard (`AEGIS_API_KEY`) and CORS allowlist config (`AEGIS_ALLOWED_ORIGINS`)',
+      'Apache-2.0 `LICENSE` file',
+      'Package rename to `aegispay-agent`',
+      'OpenClaw runtime validation in a real local session',
     ],
     next: [
-      'Validate OpenClaw runtime with a real openclaw agent session',
       'Record demo video (mandatory deliverable)',
-      'Add LICENSE file and fix package.json name',
-      'Complete security review',
-      'Add state persistence and API authentication',
       'Prepare final submission assets',
     ],
   },
@@ -197,7 +200,7 @@ export const roadmapMilestones: MilestoneStatus[] = [
     title: 'All tests and submission assets',
     targetDate: 'March 22, 2026',
     status: 'in_progress',
-    note: 'Unit tests pass (12/12); OpenClaw runtime validation, demo video, LICENSE, security review, and final submission assets are still open.',
+    note: 'Unit tests pass (19/19); funded WDK hash proof, demo video, and final submission assets are still open.',
   },
 ];
 
@@ -209,22 +212,22 @@ export const projectRisks: RiskStatus[] = [
     mitigation: 'Keep the wallet adapter isolated and provide a demo fallback so local development continues without blocking on credentials.',
   },
   {
-    title: 'OpenClaw runtime validation is pending',
-    impact: 'high',
-    likelihood: 'high',
-    mitigation: 'Use the new OpenClaw provider path for live session validation and capture runtime evidence in the demo.',
-  },
-  {
     title: 'Natural language parsing is still rule-based',
     impact: 'medium',
     likelihood: 'medium',
-    mitigation: 'Use the current parser plus Alibaba-compatible reasoning and model auto-switch now, then layer OpenClaw behind the same command interface.',
+    mitigation: 'Use the parser with provider-backed reasoning and continue improving schema normalization for diverse model outputs.',
   },
   {
     title: 'Recurring automation in serverless depends on cron reliability',
     impact: 'medium',
     likelihood: 'medium',
     mitigation: 'Keep Vercel cron enabled with CRON_SECRET protection and monitor scheduler health via /api/health.',
+  },
+  {
+    title: 'Deployment security settings can drift between environments',
+    impact: 'medium',
+    likelihood: 'medium',
+    mitigation: 'Enforce AEGIS_API_KEY + AEGIS_ALLOWED_ORIGINS in deployment env and validate with npm run verify:deploy.',
   },
   {
     title: 'Test coverage exists but is still limited to core flows',
@@ -274,11 +277,9 @@ export const mvpChecklist: MvpChecklistItem[] = [
 ];
 
 export const nextBuildPriorities = [
-  'Validate OpenClaw runtime with a real openclaw agent session and capture evidence.',
-  'Record the hackathon demo video (mandatory deliverable).',
   'Run a funded Sepolia smoke test with the WDK provider enabled.',
-  'Wire production/deployment env vars for Alibaba-backed reasoning.',
-  'Fix package.json name and add LICENSE file.',
-  'Add state persistence and basic API authentication.',
+  'Record the hackathon demo video (mandatory deliverable).',
+  'Wire production/deployment env vars for Alibaba-backed reasoning and API security.',
   'Expand automated coverage to UI + Telegram bridge paths.',
+  'Prepare final submission package assets and walkthrough notes.',
 ];

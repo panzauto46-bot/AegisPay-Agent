@@ -4,25 +4,25 @@ Last updated: March 13, 2026
 
 ## Current Snapshot
 
-- Overall progress: `93%`
+- Overall progress: `98%`
 - Delivery target: `March 22, 2026 (submission deadline - 23:59 UTC)`
-- Product state: `Full-stack MVP with animated landing page, wallet-connect console flow, API runtime, CommonJS Vercel serverless bundle with lazy WDK loading, scheduler, Telegram bridge, Alibaba-compatible reasoning, and OpenClaw CLI reasoning path`
-- Primary focus: `OpenClaw runtime validation`, `funded WDK live verification`, `demo video`, `submission assets`
+- Product state: `Full-stack MVP with animated landing page, wallet-connect console flow, API runtime, JSON persistence, API-key auth + CORS controls, CommonJS Vercel serverless bundle with lazy WDK loading, scheduler, Telegram bridge, Alibaba-compatible reasoning, and validated OpenClaw CLI reasoning path`
+- Primary focus: `funded WDK live verification`, `demo video`, `final submission package`
 
 ## PR Prioritas (Wajib Sebelum Submit)
 
 | Priority | PR / Pending Work | Status | Definition of Done |
 |----------|-------------------|--------|--------------------|
 | P0 | Fix production API crash di Vercel (`/api/health`, `/api/state`) | ✅ Complete | Bundle serverless CommonJS + lazy WDK loading lolos build, route import lokal, smoke test packaging, dan endpoint health/state sudah `200` di production tanpa `ERR_MODULE_NOT_FOUND` / `ERR_REQUIRE_ESM`. |
-| P0 | Integrasi OpenClaw nyata untuk layer reasoning/planning | 🟠 In Progress | OpenClaw CLI reasoning provider sudah wired + test lulus; tinggal validasi runtime real (`openclaw agent`) dan bukti demo flow. |
+| P0 | Integrasi OpenClaw nyata untuk layer reasoning/planning | ✅ Complete | OpenClaw CLI sekarang tervalidasi runtime real (`openclaw agent` + provider analyze live) dengan session-aware invocation (`--session-id`) dan mode lokal opsional. |
 | P0 | Verifikasi WDK live funded (Sepolia) end-to-end | 🟠 In Progress | Script `npm run verify:wdk` sudah siap + read-only gate jalan; tinggal isi env live dan jalankan transfer sukses dengan hash + bukti di README/demo script. |
 | P0 | Demo video submission (<= 5 menit, unlisted YouTube) | 🔴 Open | Link video siap ditempel di DoraHacks submission. |
-| P1 | Tambah `LICENSE` Apache-2.0 | 🔴 Open | File `LICENSE` tersedia dan sesuai requirement hackathon. |
+| P1 | Tambah `LICENSE` Apache-2.0 | ✅ Complete | `LICENSE` Apache-2.0 sudah ditambahkan di root project. |
 | P1 | Submission package final (disclosure third-party + run instruction jelas) | 🟠 In Progress | Checklist submit lengkap: repo, track, video, disclosure, cara run. |
-| P1 | Harden security backend (API auth + CORS ketat) | 🟠 In Progress | API key/token guard aktif + CORS tidak wildcard di production. |
-| P1 | Tambah persistence (JSON/SQLite) untuk wallet/rules/recurring state | 🟠 In Progress | Restart server tidak menghapus state utama demo. |
-| P2 | Rename package dari `react-vite-tailwind` ke `aegispay-agent` | 🔴 Open | `package.json` sudah pakai nama project yang benar. |
-| P2 | Tambah smoke tests untuk flow deployment + provider live | 🟠 In Progress | Ada test atau script verifikasi minimal untuk endpoint production dan provider config. |
+| P1 | Harden security backend (API auth + CORS ketat) | ✅ Complete | API auth middleware (`AEGIS_API_KEY`) + CORS allowlist (`AEGIS_ALLOWED_ORIGINS`) sudah aktif dan health/runtime tetap publik. |
+| P1 | Tambah persistence (JSON/SQLite) untuk wallet/rules/recurring state | ✅ Complete | JSON file persistence (`AEGIS_STATE_FILE_PATH`) sudah wired ke state engine sehingga restart server mempertahankan state utama. |
+| P2 | Rename package dari `react-vite-tailwind` ke `aegispay-agent` | ✅ Complete | `package.json` dan `package-lock.json` sudah pakai nama project yang benar. |
+| P2 | Tambah smoke tests untuk flow deployment + provider live | ✅ Complete | Script `npm run verify:deploy` ditambahkan untuk health/runtime/state + validasi provider. |
 
 ## What Is Working Now
 
@@ -34,7 +34,10 @@ Last updated: March 13, 2026
 - API server for state, commands, wallets, rules, recurring payments, and scheduler runs
 - Optional WDK provider for live Sepolia wallet and USDT operations
 - WDK funded smoke script (`npm run verify:wdk`) with clear preflight checks and optional execute mode
+- Deployment smoke script (`npm run verify:deploy`) for runtime/provider verification
+- Production deploy smoke verified on `https://aegis-pay-agent.vercel.app` (health/runtime/state OK, wallet provider `demo`, reasoning provider `openai`)
 - Optional OpenClaw CLI reasoning provider path with deterministic fallback
+- OpenClaw CLI runtime validation succeeded locally (`openclaw agent --local --session-id aegispay` + live provider analyze => `check_balance`)
 - Alibaba Model Studio reasoning through an OpenAI-compatible Responses API endpoint
 - Multi-model reasoning fallback chain:
   - `qwen-plus`
@@ -47,6 +50,9 @@ Last updated: March 13, 2026
   - max transaction
   - recipient whitelist
   - recipient blacklist
+- API key auth guard for protected endpoints (`AEGIS_API_KEY`)
+- Configurable production CORS allowlist (`AEGIS_ALLOWED_ORIGINS`)
+- File-based runtime state persistence (`AEGIS_STATE_FILE_PATH`)
 - Recurring payment scheduling and management
 - API-backed scheduler cycle for due recurring payments
 - Persistent in-process scheduler service on the backend
@@ -55,7 +61,7 @@ Last updated: March 13, 2026
 - Production Vercel endpoints `/api/health` and `/api/state` now return `200`
 - Web chat interface with API/local fallback behavior
 - Telegram bot bridge via `grammy`
-- Automated tests for engine, reasoning fallback, OpenClaw provider path, and API flows (`12/12` passing)
+- Automated tests for engine, reasoning fallback, OpenClaw provider path, API auth, and persistence flows (`19/19` passing)
 - CommonJS serverless bundle for Vercel API bootstrap now builds successfully
 - Lazy WDK loading prevents demo-mode runtime from importing WDK packages before they are actually needed
 - Local serverless packaging smoke test now passes with the bundled API runtime outside the repo `node_modules`
@@ -65,15 +71,8 @@ Last updated: March 13, 2026
 
 ## What Is Not Done Yet
 
-- OpenClaw provider path is implemented, but runtime validation with a real OpenClaw CLI session is still pending
-- Live WDK funded verification still blocked by missing local env secrets (`AEGIS_WALLET_SEED_PHRASE`, `AEGIS_EVM_RPC_URL`, `AEGIS_USDT_TOKEN_ADDRESS`)
-- No persistence layer yet, so runtime state resets on server restart
-- No API authentication
-- CORS is still open for general development convenience
+- Live WDK funded verification still blocked by unfunded wallet balance (read-only smoke sudah lolos, execute mode gagal karena saldo 0)
 - No demo video recorded yet
-- No `LICENSE` file yet
-- `package.json` name is still `react-vite-tailwind`
-- Public deployment still needs backend environment variables for provider-backed AI
 - Notification delivery for payment outcomes is not implemented
 - Test coverage is still centered on core engine/API paths only
 
@@ -81,11 +80,11 @@ Last updated: March 13, 2026
 
 | Phase | Progress | Status | Notes |
 |-------|----------|--------|-------|
-| Phase 1 - Foundation | 95% | In Progress | Wallet lifecycle, API runtime, provider abstraction, optional WDK integration, and funded verification script are in place; only live funded execution proof is pending. |
-| Phase 2 - AI Agent Core | 88% | In Progress | Natural-language command handling works across UI and API, Alibaba-compatible reasoning with model auto-switch is live locally, and OpenClaw CLI provider is now wired with fallback. |
+| Phase 1 - Foundation | 98% | In Progress | Wallet lifecycle, API runtime, provider abstraction, WDK smoke tooling, and JSON persistence are in place; only funded transfer proof is pending. |
+| Phase 2 - AI Agent Core | 95% | In Progress | Natural-language command handling works across UI and API, Alibaba-compatible reasoning with model auto-switch is live, and OpenClaw CLI provider is now runtime-validated. |
 | Phase 3 - Payment Engine | 90% | In Progress | Demo sends, guardrails, recurring execution, and explorer links are in place; live funded transfer verification is still pending. |
-| Phase 4 - Advanced Features | 96% | In Progress | Scheduler, web chat, Telegram bridge, landing page, wallet-connect entry flow, and the lazy-loaded serverless bootstrap are in place; notifications are the main runtime gap left. |
-| Phase 5 - Polish & Submit | 60% | In Progress | Docs, review, tests, UX polish, deployment recovery, OpenClaw wiring, and WDK smoke tooling are in place; demo video, security review, LICENSE, naming cleanup, and final submission packaging remain. |
+| Phase 4 - Advanced Features | 97% | In Progress | Scheduler, web chat, Telegram bridge, landing page, wallet-connect entry flow, lazy-loaded serverless bootstrap, and deploy smoke tooling are in place; notifications are the main runtime gap left. |
+| Phase 5 - Polish & Submit | 86% | In Progress | Docs, review, tests, UX polish, deployment recovery, OpenClaw runtime validation, WDK/deploy smoke tooling, security hardening, persistence, LICENSE, and package rename are complete; demo video and final submission packaging remain. |
 
 ## MVP Checklist
 
@@ -113,31 +112,24 @@ Last updated: March 13, 2026
 | Metric | Value |
 |--------|-------|
 | TypeScript errors | 0 |
-| Test suites | 4 |
-| Tests passing | 12/12 ✅ |
-| Source lines | ~6,470 |
-| Source files | 39 |
-| Git commits | 19 |
-| Build output | Single-file HTML (`dist/index.html`, ~524 KB) |
+| Test suites | 5 |
+| Tests passing | 19/19 ✅ |
+| Source lines | ~6,660 |
+| Source files | 42 |
+| Git commits | 18 |
+| Build output | Single-file HTML (`dist/index.html`, ~535 KB) |
 
 ## Open Risks
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| OpenClaw runtime validation is still pending | 🔴 High | Validate real `openclaw agent` runtime path and capture evidence in demo flow. |
-| Live WDK funded verification still depends on local secret availability | 🔴 High | Use `npm run verify:wdk` as preflight gate, then execute funded transfer once env secrets are provisioned. |
-| Backend state is in-memory only | 🟡 Medium | Add JSON-file or SQLite persistence for demo stability. |
-| Public deployment still lacks API authentication | 🟡 Medium | Add at least a shared API key or token gate before public backend exposure. |
+| Live WDK funded verification still depends on funded wallet balance | 🔴 High | Use `npm run verify:wdk` preflight gate, fund Sepolia wallet, then execute transfer for hash proof. |
 | Scheduler runs in-process only | 🟡 Medium | Move recurring execution to a worker or cron-capable deployment target. |
 | Provider-backed AI depends on runtime env vars in deployment | 🟡 Medium | Mirror the validated local Alibaba env configuration into the hosting environment. |
 | Test coverage is still narrow | 🟡 Medium | Add UI, Telegram, and live-provider smoke coverage. |
 
 ## Next Priorities
 
-1. Validate real OpenClaw CLI runtime flow and capture proof for submission demo.
-2. Provision missing WDK env secrets and run funded verification via `npm run verify:wdk` until hash proof is produced.
-3. Record and publish unlisted demo video (<= 5 minutes).
-4. Add `LICENSE` Apache-2.0 and finalize submission compliance artifacts.
-5. Add persistence for state and scheduler continuity.
-6. Add basic API authentication and tighten CORS for deployment.
-7. Rename package to `aegispay-agent` and expand deployment/live-provider smoke coverage.
+1. Fund Sepolia wallet and run funded verification via `npm run verify:wdk` until hash proof is produced.
+2. Record and publish unlisted demo video (<= 5 minutes).
+3. Finalize submission package artifacts (track disclosure, runbook, and video link for DoraHacks).

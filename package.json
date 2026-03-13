@@ -1,5 +1,5 @@
 {
-  "name": "react-vite-tailwind",
+  "name": "aegispay-agent",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -13,6 +13,7 @@
     "preview": "vite preview",
     "start:api": "tsx src/server/index.ts",
     "start:bot": "tsx src/server/telegramBot.ts",
+    "verify:deploy": "tsx src/server/deploySmoke.ts",
     "verify:wdk": "tsx src/server/wdkSmoke.ts",
     "test": "vitest run",
     "test:watch": "vitest"

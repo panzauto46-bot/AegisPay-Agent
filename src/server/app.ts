@@ -4,7 +4,7 @@ import cors from 'cors';
 import { AgentEngine } from '../engine/agentEngine';
 import { serializeAgentState } from '../lib/agentState';
 import type { RecurringPayment, SpendingRule } from '../types';
-import { agentEngine, schedulerService, serverConfig } from './runtime';
+import { agentEngine, schedulerService, serverConfig, stateStore } from './runtime';
 
 function isRuleType(value: unknown): value is SpendingRule['type'] {
   return value === 'daily_limit' || value === 'max_transaction' || value === 'whitelist' || value === 'blacklist';
@@ -16,6 +16,33 @@ function isRecurringFrequency(value: unknown): value is RecurringPayment['freque
 
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : 'Unexpected server error';
+}
+
+function normalizeApiPath(requestPath: string) {
+  return requestPath.startsWith('/api') ? requestPath : `/api${requestPath}`;
+}
+
+function isPublicApiRoute(request: express.Request) {
+  const path = normalizeApiPath(request.path);
+  return path === '/api/health' || path === '/api/runtime' || path === '/api/scheduler/cron';
+}
+
+function isAllowedCorsOrigin(origin: string | undefined, allowedOrigins: string[]) {
+  if (!origin) {
+    return true;
+  }
+
+  return allowedOrigins.includes('*') || allowedOrigins.includes(origin);
+}
+
+function isAuthorizedApiRequest(request: express.Request, apiKey: string | undefined) {
+  if (!apiKey) {
+    return true;
+  }
+
+  const authorization = request.header('authorization');
+  const directApiKey = request.header('x-aegis-api-key');
+  return authorization === `Bearer ${apiKey}` || directApiKey === apiKey;
 }
 
 function isAuthorizedCronRequest(request: express.Request) {
@@ -30,22 +57,56 @@ function isAuthorizedCronRequest(request: express.Request) {
 
 interface CreateAppOptions {
   engine?: AgentEngine;
+  apiKey?: string;
+  allowedOrigins?: string[];
 }
 
 export function createApp(options: CreateAppOptions = {}) {
   const engine = options.engine ?? agentEngine;
+  const apiKey = options.apiKey ?? serverConfig.apiKey;
+  const allowedOrigins = options.allowedOrigins ?? serverConfig.allowedOrigins;
   const app = express();
 
-  app.use(cors());
+  app.use(
+    cors({
+      origin(origin: string | undefined, callback: (error: Error | null, allow?: boolean) => void) {
+        callback(null, isAllowedCorsOrigin(origin, allowedOrigins));
+      },
+      credentials: true,
+    }),
+  );
   app.use(express.json());
+  app.use('/api', (request, response, next) => {
+    if (request.method === 'OPTIONS') {
+      next();
+      return;
+    }
+
+    if (isPublicApiRoute(request)) {
+      next();
+      return;
+    }
+
+    if (!isAuthorizedApiRequest(request, apiKey)) {
+      response.status(401).json({
+        error: 'Unauthorized API request.',
+      });
+      return;
+    }
+
+    next();
+  });
 
   app.get('/api/health', async (_request, response) => {
     response.json({
       ok: true,
       walletProvider: serverConfig.walletProvider,
       reasoningProvider: serverConfig.reasoningProvider,
+      apiAuthEnabled: Boolean(apiKey),
+      allowedOrigins,
       port: serverConfig.port,
       scheduler: schedulerService.getStatus(),
+      persistence: stateStore.getStatus(),
       serverTime: new Date().toISOString(),
     });
   });
@@ -55,6 +116,11 @@ export function createApp(options: CreateAppOptions = {}) {
       walletProvider: serverConfig.walletProvider,
       reasoningProvider: serverConfig.reasoningProvider,
       scheduler: schedulerService.getStatus(),
+      security: {
+        apiAuthEnabled: Boolean(apiKey),
+        allowedOrigins,
+      },
+      persistence: stateStore.getStatus(),
     });
   });
 

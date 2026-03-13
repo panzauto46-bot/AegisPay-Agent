@@ -11,8 +11,14 @@ import { loadServerConfig } from './config';
 import { OpenClawReasoningProvider } from './providers/openClawReasoningProvider';
 import { WdkWalletProvider } from './providers/wdkWalletProvider';
 import { SchedulerService } from './schedulerService';
+import { JsonFileStateStore } from './statePersistence';
 
 export const serverConfig = loadServerConfig();
+export const stateStore = new JsonFileStateStore({
+  enabled: serverConfig.statePersistenceEnabled,
+  filePath: serverConfig.stateFilePath,
+});
+const persistedState = stateStore.load();
 
 function createWalletProvider(): WalletProvider {
   if (serverConfig.walletProvider === 'wdk') {
@@ -38,6 +44,9 @@ function createReasoningProvider(): ReasoningProvider {
       new OpenClawReasoningProvider({
         command: serverConfig.openClawCommand,
         timeoutMs: serverConfig.openClawTimeoutMs,
+        sessionId: serverConfig.openClawSessionId,
+        useLocal: serverConfig.openClawUseLocal,
+        thinkingLevel: serverConfig.openClawThinkingLevel,
         fallback: deterministicProvider,
       }),
       deterministicProvider,
@@ -63,6 +72,10 @@ function createReasoningProvider(): ReasoningProvider {
 export const agentEngine = new AgentEngine({
   walletProvider: createWalletProvider(),
   reasoningProvider: createReasoningProvider(),
+  initialState: persistedState,
+  onStateChange: (state) => {
+    stateStore.save(state);
+  },
 });
 
 export const schedulerService = new SchedulerService({

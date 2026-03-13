@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { AgentEngine } from './agentEngine';
 import { DemoWalletProvider } from './demoWalletProvider';
 
@@ -42,5 +42,17 @@ describe('AgentEngine', () => {
     expect(after.transactions.length).toBeGreaterThan(before.transactions.length);
     expect(after.transactions[0]?.type).toBe('recurring');
     expect(after.transactions[0]?.to).toBe(RECIPIENT_B.toLowerCase());
+  });
+
+  it('emits state change callbacks for persistence hooks', async () => {
+    const onStateChange = vi.fn();
+    const engine = new AgentEngine({
+      walletProvider: new DemoWalletProvider(),
+      onStateChange,
+    });
+
+    await engine.processCommand('What is my balance?');
+
+    expect(onStateChange).toHaveBeenCalled();
   });
 });

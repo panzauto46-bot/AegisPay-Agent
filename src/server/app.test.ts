@@ -9,7 +9,19 @@ function createTestApp() {
     walletProvider: new DemoWalletProvider(),
   });
 
-  return createApp({ engine });
+  return createApp({ engine, allowedOrigins: ['*'] });
+}
+
+function createProtectedTestApp(apiKey = 'test-api-key') {
+  const engine = new AgentEngine({
+    walletProvider: new DemoWalletProvider(),
+  });
+
+  return createApp({
+    engine,
+    apiKey,
+    allowedOrigins: ['https://example.com'],
+  });
 }
 
 describe('AegisPay API', () => {
@@ -22,6 +34,7 @@ describe('AegisPay API', () => {
     expect(response.body.ok).toBe(true);
     expect(response.body.scheduler).toBeDefined();
     expect(response.body.reasoningProvider).toBeDefined();
+    expect(response.body.persistence).toBeDefined();
   });
 
   it('processes commands through the API', async () => {
@@ -78,5 +91,47 @@ describe('AegisPay API', () => {
     expect(response.body.ok).toBe(true);
     expect(response.body.state).toBeDefined();
     delete process.env.CRON_SECRET;
+  });
+
+  it('blocks protected API routes when API key auth is enabled', async () => {
+    const app = createProtectedTestApp();
+
+    const response = await request(app)
+      .post('/api/command')
+      .send({ input: 'What is my balance?' });
+
+    expect(response.status).toBe(401);
+    expect(response.body.error).toContain('Unauthorized');
+  });
+
+  it('allows protected API routes with x-aegis-api-key header', async () => {
+    const app = createProtectedTestApp();
+
+    const response = await request(app)
+      .post('/api/command')
+      .set('x-aegis-api-key', 'test-api-key')
+      .send({ input: 'What is my balance?' });
+
+    expect(response.status).toBe(200);
+    expect(response.body.state.messages.at(-1).action).toBe('balance_check');
+  });
+
+  it('keeps health route public even when API key auth is enabled', async () => {
+    const app = createProtectedTestApp();
+    const response = await request(app).get('/api/health');
+
+    expect(response.status).toBe(200);
+    expect(response.body.ok).toBe(true);
+  });
+
+  it('allows preflight requests when API key auth is enabled', async () => {
+    const app = createProtectedTestApp();
+
+    const response = await request(app)
+      .options('/api/command')
+      .set('origin', 'https://example.com')
+      .set('access-control-request-method', 'POST');
+
+    expect(response.status).toBe(204);
   });
 });

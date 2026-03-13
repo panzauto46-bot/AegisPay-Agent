@@ -6,6 +6,7 @@ import { createInitialAgentState } from '../lib/agentRuntime';
 import type { AgentState, RecurringPayment, SpendingRule } from '../types';
 
 const DEFAULT_API_BASE_URL = import.meta.env.VITE_AEGIS_API_URL?.trim() || '/api';
+const DEFAULT_API_KEY = import.meta.env.VITE_AEGIS_API_KEY?.trim();
 
 interface ApiStatePayload {
   state: SerializedAgentState;
@@ -18,6 +19,14 @@ async function fetchJson<T>(input: RequestInfo | URL, init?: RequestInit) {
   }
 
   return (await response.json()) as T;
+}
+
+function withApiHeaders(headers?: HeadersInit) {
+  const resolvedHeaders = new Headers(headers);
+  if (DEFAULT_API_KEY) {
+    resolvedHeaders.set('x-aegis-api-key', DEFAULT_API_KEY);
+  }
+  return resolvedHeaders;
 }
 
 export function useAgent() {
@@ -37,7 +46,9 @@ export function useAgent() {
 
     const loadRemoteState = async () => {
       try {
-        const payload = await fetchJson<ApiStatePayload>(`${DEFAULT_API_BASE_URL}/state`);
+        const payload = await fetchJson<ApiStatePayload>(`${DEFAULT_API_BASE_URL}/state`, {
+          headers: withApiHeaders(),
+        });
         if (cancelled) {
           return;
         }
@@ -73,7 +84,10 @@ export function useAgent() {
   };
 
   const runRemote = async (path: string, init?: RequestInit) => {
-    const payload = await fetchJson<ApiStatePayload>(`${DEFAULT_API_BASE_URL}${path}`, init);
+    const payload = await fetchJson<ApiStatePayload>(`${DEFAULT_API_BASE_URL}${path}`, {
+      ...init,
+      headers: withApiHeaders(init?.headers),
+    });
     const nextState = deserializeAgentState(payload.state);
     updateState(nextState);
     return nextState;

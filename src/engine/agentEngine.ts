@@ -32,6 +32,7 @@ interface AgentEngineOptions {
   reasoningProvider?: ReasoningProvider;
   initialState?: AgentState;
   now?: () => Date;
+  onStateChange?: (state: AgentState) => void | Promise<void>;
 }
 
 export class AgentEngine {
@@ -39,12 +40,14 @@ export class AgentEngine {
   private readonly walletProvider: WalletProvider;
   private readonly reasoningProvider: ReasoningProvider;
   private readonly now: () => Date;
+  private readonly onStateChange?: (state: AgentState) => void | Promise<void>;
 
   constructor(options: AgentEngineOptions) {
     this.walletProvider = options.walletProvider;
     this.reasoningProvider = options.reasoningProvider ?? new DeterministicReasoningProvider();
     this.state = cloneAgentState(options.initialState ?? createInitialAgentState());
     this.now = options.now ?? (() => new Date());
+    this.onStateChange = options.onStateChange;
   }
 
   async getState(sync = false) {
@@ -57,6 +60,7 @@ export class AgentEngine {
 
   async syncWallets() {
     this.state.wallets = await this.walletProvider.refreshWallets(this.state.wallets);
+    await this.notifyStateChange();
     return this.getState(false);
   }
 
@@ -117,8 +121,7 @@ Open the **Project Status** page for the full roadmap and risk breakdown.`,
       case 'run_scheduler':
         return this.runScheduler();
       case 'create_wallet':
-        await this.createWallet(intent.walletName);
-        break;
+        return this.createWallet(intent.walletName);
       case 'list_wallets': {
         const walletList = this.state.wallets
           .map(
@@ -165,7 +168,7 @@ Portfolio total: **${totalBalance.toFixed(2)} ${TOKEN_SYMBOL}**`,
         const recipient = intent.recipientLabel ?? inferRecurringRecipient(input, address);
         const nextExecution = getNextExecutionDate(intent.frequency);
 
-        this.addRecurringPayment({
+        await this.addRecurringPayment({
           recipient,
           recipientAddress: address,
           amount: intent.amount,
@@ -311,6 +314,7 @@ Try:
         break;
     }
 
+    await this.notifyStateChange();
     return this.getState(false);
   }
 
@@ -335,39 +339,45 @@ This follows the PRD wallet-creation flow and is ready for funding.`,
       'wallet_created',
     );
 
+    await this.notifyStateChange();
     return this.getState(false);
   }
 
-  toggleRule(id: string) {
+  async toggleRule(id: string) {
     this.state.rules = this.state.rules.map((rule) =>
       rule.id === id ? { ...rule, enabled: !rule.enabled } : rule,
     );
+    await this.notifyStateChange();
     return this.getState(false);
   }
 
-  deleteRule(id: string) {
+  async deleteRule(id: string) {
     this.state.rules = this.state.rules.filter((rule) => rule.id !== id);
+    await this.notifyStateChange();
     return this.getState(false);
   }
 
-  toggleRecurring(id: string) {
+  async toggleRecurring(id: string) {
     this.state.recurringPayments = this.state.recurringPayments.map((payment) =>
       payment.id === id ? { ...payment, active: !payment.active } : payment,
     );
+    await this.notifyStateChange();
     return this.getState(false);
   }
 
-  deleteRecurring(id: string) {
+  async deleteRecurring(id: string) {
     this.state.recurringPayments = this.state.recurringPayments.filter((payment) => payment.id !== id);
+    await this.notifyStateChange();
     return this.getState(false);
   }
 
-  addRule(type: SpendingRule['type'], label: string, value: number | string[]) {
+  async addRule(type: SpendingRule['type'], label: string, value: number | string[]) {
     this.upsertRule(type, label, value);
+    await this.notifyStateChange();
     return this.getState(false);
   }
 
-  addRecurringPayment(payment: Omit<RecurringPayment, 'id' | 'executionCount'>) {
+  async addRecurringPayment(payment: Omit<RecurringPayment, 'id' | 'executionCount'>) {
     const recipientAddress = isValidAddress(payment.recipientAddress)
       ? normalizeAddress(payment.recipientAddress)
       : generateAddress();
@@ -382,6 +392,7 @@ This follows the PRD wallet-creation flow and is ready for funding.`,
       },
     ];
 
+    await this.notifyStateChange();
     return this.getState(false);
   }
 
@@ -396,6 +407,7 @@ This follows the PRD wallet-creation flow and is ready for funding.`,
 
     if (!primaryWallet) {
       this.addMessage('agent', 'Scheduler cycle aborted because no wallet is available.', 'scheduler_error');
+      await this.notifyStateChange();
       return this.getState(false);
     }
 
@@ -411,6 +423,7 @@ This follows the PRD wallet-creation flow and is ready for funding.`,
 No recurring payments are due right now.${nextPayment ? ` Next up: **${nextPayment.recipient}** on **${nextPayment.nextExecution.toLocaleDateString()}**.` : ''}`,
         'scheduler_idle',
       );
+      await this.notifyStateChange();
       return this.getState(false);
     }
 
@@ -513,6 +526,7 @@ No recurring payments are due right now.${nextPayment ? ` Next up: **${nextPayme
     }
 
     this.addMessage('agent', summary.join('\n'), 'scheduler_run');
+    await this.notifyStateChange();
     return this.getState(false);
   }
 
@@ -577,6 +591,19 @@ No recurring payments are due right now.${nextPayment ? ` Next up: **${nextPayme
     }
 
     return true;
+  }
+
+  private async notifyStateChange() {
+    if (!this.onStateChange) {
+      return;
+    }
+
+    try {
+      await this.onStateChange(cloneAgentState(this.state));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unexpected state persistence failure';
+      console.warn(`[AegisPay] Failed to persist runtime state: ${message}`);
+    }
   }
 
   private async executeSend({

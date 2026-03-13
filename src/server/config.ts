@@ -1,3 +1,4 @@
+import path from 'node:path';
 import dotenv from 'dotenv';
 import { DEFAULT_EXPLORER_BASE_URL, NETWORK_NAME } from '../lib/agentRuntime';
 
@@ -7,6 +8,8 @@ export interface AegisServerConfig {
   port: number;
   walletProvider: 'demo' | 'wdk';
   reasoningProvider: 'deterministic' | 'openai' | 'openclaw';
+  apiKey?: string;
+  allowedOrigins: string[];
   rpcUrl?: string;
   walletSeedPhrase?: string;
   tokenAddress?: string;
@@ -20,9 +23,14 @@ export interface AegisServerConfig {
   openAiBaseUrl: string;
   openClawCommand: string;
   openClawTimeoutMs: number;
+  openClawSessionId: string;
+  openClawUseLocal: boolean;
+  openClawThinkingLevel: 'off' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh';
   schedulerEnabled: boolean;
   schedulerIntervalMs: number;
   schedulerRunOnStart: boolean;
+  statePersistenceEnabled: boolean;
+  stateFilePath: string;
   telegramBotToken?: string;
   serverUrl: string;
 }
@@ -53,6 +61,54 @@ function getListEnv(name: string) {
     .filter(Boolean);
 }
 
+function getOpenClawThinkingLevel() {
+  const value = (getOptionalEnv('AEGIS_OPENCLAW_THINKING') ?? 'high').toLowerCase();
+  if (value === 'off' || value === 'minimal' || value === 'low' || value === 'medium' || value === 'high' || value === 'xhigh') {
+    return value;
+  }
+
+  return 'high';
+}
+
+function getUrlOrigin(value: string | undefined) {
+  if (!value) {
+    return undefined;
+  }
+
+  try {
+    return new URL(value).origin;
+  } catch {
+    return undefined;
+  }
+}
+
+function getDefaultAllowedOrigins(serverUrl: string) {
+  if (process.env.NODE_ENV !== 'production') {
+    return ['*'];
+  }
+
+  const allowed = new Set<string>();
+  const serverOrigin = getUrlOrigin(serverUrl);
+  if (serverOrigin) {
+    allowed.add(serverOrigin);
+  }
+
+  const vercelUrl = getOptionalEnv('VERCEL_URL');
+  if (vercelUrl) {
+    allowed.add(`https://${vercelUrl}`);
+  }
+
+  return Array.from(allowed);
+}
+
+function getDefaultStateFilePath() {
+  if (process.env.VERCEL) {
+    return '/tmp/aegispay-agent-state.json';
+  }
+
+  return path.resolve(process.cwd(), '.data', 'agent-state.json');
+}
+
 export function loadServerConfig(): AegisServerConfig {
   const configuredWalletProvider = (process.env.AEGIS_WALLET_PROVIDER?.trim().toLowerCase() as 'demo' | 'wdk' | undefined) ?? 'demo';
   const configuredReasoningProvider = (process.env.AEGIS_REASONING_PROVIDER?.trim().toLowerCase() as 'deterministic' | 'openai' | 'openclaw' | undefined) ?? 'deterministic';
@@ -64,6 +120,9 @@ export function loadServerConfig(): AegisServerConfig {
   const openAiModel = getOptionalEnv('AEGIS_OPENAI_MODEL') ?? 'gpt-5-mini';
   const openAiModels = getListEnv('AEGIS_OPENAI_MODELS');
   const openAiApiKey = getOptionalEnv('OPENAI_API_KEY');
+  const serverUrl = getOptionalEnv('AEGIS_SERVER_URL') ?? `http://localhost:${port}`;
+  const configuredAllowedOrigins = getListEnv('AEGIS_ALLOWED_ORIGINS');
+  const defaultAllowedOrigins = getDefaultAllowedOrigins(serverUrl);
   const hasWdkConfig = Boolean(getOptionalEnv('AEGIS_WALLET_SEED_PHRASE') && getOptionalEnv('AEGIS_EVM_RPC_URL') && getOptionalEnv('AEGIS_USDT_TOKEN_ADDRESS'));
 
   let walletProvider = configuredWalletProvider;
@@ -91,6 +150,8 @@ export function loadServerConfig(): AegisServerConfig {
     port: Number.isFinite(port) ? port : 8787,
     walletProvider,
     reasoningProvider,
+    apiKey: getOptionalEnv('AEGIS_API_KEY'),
+    allowedOrigins: configuredAllowedOrigins.length > 0 ? configuredAllowedOrigins : defaultAllowedOrigins,
     rpcUrl: getOptionalEnv('AEGIS_EVM_RPC_URL'),
     walletSeedPhrase: getOptionalEnv('AEGIS_WALLET_SEED_PHRASE'),
     tokenAddress: getOptionalEnv('AEGIS_USDT_TOKEN_ADDRESS'),
@@ -104,10 +165,15 @@ export function loadServerConfig(): AegisServerConfig {
     openAiBaseUrl: getOptionalEnv('AEGIS_OPENAI_BASE_URL') ?? 'https://api.openai.com/v1',
     openClawCommand: getOptionalEnv('AEGIS_OPENCLAW_COMMAND') ?? 'openclaw',
     openClawTimeoutMs: Number.isFinite(openClawTimeoutMs) ? openClawTimeoutMs : 15000,
+    openClawSessionId: getOptionalEnv('AEGIS_OPENCLAW_SESSION_ID') ?? 'aegispay',
+    openClawUseLocal: getBooleanEnv('AEGIS_OPENCLAW_LOCAL', true),
+    openClawThinkingLevel: getOpenClawThinkingLevel(),
     schedulerEnabled: getBooleanEnv('AEGIS_SCHEDULER_ENABLED', true),
     schedulerIntervalMs: Number.isFinite(schedulerIntervalMs) ? schedulerIntervalMs : 60000,
     schedulerRunOnStart: getBooleanEnv('AEGIS_SCHEDULER_RUN_ON_START', false),
+    statePersistenceEnabled: getBooleanEnv('AEGIS_STATE_PERSISTENCE_ENABLED', true),
+    stateFilePath: getOptionalEnv('AEGIS_STATE_FILE_PATH') ?? getDefaultStateFilePath(),
     telegramBotToken: getOptionalEnv('TELEGRAM_BOT_TOKEN'),
-    serverUrl: getOptionalEnv('AEGIS_SERVER_URL') ?? `http://localhost:${port}`,
+    serverUrl,
   };
 }

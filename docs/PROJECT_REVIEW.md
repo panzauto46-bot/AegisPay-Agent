@@ -8,16 +8,16 @@ Submission deadline: March 22, 2026
 
 | Metric | Value |
 |--------|-------|
-| Overall progress | 93% |
+| Overall progress | 98% |
 | TypeScript errors | 0 |
-| Test suites | 4 |
-| Tests | 12/12 passed |
-| Source files in `src/` | 39 |
-| Source lines in `src/` | ~6,470 |
-| Build output | `dist/index.html` (~524 KB) |
+| Test suites | 5 |
+| Tests | 19/19 passed |
+| Source files in `src/` | 42 |
+| Source lines in `src/` | ~6,660 |
+| Build output | `dist/index.html` (~535 KB) |
 | Current runtime state | Full-stack MVP |
 
-The project is in strong MVP shape. The product story is now much clearer thanks to the animated landing page and wallet-connect entry flow, and the backend has a credible runtime model with provider-backed reasoning, scheduler execution, Telegram bridge, optional WDK support, and a Vercel serverless deployment path with a CommonJS bundle plus lazy WDK loading now stable in production. OpenClaw CLI integration is now wired as an optional reasoning path with deterministic fallback, and a funded WDK smoke script is now in place. The most important remaining gaps are live OpenClaw runtime validation, funded WDK execution proof, persistence/auth hardening, and final hackathon deliverables such as the demo video and submission assets.
+The project is in strong MVP shape. The product story is clear thanks to the animated landing page and wallet-connect entry flow, and the backend now has a credible runtime model with provider-backed reasoning, scheduler execution, Telegram bridge, optional WDK support, JSON persistence, API auth + CORS controls, and a Vercel serverless deployment path with a CommonJS bundle plus lazy WDK loading stable in production. OpenClaw CLI integration is wired and runtime-validated in a real local session, and both funded WDK and deployed-runtime smoke scripts are in place. The most important remaining gaps are funded WDK execution proof and final hackathon deliverables such as the demo video and submission assets.
 
 ## Current Architecture
 
@@ -81,6 +81,7 @@ graph TB
 - The current local validation path works with Alibaba Model Studio/Qwen.
 - Multi-model fallback is implemented, so quota/rate-limit/provider errors can roll over to the next configured model before falling back to deterministic parsing.
 - OpenClaw CLI can now be used as a first-pass reasoning layer and falls back to deterministic parsing if unavailable.
+- OpenClaw runtime was validated with a real local session (`openclaw agent --local --session-id ...`) and the provider now uses session-aware invocation.
 
 ### 4. Core wallet and payment flows are there
 
@@ -110,46 +111,39 @@ The docs now form a more coherent story than earlier revisions.
 - Optional `CRON_SECRET` bearer validation is implemented for cron calls.
 - The Vercel bootstrap path now uses a bundled CommonJS server app with lazy WDK loading, which removes unnecessary WDK startup imports in demo mode and is a better fit for the current Express runtime.
 
+### 7. Security and persistence hardening now landed
+
+- Optional API key guard (`AEGIS_API_KEY`) protects non-public API routes.
+- CORS is now configurable via allowlist (`AEGIS_ALLOWED_ORIGINS`) and is no longer implicitly wildcard in production defaults.
+- Runtime state persistence is now file-based (`AEGIS_STATE_FILE_PATH`), so restarts do not wipe wallets/rules/recurring/messages.
+- Package naming cleanup (`aegispay-agent`) and Apache-2.0 `LICENSE` are now done.
+
 ## Main Gaps
 
 ### High severity
 
-#### 1. OpenClaw runtime validation is still pending
+#### 1. Live WDK verification is still pending
 
-OpenClaw CLI reasoning is now integrated in code, but it still needs end-to-end runtime proof with a real `openclaw agent` execution flow and demo evidence.
-
-#### 2. Live WDK verification is still pending
-
-The WDK provider exists and there is now a dedicated `npm run verify:wdk` smoke script, but there is still no funded Sepolia verification hash recorded yet because live env secrets are missing in the local setup.
-
-#### 3. No persistence layer
-
-Runtime state still lives in memory. A server restart wipes wallets, rules, recurring schedules, and chat history. This is acceptable for local iteration, but risky for a demo or public deployment.
-
-#### 4. No API authentication
-
-The backend still lacks an auth gate. If publicly exposed as-is, anyone who can reach the API can trigger commands and scheduler actions.
+The WDK provider exists and `npm run verify:wdk` is in place. Read-only validation works, but there is still no funded Sepolia verification hash because the configured wallet is not funded yet.
 
 ### Medium severity
 
-#### 5. Deployment still needs backend env setup hardening
+#### 2. Deployment still needs backend env setup hardening
 
-The deployment path exists now and production health/state endpoints are responding. Remaining deployment work is mostly hardening: ensure Vercel env vars stay correct (Alibaba-compatible API key, model list, and base URL), add auth/CORS tightening, and keep runtime observability for cron/scheduler behavior.
+The deployment path exists now and production health/runtime/state endpoints are responding. `npm run verify:deploy` has already been validated against production. Remaining deployment work is now operational hardening: keep Vercel env vars consistent (Alibaba-compatible API key, model list, base URL, API key, CORS origins) and improve scheduler observability.
 
-#### 6. Test coverage is still selective
+#### 3. Test coverage is still selective
 
 Coverage is improving, but it is still focused on:
 - engine core
 - API endpoints
 - reasoning model fallback
 
-UI flows, Telegram bridge behavior, and live-provider smoke tests are still missing.
+UI flows and Telegram bridge behavior are still missing from automated tests.
 
-#### 7. Submission polish items remain open
+#### 4. Submission polish items remain open
 
 - demo video
-- `LICENSE`
-- `package.json` rename cleanup
 - final submission packaging
 
 ## Updated Metrics
@@ -160,7 +154,9 @@ UI flows, Telegram bridge behavior, and live-provider smoke tests are still miss
 | Wallet flow | Ready in demo mode, optional WDK path present |
 | AI runtime | Alibaba-compatible reasoning verified locally and deployable via Vercel Functions |
 | Scheduler | Working in-process + Vercel cron path available |
-| Tests | 12/12 passing |
+| Security | API key auth + CORS allowlist controls are implemented |
+| Persistence | JSON state persistence is wired and active |
+| Tests | 19/19 passing |
 | README accuracy | Improved and aligned with runtime |
 | Submission readiness | Not done yet (but deployment runtime is now stable) |
 
@@ -172,19 +168,16 @@ UI flows, Telegram bridge behavior, and live-provider smoke tests are still miss
 | Technical documentation | ✅ Complete | README, PRD, roadmap, status, and review are aligned. |
 | Working prototype | ✅ Complete | Landing, connect-wallet, chat, API, scheduler, and Telegram bridge are functional. |
 | Demo video | ❌ Pending | Mandatory remaining deliverable. |
-| Track-specific OpenClaw story | 🟠 In Progress | OpenClaw CLI path is implemented; runtime proof is still required. |
+| Track-specific OpenClaw story | ✅ Complete | OpenClaw CLI path is implemented and runtime-validated in a real session. |
 
 ## Recommended Next Steps
 
-1. Validate OpenClaw with a real CLI session and record proof.
-2. Run a funded WDK Sepolia smoke test and document the result.
-3. Add persistence so the runtime survives restarts.
-4. Add basic API authentication before any public backend exposure.
-5. Record the demo video using the new landing-to-console flow.
-6. Add `LICENSE` and rename the package to `aegispay-agent`.
+1. Run a funded WDK Sepolia smoke test and document the result.
+2. Record the demo video using the new landing-to-console flow.
+3. Finalize submission package artifacts and disclosures.
 
 ## Overall Assessment
 
-Rating: 8.8/10
+Rating: 9.4/10
 
-The project is no longer just a rough prototype. It now looks and behaves like a polished MVP with a credible architecture and a presentable user journey. The remaining work is mostly about validation, compliance with the track requirements, and final submission hardening rather than rebuilding the core product.
+The project is no longer just a rough prototype. It now looks and behaves like a polished MVP with a credible architecture, security/persistence hardening, validated OpenClaw runtime behavior, and a presentable user journey. The remaining work is mostly about funded WDK proof and final submission assets, not rebuilding core product capability.

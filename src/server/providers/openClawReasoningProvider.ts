@@ -19,8 +19,11 @@ interface OpenClawIntentShape {
 export interface OpenClawReasoningProviderOptions {
   command: string;
   timeoutMs: number;
+  sessionId: string;
+  useLocal: boolean;
+  thinkingLevel: 'off' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh';
   fallback?: ReasoningProvider;
-  runner?: (command: string, prompt: string, timeoutMs: number) => Promise<string>;
+  runner?: (command: string, args: string[], timeoutMs: number) => Promise<string>;
 }
 
 function getStateSummary(state: AgentState) {
@@ -49,10 +52,10 @@ function buildOpenClawPrompt(input: string, state: AgentState) {
   ].join('\n');
 }
 
-async function runOpenClaw(command: string, prompt: string, timeoutMs: number) {
+async function runOpenClaw(command: string, args: string[], timeoutMs: number) {
   const result = await execFileAsync(
     command,
-    ['agent', '--message', prompt, '--thinking', 'high'],
+    args,
     {
       timeout: timeoutMs,
       maxBuffer: 1024 * 1024,
@@ -163,12 +166,18 @@ export class OpenClawReasoningProvider implements ReasoningProvider {
 
   private readonly command: string;
   private readonly timeoutMs: number;
+  private readonly sessionId: string;
+  private readonly useLocal: boolean;
+  private readonly thinkingLevel: 'off' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh';
   private readonly fallback?: ReasoningProvider;
-  private readonly runner: (command: string, prompt: string, timeoutMs: number) => Promise<string>;
+  private readonly runner: (command: string, args: string[], timeoutMs: number) => Promise<string>;
 
   constructor(options: OpenClawReasoningProviderOptions) {
     this.command = options.command;
     this.timeoutMs = options.timeoutMs;
+    this.sessionId = options.sessionId;
+    this.useLocal = options.useLocal;
+    this.thinkingLevel = options.thinkingLevel;
     this.fallback = options.fallback;
     this.runner = options.runner ?? runOpenClaw;
   }
@@ -176,7 +185,12 @@ export class OpenClawReasoningProvider implements ReasoningProvider {
   async analyze(input: string, state: AgentState): Promise<AgentIntent> {
     try {
       const prompt = buildOpenClawPrompt(input, state);
-      const output = await this.runner(this.command, prompt, this.timeoutMs);
+      const args = ['agent', '--session-id', this.sessionId, '--message', prompt, '--thinking', this.thinkingLevel];
+      if (this.useLocal) {
+        args.splice(1, 0, '--local');
+      }
+
+      const output = await this.runner(this.command, args, this.timeoutMs);
       const jsonPayload = extractJsonObject(output);
 
       if (!jsonPayload) {
@@ -194,4 +208,3 @@ export class OpenClawReasoningProvider implements ReasoningProvider {
     }
   }
 }
-
